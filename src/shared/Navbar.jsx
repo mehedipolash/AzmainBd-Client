@@ -30,9 +30,13 @@ const Navbar = () => {
         setMenuOpen(false);
     };
 
+    // NavLink gives us isActive; the underline makes the current page legible
+    // without relying on colour alone.
     const linkClass = ({ isActive }) =>
-        `text-[13px] font-medium tracking-wide transition-colors hover:text-base-content ${
-            isActive ? 'text-base-content' : 'text-base-content/60'
+        `relative py-1 text-[15px] font-medium tracking-wide transition-colors hover:text-base-content ${
+            isActive
+                ? 'text-base-content after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:bg-base-content'
+                : 'text-base-content/65'
         }`;
 
     return (
@@ -66,9 +70,17 @@ const Navbar = () => {
                         <FaBars />
                     </button>
 
-                    {/* Desktop nav sits left of the wordmark. */}
-                    <ul className="hidden flex-1 items-center gap-7 lg:flex">
-                        {NAV_LINKS.slice(0, 2).map((link) => (
+                    <Link
+                        to="/"
+                        className="font-display text-2xl leading-none font-semibold tracking-tight lg:text-[28px]"
+                    >
+                        {SITE_NAME}
+                    </Link>
+
+                    {/* One list for every link, so adding a nav item never
+                        unbalances the header. */}
+                    <ul className="hidden flex-1 items-center justify-center gap-9 lg:flex">
+                        {NAV_LINKS.map((link) => (
                             <li key={link.path}>
                                 <NavLink
                                     to={link.path}
@@ -81,24 +93,7 @@ const Navbar = () => {
                         ))}
                     </ul>
 
-                    <Link
-                        to="/"
-                        className="font-display text-2xl leading-none font-semibold tracking-tight lg:text-[28px]"
-                    >
-                        {SITE_NAME}
-                    </Link>
-
-                    <ul className="hidden flex-1 items-center justify-end gap-7 lg:flex">
-                        {NAV_LINKS.slice(2).map((link) => (
-                            <li key={link.path}>
-                                <NavLink to={link.path} className={linkClass}>
-                                    {link.label}
-                                </NavLink>
-                            </li>
-                        ))}
-                    </ul>
-
-                    <div className="flex items-center gap-1 sm:gap-3 lg:ml-8">
+                    <div className="flex items-center gap-1 sm:gap-3">
                         <button
                             type="button"
                             onClick={() => setSearchOpen((open) => !open)}
@@ -195,7 +190,7 @@ const Navbar = () => {
                                         end={link.path === '/'}
                                         onClick={() => setMenuOpen(false)}
                                         className={({ isActive }) =>
-                                            `block border-b border-base-300 px-5 py-3.5 text-sm tracking-wide transition-colors ${
+                                            `block border-b border-base-300 px-5 py-4 text-[15px] tracking-wide transition-colors ${
                                                 isActive
                                                     ? 'font-semibold text-base-content'
                                                     : 'text-base-content/65'
