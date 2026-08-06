@@ -264,3 +264,27 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* A highlight sweeps the benefits rail, so the sequence reads as live. */
+@keyframes rail-pulse {
+  0% {
+    transform: translateX(-100%);
+  }
+  55%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Soft ring expanding out of each step icon as it lands. */
+@keyframes halo {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.5;
+  }
+  70%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
