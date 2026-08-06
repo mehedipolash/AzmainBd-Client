@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import { FaTrash, FaLock, FaTruckFast } from 'react-icons/fa6';
 import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import UseCart from '../../Hooks/UseCart';
 import UseToast from '../../Hooks/UseToast';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -23,12 +24,12 @@ const Cart = () => {
 
     return (
         <div>
-            <div className="border-b border-base-300 bg-base-200">
-                <div className="container-px py-12 text-center sm:py-16">
-                    <p className="eyebrow mb-3">Checkout</p>
-                    <h1 className="font-display text-3xl font-semibold sm:text-4xl">Your cart</h1>
-                </div>
-            </div>
+            <PageHeader
+                eyebrow="Checkout"
+                title="Your cart"
+                image="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80"
+                crumbs={[{ label: 'Home', path: '/' }, { label: 'Cart' }]}
+            />
 
             <div className="container-px section-y">
                 {count === 0 ? (

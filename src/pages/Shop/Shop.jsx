@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router';
 import { FaSliders, FaXmark } from 'react-icons/fa6';
 import ProductCard from '../../components/ProductCard';
 import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import ShopFilters from './ShopFilters';
 import { products, isSoldOut, byAvailability } from '../../data/products';
 import { SORT_OPTIONS } from '../../utils/constants';
@@ -91,14 +92,13 @@ const Shop = () => {
 
     return (
         <div>
-            <div className="border-b border-base-300 bg-base-200">
-                <div className="container-px py-12 text-center sm:py-16">
-                    <p className="eyebrow mb-3">Shop</p>
-                    <h1 className="font-display text-3xl font-semibold sm:text-4xl">
-                        {search ? `Results for “${search}”` : 'All products'}
-                    </h1>
-                </div>
-            </div>
+            <PageHeader
+                eyebrow="Shop"
+                title={search ? `Results for “${search}”` : 'All products'}
+                subtitle="Authorised stock with full manufacturer warranty on every order."
+                image="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"
+                crumbs={[{ label: 'Home', path: '/' }, { label: 'Shop' }]}
+            />
 
             <div className="container-px py-10 lg:py-14">
                 <div className="flex flex-col gap-10 lg:flex-row lg:gap-14">

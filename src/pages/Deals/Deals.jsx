@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SectionTitle from '../../components/SectionTitle';
 import ProductCard from '../../components/ProductCard';
 import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import PromoBanner from '../../components/PromoBanner';
 import { products, byAvailability } from '../../data/products';
 import { getBannersByPlacement } from '../../data/banners';
@@ -33,18 +34,13 @@ const Deals = () => {
 
     return (
         <div>
-            <div className="border-b border-base-300 bg-base-200">
-                <div className="container-px py-12 text-center sm:py-16">
-                    <p className="eyebrow mb-3">Savings</p>
-                    <h1 className="font-display text-3xl font-semibold sm:text-4xl">
-                        Exclusive deals &amp; special offers
-                    </h1>
-                    <p className="mx-auto mt-4 max-w-lg text-sm text-base-content/60">
-                        Genuine reductions on authorised stock — every price below includes full
-                        manufacturer warranty.
-                    </p>
-                </div>
-            </div>
+            <PageHeader
+                eyebrow="Savings"
+                title="Exclusive deals & special offers"
+                subtitle="Genuine reductions on authorised stock — every price includes full manufacturer warranty."
+                image="https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1600&q=80"
+                crumbs={[{ label: 'Home', path: '/' }, { label: 'Deals' }]}
+            />
 
             {strip && (
                 <div className="container-px pt-10 lg:pt-14">

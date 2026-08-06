@@ -33,14 +33,14 @@ const Navbar = () => {
     // NavLink gives us isActive; the underline makes the current page legible
     // without relying on colour alone.
     const linkClass = ({ isActive }) =>
-        `relative py-1 text-[15px] font-medium tracking-wide transition-colors hover:text-base-content ${
+        `rounded-full px-4 py-2 text-[14px] font-medium transition-colors ${
             isActive
-                ? 'text-base-content after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:bg-base-content'
-                : 'text-base-content/65'
+                ? 'bg-primary text-primary-content shadow-sm'
+                : 'text-base-content/65 hover:bg-base-100 hover:text-base-content'
         }`;
 
     return (
-        <header className="sticky top-0 z-50 bg-base-100">
+        <header className="sticky top-0 z-50">
             {/* Utility strip — shipping promise and hotline, the way real
                 storefronts open. */}
             <div className="hidden bg-primary text-primary-content md:block">
@@ -59,12 +59,15 @@ const Navbar = () => {
                 </div>
             </div>
 
-            <div className="border-b border-base-300">
-                <nav className="container-px flex h-16 items-center justify-between gap-4 lg:h-20">
+            {/* Floating bar: the nav detaches from the page edge and sits on a
+                rounded card, so it reads as a control surface rather than a
+                border. */}
+            <div className="bg-base-200/70 px-3 py-3 backdrop-blur-lg sm:px-4">
+                <nav className="container-px flex h-14 items-center justify-between gap-4 rounded-full border border-base-300 bg-base-100 px-4 shadow-sm sm:px-6 lg:h-16">
                     <button
                         type="button"
                         onClick={() => setMenuOpen(true)}
-                        className="-ml-2 p-2 text-lg lg:hidden"
+                        className="-ml-1 p-2 text-lg lg:hidden"
                         aria-label="Open menu"
                     >
                         <FaBars />
@@ -72,28 +75,29 @@ const Navbar = () => {
 
                     <Link
                         to="/"
-                        className="font-display text-2xl leading-none font-semibold tracking-tight lg:text-[28px]"
+                        className="font-display text-xl leading-none font-semibold tracking-tight lg:text-2xl"
                     >
-                        {SITE_NAME}
+                        Azmain <span className="text-primary">BD</span>
                     </Link>
 
-                    {/* One list for every link, so adding a nav item never
-                        unbalances the header. */}
-                    <ul className="hidden flex-1 items-center justify-center gap-9 lg:flex">
-                        {NAV_LINKS.map((link) => (
-                            <li key={link.path}>
+                    {/* Links grouped inside their own pill, one list so adding a
+                        nav item never unbalances the header. */}
+                    <ul className="hidden flex-1 items-center justify-center lg:flex">
+                        <li className="flex items-center gap-1 rounded-full bg-base-200 p-1">
+                            {NAV_LINKS.map((link) => (
                                 <NavLink
+                                    key={link.path}
                                     to={link.path}
                                     className={linkClass}
                                     end={link.path === '/'}
                                 >
                                     {link.label}
                                 </NavLink>
-                            </li>
-                        ))}
+                            ))}
+                        </li>
                     </ul>
 
-                    <div className="flex items-center gap-1 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
                         <button
                             type="button"
                             onClick={() => setSearchOpen((open) => !open)}
@@ -105,14 +109,6 @@ const Navbar = () => {
                         </button>
 
                         <ThemeToggle />
-
-                        <Link
-                            to="/login"
-                            className="hidden p-2 text-base transition-opacity hover:opacity-60 sm:block"
-                            aria-label="Account"
-                        >
-                            <FaUser />
-                        </Link>
 
                         <Link
                             to="/cart"
@@ -139,15 +135,24 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
+
+                        {/* Solid pill anchors the right end of the bar. */}
+                        <Link
+                            to="/login"
+                            className="ml-1 hidden items-center gap-2 rounded-full bg-neutral px-5 py-2.5 text-[13px] font-semibold text-neutral-content transition-opacity hover:opacity-85 sm:inline-flex"
+                        >
+                            <FaUser className="text-xs" />
+                            Sign In
+                        </Link>
                     </div>
                 </nav>
             </div>
 
             {/* Search drops down from the header rather than living inline. */}
             {searchOpen && (
-                <div className="border-b border-base-300 bg-base-100">
-                    <form onSubmit={handleSearch} className="container-px py-5">
-                        <div className="flex items-center gap-3 border-b border-base-content/25 pb-3">
+                <div className="bg-base-200/70 px-3 pb-3 backdrop-blur-lg sm:px-4">
+                    <form onSubmit={handleSearch} className="container-px">
+                        <div className="flex items-center gap-3 rounded-full border border-base-300 bg-base-100 px-6 py-3.5 shadow-sm">
                             <FaMagnifyingGlass
                                 className="text-sm text-base-content/40"
                                 aria-hidden="true"

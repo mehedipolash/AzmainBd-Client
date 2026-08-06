@@ -66,12 +66,14 @@ const ProductDetails = () => {
 
     return (
         <div>
-            <div className="border-b border-base-300 bg-base-200">
-                <div className="container-px py-4">
+            {/* Compact brand bar — the product photo carries this page, so the
+                header stays a slim breadcrumb strip rather than a full banner. */}
+            <div className="bg-primary">
+                <div className="container-px py-3.5">
                     <nav aria-label="Breadcrumb">
-                        <ol className="flex flex-wrap items-center gap-2 text-[13px] text-base-content/50">
+                        <ol className="flex flex-wrap items-center gap-2 text-[13px] text-white/65">
                             <li>
-                                <Link to="/" className="hover:text-base-content">
+                                <Link to="/" className="transition-colors hover:text-white">
                                     Home
                                 </Link>
                             </li>
@@ -79,13 +81,13 @@ const ProductDetails = () => {
                             <li>
                                 <Link
                                     to={`/shop?category=${product.category}`}
-                                    className="capitalize hover:text-base-content"
+                                    className="capitalize transition-colors hover:text-white"
                                 >
                                     {product.category}
                                 </Link>
                             </li>
                             <li aria-hidden="true">/</li>
-                            <li className="text-base-content">{product.name}</li>
+                            <li className="text-white">{product.name}</li>
                         </ol>
                     </nav>
                 </div>

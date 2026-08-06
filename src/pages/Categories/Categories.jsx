@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import SectionTitle from '../../components/SectionTitle';
+import PageHeader from '../../components/PageHeader';
 import { categories, products, isInStock } from '../../data/products';
 
 const Categories = () => {
@@ -10,14 +11,13 @@ const Categories = () => {
 
     return (
         <div>
-            <div className="border-b border-base-300 bg-base-200">
-                <div className="container-px py-12 text-center sm:py-16">
-                    <p className="eyebrow mb-3">Departments</p>
-                    <h1 className="font-display text-3xl font-semibold sm:text-4xl">
-                        Shop by category
-                    </h1>
-                </div>
-            </div>
+            <PageHeader
+                eyebrow="Departments"
+                title="Shop by category"
+                subtitle="Every department is stocked with authorised products and full warranty coverage."
+                image="https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=1600&q=80"
+                crumbs={[{ label: 'Home', path: '/' }, { label: 'Categories' }]}
+            />
 
             <div className="container-px section-y">
                 <SectionTitle
