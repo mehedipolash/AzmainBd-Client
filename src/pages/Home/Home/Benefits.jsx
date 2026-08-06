@@ -18,10 +18,9 @@ const Benefits = () => {
 
                         return (
                             <li key={benefit.title} className="text-center">
-                                <Icon
-                                    className="mx-auto mb-4 text-xl text-base-content/70"
-                                    aria-hidden="true"
-                                />
+                                <span className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-secondary">
+                                    <Icon className="text-lg text-primary" aria-hidden="true" />
+                                </span>
                                 <h3 className="font-display text-base font-semibold">
                                     {benefit.title}
                                 </h3>

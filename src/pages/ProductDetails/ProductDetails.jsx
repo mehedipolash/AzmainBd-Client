@@ -5,7 +5,6 @@ import {
     FaTruckFast,
     FaShieldHalved,
     FaRotateLeft,
-    FaCheck,
     FaRegHeart,
 } from 'react-icons/fa6';
 import ProductCard from '../../components/ProductCard';
@@ -16,13 +15,20 @@ import {
     getRelated,
     isSoldOut,
     isLowStock,
+    getDeliveryEstimate,
     LOW_STOCK_THRESHOLD,
 } from '../../data/products';
 import { formatCurrency, calcDiscount } from '../../utils/formatCurrency';
+import UseCart from '../../Hooks/UseCart';
+import UseToast from '../../Hooks/UseToast';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const [quantity, setQuantity] = useState(1);
+    // Hooks must run before any early return, so they sit above the
+    // not-found branch.
+    const { addItem } = UseCart();
+    const { notify } = UseToast();
 
     const product = products.find((item) => item._id === id);
 
@@ -46,9 +52,16 @@ const ProductDetails = () => {
 
     // Never let the customer request more than we hold.
     const maxQuantity = Math.max(1, product.stock);
+    const deliveryDate = getDeliveryEstimate(product);
 
     const handleAddToCart = () => {
-        // Wired to CartContext once that is built.
+        if (soldOut) {
+            notify('We will email you when this is back in stock', 'info');
+            return;
+        }
+
+        addItem(product, quantity);
+        notify(`${quantity} × ${product.name} added to cart`);
     };
 
     return (
@@ -158,15 +171,33 @@ const ProductDetails = () => {
                                     Currently sold out — join the waitlist below.
                                 </p>
                             ) : (
-                                <p className="flex items-center gap-2 text-sm">
-                                    <FaCheck className="text-xs text-success" aria-hidden="true" />
-                                    <span className="font-medium text-success">In stock</span>
-                                    <span className="text-base-content/50">
-                                        {lowStock
-                                            ? `— only ${product.stock} left, order soon`
-                                            : '— ships within 24 hours'}
-                                    </span>
-                                </p>
+                                <div className="space-y-2.5">
+                                    <p className="flex flex-wrap items-center gap-2 text-sm">
+                                        {lowStock ? (
+                                            <span className="pill-urgent">
+                                                Only {product.stock} left
+                                            </span>
+                                        ) : (
+                                            <span className="pill-stock">In stock</span>
+                                        )}
+                                        <span className="text-base-content/50">
+                                            {lowStock
+                                                ? 'Order soon to avoid missing out'
+                                                : 'Ships within 24 hours'}
+                                        </span>
+                                    </p>
+
+                                    {deliveryDate && (
+                                        <p className="flex items-center gap-2 text-sm text-base-content/60">
+                                            <FaTruckFast className="text-xs" aria-hidden="true" />
+                                            Delivered by{' '}
+                                            <span className="font-medium text-base-content">
+                                                {deliveryDate}
+                                            </span>{' '}
+                                            in Dhaka
+                                        </p>
+                                    )}
+                                </div>
                             )}
                         </div>
 

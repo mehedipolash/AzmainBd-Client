@@ -3,10 +3,13 @@ import { Link } from 'react-router';
 import { FaStar, FaRegHeart, FaArrowRightArrowLeft } from 'react-icons/fa6';
 import { formatCurrency, calcDiscount } from '../utils/formatCurrency';
 import { getStockBadge, isSoldOut, isLowStock } from '../data/products';
+import UseCart from '../Hooks/UseCart';
+import UseToast from '../Hooks/UseToast';
 
 const TONE_CLASSES = {
     sold: 'bg-base-content/75 text-base-100',
-    low: 'bg-error text-error-content',
+    // Amber signals scarcity — the only place colour means urgency.
+    low: 'bg-warning text-warning-content',
     ok: 'bg-base-100 text-base-content',
 };
 
@@ -15,6 +18,8 @@ const TONE_CLASSES = {
 // "notify me" affordance instead.
 const ProductCard = ({ product }) => {
     const { _id, name, image, price, oldPrice, rating, reviews } = product;
+    const { addItem } = UseCart();
+    const { notify } = UseToast();
 
     const soldOut = isSoldOut(product);
     const lowStock = isLowStock(product);
@@ -22,7 +27,12 @@ const ProductCard = ({ product }) => {
     const discount = calcDiscount(price, oldPrice);
 
     const handleAddToCart = () => {
-        // Wired to CartContext once that is built.
+        addItem(product, 1);
+        notify(`${name} added to cart`);
+    };
+
+    const handleNotifyMe = () => {
+        notify('We will email you when this is back in stock', 'info');
     };
 
     return (
@@ -50,7 +60,7 @@ const ProductCard = ({ product }) => {
                 )}
 
                 {discount > 0 && !soldOut && (
-                    <span className="absolute top-3 right-3 bg-base-content px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] text-base-100 uppercase">
+                    <span className="absolute top-3 right-3 bg-primary px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] text-primary-content uppercase">
                         -{discount}%
                     </span>
                 )}
@@ -82,6 +92,7 @@ const ProductCard = ({ product }) => {
                     {soldOut ? (
                         <button
                             type="button"
+                            onClick={handleNotifyMe}
                             className="w-full bg-base-content/85 py-3 text-[11px] font-semibold tracking-[0.14em] text-base-100 uppercase"
                         >
                             Notify Me
@@ -114,7 +125,9 @@ const ProductCard = ({ product }) => {
                 </div>
 
                 <div className="mt-2 flex items-baseline justify-center gap-2">
-                    <span className="text-[15px] font-medium">{formatCurrency(price)}</span>
+                    <span className="text-[16px] font-semibold text-primary">
+                        {formatCurrency(price)}
+                    </span>
                     {oldPrice && (
                         <span className="text-[13px] text-base-content/35 line-through">
                             {formatCurrency(oldPrice)}
@@ -123,8 +136,8 @@ const ProductCard = ({ product }) => {
                 </div>
 
                 {lowStock && (
-                    <p className="mt-1.5 text-[11px] tracking-wide text-error">
-                        Only {product.stock} left in stock
+                    <p className="mt-2 text-[11px] font-medium tracking-wide text-warning">
+                        Only {product.stock} left — order soon
                     </p>
                 )}
             </div>

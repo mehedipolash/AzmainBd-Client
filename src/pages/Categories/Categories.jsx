@@ -53,7 +53,7 @@ const Categories = () => {
                                     {count > 0 ? `${count} in stock` : 'Restocking soon'}
                                 </p>
 
-                                <span className="mt-3 inline-block border-b border-base-content/30 pb-1 text-[11px] font-semibold tracking-[0.16em] uppercase transition-colors group-hover:border-base-content">
+                                <span className="mt-3 inline-block border-b border-primary/40 pb-1 text-[11px] font-semibold tracking-[0.16em] text-primary uppercase transition-colors group-hover:border-primary">
                                     Explore
                                 </span>
                             </Link>

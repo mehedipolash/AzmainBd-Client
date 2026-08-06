@@ -14,9 +14,16 @@
    Design system — editorial commerce.
 
    Type pairing does the heavy lifting: a serif display face for headings
-   against a clean grotesque for UI. Colour stays near-monochrome so the
-   product photography carries the page; a single mint tint separates
-   sections instead of coloured bands.
+   against a clean grotesque for UI.
+
+   Colour discipline — two accents, each with exactly one job:
+
+     teal   brand. Buttons, links, active nav, focus rings, prices.
+     amber  urgency only. Low stock, countdowns, sale badges.
+
+   Amber is never decorative. If it appears, something is scarce or ending —
+   so it keeps its meaning and the page stays calm. Everything else is
+   monochrome, letting product photography carry the page.
 
    No gradients. Corners stay sharp (4px). Buttons are rectangular.
 --------------------------------------------------------------------------- */
@@ -30,6 +37,17 @@
   --color-ink-muted: #616161;
   --color-mint: #f1f8f6;
   --color-line: #eaeaea;
+
+  /* Brand teal — deepened out of the existing mint tint so the accent reads
+     as native to the palette rather than applied on top of it. */
+  --color-teal-deep: #0f6b5c;
+  --color-teal-mid: #14806e;
+  --color-teal-tint: #e8f4f1;
+
+  /* Urgency amber. */
+  --color-amber-deep: #a8610f;
+  --color-amber-mid: #c8791a;
+  --color-amber-tint: #fdf3e6;
 }
 
 /* Light theme — the default. Near-monochrome, mint section tint. */
@@ -39,27 +57,30 @@
   color-scheme: light;
 
   --color-base-100: #ffffff;
-  --color-base-200: #f1f8f6;
-  --color-base-300: #eaeaea;
+  --color-base-200: #f6faf9;
+  --color-base-300: #e4eae8;
   --color-base-content: #111111;
 
-  --color-primary: #111111;
+  /* Teal carries every brand action. */
+  --color-primary: #0f6b5c;
   --color-primary-content: #ffffff;
 
-  --color-secondary: #f1f8f6;
-  --color-secondary-content: #111111;
+  --color-secondary: #e8f4f1;
+  --color-secondary-content: #0b4c41;
 
-  --color-accent: #2d2d2d;
+  /* Amber is the urgency accent — surfaced through daisyUI's warning slot so
+     countdowns and low-stock warnings inherit it automatically. */
+  --color-accent: #c8791a;
   --color-accent-content: #ffffff;
 
   --color-neutral: #111111;
   --color-neutral-content: #ffffff;
 
-  --color-info: #557dbc;
+  --color-info: #2d6a9f;
   --color-info-content: #ffffff;
-  --color-success: #2f7d5f;
+  --color-success: #14806e;
   --color-success-content: #ffffff;
-  --color-warning: #b4761a;
+  --color-warning: #a8610f;
   --color-warning-content: #ffffff;
   --color-error: #b3261e;
   --color-error-content: #ffffff;
@@ -81,31 +102,33 @@
   prefersdark: true;
   color-scheme: dark;
 
-  --color-base-100: #101211;
-  --color-base-200: #171a19;
-  --color-base-300: #262a29;
+  --color-base-100: #0e1211;
+  --color-base-200: #151b1a;
+  --color-base-300: #253230;
   --color-base-content: #f2f4f3;
 
-  --color-primary: #ffffff;
-  --color-primary-content: #111111;
+  /* Both accents lift in lightness for the dark ground — the light-theme
+     values would fail contrast here. */
+  --color-primary: #4fbfa8;
+  --color-primary-content: #06201b;
 
-  --color-secondary: #171a19;
-  --color-secondary-content: #f2f4f3;
+  --color-secondary: #172624;
+  --color-secondary-content: #cfe9e3;
 
-  --color-accent: #d8dedb;
-  --color-accent-content: #111111;
+  --color-accent: #e8a24a;
+  --color-accent-content: #21150a;
 
   --color-neutral: #f2f4f3;
   --color-neutral-content: #111111;
 
   --color-info: #7aa4e0;
-  --color-info-content: #101211;
-  --color-success: #62b894;
-  --color-success-content: #101211;
-  --color-warning: #d9a441;
-  --color-warning-content: #101211;
-  --color-error: #e26a62;
-  --color-error-content: #101211;
+  --color-info-content: #0e1211;
+  --color-success: #4fbfa8;
+  --color-success-content: #06201b;
+  --color-warning: #e8a24a;
+  --color-warning-content: #21150a;
+  --color-error: #e8776d;
+  --color-error-content: #21100e;
 
   --radius-selector: 4px;
   --radius-field: 4px;
@@ -186,5 +209,38 @@
 
   .btn-shop-light:hover {
     @apply bg-transparent text-white;
+  }
+
+  /* Urgency pill — amber, reserved for scarcity and expiry. */
+  .pill-urgent {
+    @apply inline-flex items-center gap-1.5 bg-warning/12 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] text-warning uppercase;
+  }
+
+  .pill-stock {
+    @apply inline-flex items-center gap-1.5 bg-success/12 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] text-success uppercase;
+  }
+
+  /* Loading placeholder that matches the card grid. */
+  .skeleton-block {
+    @apply animate-pulse bg-base-300;
+  }
+}
+
+@layer base {
+  /* One visible focus treatment everywhere, in the brand colour. */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

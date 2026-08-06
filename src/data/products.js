@@ -237,6 +237,114 @@ export const products = [
             'Compact earbuds with adaptive noise cancelling and a pocketable wireless charging case.',
         image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=900&q=80',
     },
+    {
+        _id: 'p13',
+        name: 'Aurora QLED 55" Smart TV',
+        category: 'televisions',
+        brand: 'Samsung',
+        price: 92000,
+        oldPrice: 108000,
+        rating: 4.6,
+        reviews: 143,
+        stock: 6,
+        soldCount: 34,
+        stockTotal: 40,
+        createdAt: '2026-07-11',
+        specs: ['4K UHD', 'HDR10+', '120Hz'],
+        description:
+            'Quantum dot colour with a slim bezel and built-in streaming apps tuned for local networks.',
+        image: 'https://images.unsplash.com/photo-1461151304267-38535e780c79?w=900&q=80',
+    },
+    {
+        _id: 'p14',
+        name: 'FrostLine Inverter AC 1.5 Ton',
+        category: 'appliances',
+        brand: 'LG Electronics',
+        price: 68500,
+        oldPrice: 74900,
+        rating: 4.5,
+        reviews: 267,
+        stock: 19,
+        soldCount: 61,
+        stockTotal: 80,
+        createdAt: '2026-06-22',
+        specs: ['Inverter', 'Dual Cool'],
+        description:
+            'Dual-inverter cooling built for Dhaka summers, with a copper condenser and 10-year compressor warranty.',
+        image: 'https://images.unsplash.com/photo-1631545806609-9c69bc0dd4b0?w=900&q=80',
+    },
+    {
+        _id: 'p15',
+        name: 'Redmi Note Pro 5G',
+        category: 'smartphones',
+        brand: 'Xiaomi',
+        price: 32999,
+        oldPrice: 36500,
+        rating: 4.4,
+        reviews: 689,
+        stock: 42,
+        soldCount: 158,
+        stockTotal: 200,
+        createdAt: '2026-07-30',
+        specs: ['5G', '128GB'],
+        description:
+            'A 120Hz AMOLED panel, 5000mAh battery and 67W charging at a mid-range price point.',
+        image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=900&q=80',
+    },
+    {
+        _id: 'p16',
+        name: 'StudioBook Creator 16',
+        category: 'laptops',
+        brand: 'Samsung',
+        price: 165000,
+        oldPrice: null,
+        rating: 4.8,
+        reviews: 71,
+        stock: 3,
+        soldCount: 22,
+        stockTotal: 25,
+        createdAt: '2026-08-02',
+        specs: ['32GB RAM', 'RTX 4060'],
+        description:
+            'A colour-accurate 16-inch workstation for video and 3D, with a full-size SD reader and quiet thermals.',
+        image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=900&q=80',
+    },
+    {
+        _id: 'p17',
+        name: 'PureSteam Microwave Oven 30L',
+        category: 'appliances',
+        brand: 'Panasonic',
+        price: 18900,
+        oldPrice: 22000,
+        rating: 4.1,
+        reviews: 198,
+        stock: 27,
+        soldCount: 73,
+        stockTotal: 100,
+        createdAt: '2026-05-30',
+        specs: ['30L', 'Convection'],
+        description:
+            'Convection, grill and steam modes in one cavity, with preset programmes for everyday cooking.',
+        image: 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=900&q=80',
+    },
+    {
+        _id: 'p18',
+        name: 'DeskPro 27" IPS Monitor',
+        category: 'televisions',
+        brand: 'LG Electronics',
+        price: 34500,
+        oldPrice: null,
+        rating: 4.3,
+        reviews: 112,
+        stock: 0,
+        soldCount: 45,
+        stockTotal: 45,
+        createdAt: '2026-04-18',
+        specs: ['4K UHD', '60Hz'],
+        description:
+            'A 27-inch IPS panel with USB-C power delivery and a height-adjustable stand for long working days.',
+        image: 'https://images.unsplash.com/photo-1585792180666-f7347c490ee2?w=900&q=80',
+    },
 ];
 
 /* ---------------------------------------------------------------------------
@@ -262,6 +370,21 @@ export const getSoldPercent = (product) => {
     if (!product.stockTotal) return 0;
     return Math.min(100, Math.round((product.soldCount / product.stockTotal) * 100));
 };
+
+// Delivery promise, derived from availability. Real shops quote a date, not a
+// vague "ships soon" — and an out-of-stock item must never promise one.
+export const getDeliveryEstimate = (product) => {
+    if (isSoldOut(product)) return null;
+
+    const days = isLowStock(product) ? 3 : 2;
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+
+    return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+};
+
+// Free delivery threshold, mirrored in the navbar strip and product pages.
+export const FREE_DELIVERY_THRESHOLD = 5000;
 
 // Stock-driven ordering: available products first, sold-out sink to the end.
 // Used by every grid so customers never lead with items they cannot buy.

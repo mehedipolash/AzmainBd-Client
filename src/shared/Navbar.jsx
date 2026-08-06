@@ -10,6 +10,8 @@ import {
     FaTruckFast,
 } from 'react-icons/fa6';
 import ThemeToggle from '../components/ThemeToggle';
+import UseCart from '../Hooks/UseCart';
+import { formatCurrency } from '../utils/formatCurrency';
 import { NAV_LINKS, SITE_NAME } from '../utils/constants';
 
 const Navbar = () => {
@@ -17,9 +19,7 @@ const Navbar = () => {
     const [searchOpen, setSearchOpen] = useState(false);
     const [term, setTerm] = useState('');
     const navigate = useNavigate();
-
-    // Cart count comes from CartContext once that is wired; kept local for now.
-    const cartCount = 0;
+    const { count: cartCount, subtotal } = UseCart();
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -116,13 +116,26 @@ const Navbar = () => {
 
                         <Link
                             to="/cart"
-                            className="relative p-2 text-base transition-opacity hover:opacity-60"
-                            aria-label={`Cart, ${cartCount} items`}
+                            className="group flex items-center gap-2.5 p-2 transition-opacity hover:opacity-70"
+                            aria-label={`Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}, subtotal ${formatCurrency(subtotal)}`}
                         >
-                            <FaBagShopping />
+                            <span className="relative text-base">
+                                <FaBagShopping />
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1.5 -right-2 flex min-w-4.5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-content">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </span>
+
+                            {/* Running subtotal — the detail that makes a cart
+                                feel like a real shop rather than an icon. */}
                             {cartCount > 0 && (
-                                <span className="absolute top-0 right-0 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-content">
-                                    {cartCount}
+                                <span
+                                    className="hidden text-[13px] font-medium text-primary lg:inline"
+                                    aria-hidden="true"
+                                >
+                                    {formatCurrency(subtotal)}
                                 </span>
                             )}
                         </Link>

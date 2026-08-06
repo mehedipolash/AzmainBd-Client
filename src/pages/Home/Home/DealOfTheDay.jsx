@@ -34,7 +34,7 @@ const DealOfTheDay = () => {
                         className="aspect-square w-full object-cover"
                     />
                     {discount > 0 && (
-                        <span className="absolute top-5 left-5 bg-base-content px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-base-100 uppercase">
+                        <span className="absolute top-5 left-5 bg-warning px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-warning-content uppercase">
                             Save {discount}%
                         </span>
                     )}
@@ -52,7 +52,9 @@ const DealOfTheDay = () => {
                     </p>
 
                     <div className="mt-6 flex items-baseline gap-3">
-                        <span className="text-2xl font-medium">{formatCurrency(deal.price)}</span>
+                        <span className="text-3xl font-semibold text-primary">
+                            {formatCurrency(deal.price)}
+                        </span>
                         {deal.oldPrice && (
                             <span className="text-base text-base-content/35 line-through">
                                 {formatCurrency(deal.oldPrice)}
@@ -81,14 +83,16 @@ const DealOfTheDay = () => {
                             aria-label={`${deal.soldCount} of ${deal.stockTotal} sold`}
                         >
                             <div
-                                className="h-full bg-primary transition-[width] duration-500"
+                                className="h-full bg-warning transition-[width] duration-500"
                                 style={{ width: `${soldPercent}%` }}
                             />
                         </div>
                     </div>
 
                     <div className="mt-8">
-                        <p className="eyebrow mb-3">{expired ? 'Offer ended' : 'Offer ends in'}</p>
+                        <p className="eyebrow mb-3 text-warning">
+                            {expired ? 'Offer ended' : 'Offer ends in'}
+                        </p>
                         <div className="flex gap-3">
                             {[
                                 { value: hours, unit: 'Hrs' },
@@ -97,9 +101,9 @@ const DealOfTheDay = () => {
                             ].map((part) => (
                                 <div
                                     key={part.unit}
-                                    className="flex w-[68px] flex-col items-center border border-base-300 py-2.5"
+                                    className="flex w-17 flex-col items-center border border-warning/30 bg-warning/8 py-2.5"
                                 >
-                                    <span className="font-display text-2xl font-semibold">
+                                    <span className="font-display text-2xl font-semibold text-warning tabular-nums">
                                         {pad(part.value)}
                                     </span>
                                     <span className="text-[10px] tracking-[0.14em] text-base-content/45 uppercase">
