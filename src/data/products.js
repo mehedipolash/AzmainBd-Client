@@ -407,6 +407,31 @@ export const getDealOfTheDay = () => {
     return discounted.sort((a, b) => getSoldPercent(b) - getSoldPercent(a))[0];
 };
 
+// The product the hero showcases. Picks the best-rated in-stock item so the
+// homepage always leads with something buyable and well-reviewed — never a
+// sold-out unit. Swaps to an API call later without touching the component.
+export const getHeroProduct = () => {
+    const available = products.filter(isInStock);
+    if (available.length === 0) return null;
+
+    return available.sort((a, b) => b.rating - a.rating || b.reviews - a.reviews)[0];
+};
+
+// Trust figures shown under the hero. Derived from the catalogue rather than
+// invented, so they stay honest as stock changes.
+export const getStoreStats = () => {
+    const totalReviews = products.reduce((sum, product) => sum + product.reviews, 0);
+    const averageRating =
+        products.reduce((sum, product) => sum + product.rating, 0) / products.length;
+
+    return {
+        productCount: products.filter(isInStock).length,
+        brandCount: new Set(products.map((product) => product.brand)).size,
+        totalReviews,
+        averageRating: averageRating.toFixed(1),
+    };
+};
+
 export const getRelated = (product, limit = 4) =>
     products
         .filter((item) => item.category === product.category && item._id !== product._id)

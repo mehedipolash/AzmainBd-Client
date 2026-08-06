@@ -5,9 +5,9 @@ export const banners = [
     {
         _id: 'b1',
         placement: 'hero',
-        eyebrow: 'New Season',
-        title: 'Technology that feels effortless',
-        body: 'Discover flagship phones, laptops and home appliances chosen for people who expect more from everyday tools.',
+        eyebrow: 'Authorised retailer',
+        title: 'Real warranties. Sealed boxes. Next-day Dhaka.',
+        body: 'Flagship phones, laptops and home appliances sourced direct from the brand — never grey imports, never refurbished stock sold as new.',
         ctaLabel: 'Shop the collection',
         ctaPath: '/shop',
         image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1600&q=80',
