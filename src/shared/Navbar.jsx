@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
-import { FiSearch, FiShoppingCart, FiMenu, FiX, FiUser } from 'react-icons/fi';
+import {
+    FaMagnifyingGlass,
+    FaBagShopping,
+    FaBars,
+    FaXmark,
+    FaUser,
+    FaPhone,
+    FaTruckFast,
+} from 'react-icons/fa6';
 import ThemeToggle from '../components/ThemeToggle';
 import { NAV_LINKS, SITE_NAME } from '../utils/constants';
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
     const [term, setTerm] = useState('');
     const navigate = useNavigate();
 
@@ -17,106 +26,168 @@ const Navbar = () => {
         const query = term.trim();
         if (!query) return;
         navigate(`/shop?search=${encodeURIComponent(query)}`);
+        setSearchOpen(false);
         setMenuOpen(false);
     };
 
     const linkClass = ({ isActive }) =>
-        `relative py-1 text-sm font-medium transition-colors hover:text-primary ${
-            isActive
-                ? 'text-primary after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-primary'
-                : 'text-base-content/70'
+        `text-[13px] font-medium tracking-wide transition-colors hover:text-base-content ${
+            isActive ? 'text-base-content' : 'text-base-content/60'
         }`;
 
     return (
-        <header className="sticky top-0 z-50 border-b border-base-300 bg-base-100/85 backdrop-blur-lg">
-            {/* Thin brand ramp — carries all four palette colors across the top. */}
-            <div className="brand-gradient h-1 w-full" />
+        <header className="sticky top-0 z-50 bg-base-100">
+            {/* Utility strip — shipping promise and hotline, the way real
+                storefronts open. */}
+            <div className="hidden bg-primary text-primary-content md:block">
+                <div className="container-px flex h-9 items-center justify-between text-[11px] tracking-wide">
+                    <p className="flex items-center gap-2">
+                        <FaTruckFast className="text-xs" aria-hidden="true" />
+                        Free delivery on orders over ৳ 5,000
+                    </p>
+                    <a
+                        href="tel:+8801000000000"
+                        className="flex items-center gap-2 transition-opacity hover:opacity-75"
+                    >
+                        <FaPhone className="text-[10px]" aria-hidden="true" />
+                        +880 1000-000000
+                    </a>
+                </div>
+            </div>
 
-            <nav className="container-px flex h-16 items-center gap-3 lg:h-18 lg:gap-6">
-                <Link to="/" className="flex shrink-0 items-center gap-2">
-                    <span className="brand-gradient flex size-9 items-center justify-center rounded-xl text-sm font-black text-white shadow-md shadow-primary/20">
-                        A
-                    </span>
-                    <span className="brand-text-gradient hidden text-lg font-extrabold tracking-tight sm:inline">
-                        {SITE_NAME}
-                    </span>
-                </Link>
+            <div className="border-b border-base-300">
+                <nav className="container-px flex h-16 items-center justify-between gap-4 lg:h-20">
+                    <button
+                        type="button"
+                        onClick={() => setMenuOpen(true)}
+                        className="-ml-2 p-2 text-lg lg:hidden"
+                        aria-label="Open menu"
+                    >
+                        <FaBars />
+                    </button>
 
-                <ul className="hidden flex-1 items-center justify-center gap-7 lg:flex">
-                    {NAV_LINKS.map((link) => (
-                        <li key={link.path}>
-                            <NavLink to={link.path} className={linkClass} end={link.path === '/'}>
-                                {link.label}
-                            </NavLink>
-                        </li>
-                    ))}
-                </ul>
-
-                <form onSubmit={handleSearch} className="ml-auto hidden md:block lg:ml-0">
-                    <label className="input input-sm h-10 w-56 rounded-full border-base-300 bg-base-200 focus-within:border-primary lg:w-64">
-                        <FiSearch className="text-base-content/40" aria-hidden="true" />
-                        <input
-                            type="search"
-                            value={term}
-                            onChange={(e) => setTerm(e.target.value)}
-                            placeholder="Search tech..."
-                            aria-label="Search products"
-                        />
-                    </label>
-                </form>
-
-                <div className="ml-auto flex items-center gap-1 md:ml-0 sm:gap-2">
-                    <ThemeToggle />
+                    {/* Desktop nav sits left of the wordmark. */}
+                    <ul className="hidden flex-1 items-center gap-7 lg:flex">
+                        {NAV_LINKS.slice(0, 2).map((link) => (
+                            <li key={link.path}>
+                                <NavLink
+                                    to={link.path}
+                                    className={linkClass}
+                                    end={link.path === '/'}
+                                >
+                                    {link.label}
+                                </NavLink>
+                            </li>
+                        ))}
+                    </ul>
 
                     <Link
-                        to="/cart"
-                        className="btn btn-ghost btn-circle btn-sm"
-                        aria-label={`Cart, ${cartCount} items`}
+                        to="/"
+                        className="font-display text-2xl leading-none font-semibold tracking-tight lg:text-[28px]"
                     >
-                        <div className="indicator">
-                            <FiShoppingCart className="text-lg" />
+                        {SITE_NAME}
+                    </Link>
+
+                    <ul className="hidden flex-1 items-center justify-end gap-7 lg:flex">
+                        {NAV_LINKS.slice(2).map((link) => (
+                            <li key={link.path}>
+                                <NavLink to={link.path} className={linkClass}>
+                                    {link.label}
+                                </NavLink>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className="flex items-center gap-1 sm:gap-3 lg:ml-8">
+                        <button
+                            type="button"
+                            onClick={() => setSearchOpen((open) => !open)}
+                            className="p-2 text-base transition-opacity hover:opacity-60"
+                            aria-label="Search products"
+                            aria-expanded={searchOpen}
+                        >
+                            <FaMagnifyingGlass />
+                        </button>
+
+                        <ThemeToggle />
+
+                        <Link
+                            to="/login"
+                            className="hidden p-2 text-base transition-opacity hover:opacity-60 sm:block"
+                            aria-label="Account"
+                        >
+                            <FaUser />
+                        </Link>
+
+                        <Link
+                            to="/cart"
+                            className="relative p-2 text-base transition-opacity hover:opacity-60"
+                            aria-label={`Cart, ${cartCount} items`}
+                        >
+                            <FaBagShopping />
                             {cartCount > 0 && (
-                                <span className="indicator-item badge badge-primary badge-xs">
+                                <span className="absolute top-0 right-0 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-content">
                                     {cartCount}
                                 </span>
                             )}
+                        </Link>
+                    </div>
+                </nav>
+            </div>
+
+            {/* Search drops down from the header rather than living inline. */}
+            {searchOpen && (
+                <div className="border-b border-base-300 bg-base-100">
+                    <form onSubmit={handleSearch} className="container-px py-5">
+                        <div className="flex items-center gap-3 border-b border-base-content/25 pb-3">
+                            <FaMagnifyingGlass
+                                className="text-sm text-base-content/40"
+                                aria-hidden="true"
+                            />
+                            <input
+                                type="search"
+                                autoFocus
+                                value={term}
+                                onChange={(e) => setTerm(e.target.value)}
+                                placeholder="Search for products..."
+                                aria-label="Search products"
+                                className="w-full bg-transparent text-base outline-none placeholder:text-base-content/35"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setSearchOpen(false)}
+                                className="text-sm text-base-content/40 hover:text-base-content"
+                                aria-label="Close search"
+                            >
+                                <FaXmark />
+                            </button>
                         </div>
-                    </Link>
-
-                    <Link to="/login" className="btn btn-primary btn-sm hidden rounded-full px-5 sm:inline-flex">
-                        <FiUser className="text-base" />
-                        Login
-                    </Link>
-
-                    <button
-                        type="button"
-                        onClick={() => setMenuOpen((open) => !open)}
-                        className="btn btn-ghost btn-circle btn-sm lg:hidden"
-                        aria-label="Toggle navigation menu"
-                        aria-expanded={menuOpen}
-                    >
-                        {menuOpen ? <FiX className="text-lg" /> : <FiMenu className="text-lg" />}
-                    </button>
+                    </form>
                 </div>
-            </nav>
+            )}
 
+            {/* Mobile drawer. */}
             {menuOpen && (
-                <div className="border-t border-base-300 bg-base-100 lg:hidden">
-                    <div className="container-px space-y-3 py-4">
-                        <form onSubmit={handleSearch} className="md:hidden">
-                            <label className="input input-sm h-10 w-full rounded-full border-base-300 bg-base-200">
-                                <FiSearch className="text-base-content/40" aria-hidden="true" />
-                                <input
-                                    type="search"
-                                    value={term}
-                                    onChange={(e) => setTerm(e.target.value)}
-                                    placeholder="Search tech..."
-                                    aria-label="Search products"
-                                />
-                            </label>
-                        </form>
+                <div className="fixed inset-0 z-50 lg:hidden">
+                    <div
+                        className="absolute inset-0 bg-ink/50"
+                        onClick={() => setMenuOpen(false)}
+                        aria-hidden="true"
+                    />
+                    <div className="absolute inset-y-0 left-0 flex w-75 max-w-[85%] flex-col bg-base-100">
+                        <div className="flex items-center justify-between border-b border-base-300 px-5 py-4">
+                            <span className="font-display text-xl font-semibold">{SITE_NAME}</span>
+                            <button
+                                type="button"
+                                onClick={() => setMenuOpen(false)}
+                                className="p-1 text-lg"
+                                aria-label="Close menu"
+                            >
+                                <FaXmark />
+                            </button>
+                        </div>
 
-                        <ul className="space-y-1">
+                        <ul className="flex-1 overflow-y-auto py-2">
                             {NAV_LINKS.map((link) => (
                                 <li key={link.path}>
                                     <NavLink
@@ -124,10 +195,10 @@ const Navbar = () => {
                                         end={link.path === '/'}
                                         onClick={() => setMenuOpen(false)}
                                         className={({ isActive }) =>
-                                            `block rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                                            `block border-b border-base-300 px-5 py-3.5 text-sm tracking-wide transition-colors ${
                                                 isActive
-                                                    ? 'bg-primary/10 text-primary'
-                                                    : 'text-base-content/70 hover:bg-base-200'
+                                                    ? 'font-semibold text-base-content'
+                                                    : 'text-base-content/65'
                                             }`
                                         }
                                     >
@@ -137,14 +208,16 @@ const Navbar = () => {
                             ))}
                         </ul>
 
-                        <Link
-                            to="/login"
-                            onClick={() => setMenuOpen(false)}
-                            className="btn btn-primary btn-sm w-full rounded-full sm:hidden"
-                        >
-                            <FiUser />
-                            Login
-                        </Link>
+                        <div className="border-t border-base-300 p-5">
+                            <Link
+                                to="/login"
+                                onClick={() => setMenuOpen(false)}
+                                className="btn-shop w-full"
+                            >
+                                <FaUser className="text-xs" />
+                                Sign In
+                            </Link>
+                        </div>
                     </div>
                 </div>
             )}

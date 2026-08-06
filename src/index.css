@@ -1,141 +1,138 @@
+/* Self-hosted so there is no third-party request on page load. */
+@import "@fontsource/crimson-text/400.css";
+@import "@fontsource/crimson-text/600.css";
+@import "@fontsource/crimson-text/600-italic.css";
+@import "@fontsource/outfit/300.css";
+@import "@fontsource/outfit/400.css";
+@import "@fontsource/outfit/500.css";
+@import "@fontsource/outfit/600.css";
+
 @import "tailwindcss";
 @plugin "daisyui";
 
 /* ---------------------------------------------------------------------------
-   Brand palette — the four ramp colors from the design source.
+   Design system — editorial commerce.
 
-     brand-1  #7579E7  indigo      primary actions, headings
-     brand-2  #9AB3F5  periwinkle  secondary surfaces, accents
-     brand-3  #A3D8F4  sky         informational sections
-     brand-4  #B9FFFC  aqua        highlights, badges, CTA glow
+   Type pairing does the heavy lifting: a serif display face for headings
+   against a clean grotesque for UI. Colour stays near-monochrome so the
+   product photography carries the page; a single mint tint separates
+   sections instead of coloured bands.
 
-   Sections alternate through the ramp so the page reads as one system rather
-   than four unrelated blocks. Components reference semantic tokens
-   (primary/secondary/accent/info), never raw hex, so retheming is one file.
+   No gradients. Corners stay sharp (4px). Buttons are rectangular.
 --------------------------------------------------------------------------- */
 
 @theme {
-  --color-brand-1: #7579e7;
-  --color-brand-2: #9ab3f5;
-  --color-brand-3: #a3d8f4;
-  --color-brand-4: #b9fffc;
+  --font-display: "Crimson Text", ui-serif, Georgia, serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
-  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #111111;
+  --color-ink-soft: #2d2d2d;
+  --color-ink-muted: #616161;
+  --color-mint: #f1f8f6;
+  --color-line: #eaeaea;
 }
 
-/* Light theme — the default. */
+/* Light theme — the default. Near-monochrome, mint section tint. */
 @plugin "daisyui/theme" {
   name: "azmainlight";
   default: true;
   color-scheme: light;
 
-  --color-base-100: oklch(100% 0 0);
-  --color-base-200: oklch(97.5% 0.008 260);
-  --color-base-300: oklch(93% 0.015 260);
-  --color-base-content: oklch(24% 0.04 275);
+  --color-base-100: #ffffff;
+  --color-base-200: #f1f8f6;
+  --color-base-300: #eaeaea;
+  --color-base-content: #111111;
 
-  --color-primary: #7579e7;
-  --color-primary-content: oklch(100% 0 0);
+  --color-primary: #111111;
+  --color-primary-content: #ffffff;
 
-  --color-secondary: #9ab3f5;
-  --color-secondary-content: oklch(25% 0.05 270);
+  --color-secondary: #f1f8f6;
+  --color-secondary-content: #111111;
 
-  --color-accent: #b9fffc;
-  --color-accent-content: oklch(30% 0.06 220);
+  --color-accent: #2d2d2d;
+  --color-accent-content: #ffffff;
 
-  --color-info: #a3d8f4;
-  --color-info-content: oklch(28% 0.05 235);
+  --color-neutral: #111111;
+  --color-neutral-content: #ffffff;
 
-  --color-neutral: oklch(28% 0.04 275);
-  --color-neutral-content: oklch(97% 0.01 260);
+  --color-info: #557dbc;
+  --color-info-content: #ffffff;
+  --color-success: #2f7d5f;
+  --color-success-content: #ffffff;
+  --color-warning: #b4761a;
+  --color-warning-content: #ffffff;
+  --color-error: #b3261e;
+  --color-error-content: #ffffff;
 
-  --color-success: oklch(72% 0.16 155);
-  --color-success-content: oklch(20% 0.03 155);
-  --color-warning: oklch(80% 0.15 78);
-  --color-warning-content: oklch(25% 0.04 78);
-  --color-error: oklch(60% 0.21 25);
-  --color-error-content: oklch(100% 0 0);
-
-  --radius-selector: 0.75rem;
-  --radius-field: 0.625rem;
-  --radius-box: 1rem;
+  --radius-selector: 4px;
+  --radius-field: 4px;
+  --radius-box: 4px;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 1;
+  --depth: 0;
   --noise: 0;
 }
 
-/* Dark theme — same hues, re-tuned for a dark surface. The ramp colors are
-   lightened rather than darkened so they stay vivid against near-black. */
+/* Dark theme — same near-monochrome logic inverted. The mint becomes a
+   desaturated slate so tinted sections still read as a distinct band. */
 @plugin "daisyui/theme" {
   name: "azmaindark";
   prefersdark: true;
   color-scheme: dark;
 
-  --color-base-100: oklch(17% 0.022 275);
-  --color-base-200: oklch(21% 0.026 275);
-  --color-base-300: oklch(27% 0.03 275);
-  --color-base-content: oklch(95% 0.012 265);
+  --color-base-100: #101211;
+  --color-base-200: #171a19;
+  --color-base-300: #262a29;
+  --color-base-content: #f2f4f3;
 
-  --color-primary: oklch(70% 0.155 280);
-  --color-primary-content: oklch(15% 0.03 280);
+  --color-primary: #ffffff;
+  --color-primary-content: #111111;
 
-  --color-secondary: oklch(76% 0.1 265);
-  --color-secondary-content: oklch(16% 0.03 265);
+  --color-secondary: #171a19;
+  --color-secondary-content: #f2f4f3;
 
-  --color-accent: oklch(88% 0.12 190);
-  --color-accent-content: oklch(16% 0.03 200);
+  --color-accent: #d8dedb;
+  --color-accent-content: #111111;
 
-  --color-info: oklch(82% 0.09 230);
-  --color-info-content: oklch(16% 0.03 230);
+  --color-neutral: #f2f4f3;
+  --color-neutral-content: #111111;
 
-  --color-neutral: oklch(25% 0.028 275);
-  --color-neutral-content: oklch(95% 0.012 265);
+  --color-info: #7aa4e0;
+  --color-info-content: #101211;
+  --color-success: #62b894;
+  --color-success-content: #101211;
+  --color-warning: #d9a441;
+  --color-warning-content: #101211;
+  --color-error: #e26a62;
+  --color-error-content: #101211;
 
-  --color-success: oklch(74% 0.16 155);
-  --color-success-content: oklch(16% 0.03 155);
-  --color-warning: oklch(82% 0.15 78);
-  --color-warning-content: oklch(18% 0.04 78);
-  --color-error: oklch(66% 0.2 25);
-  --color-error-content: oklch(15% 0.03 25);
-
-  --radius-selector: 0.75rem;
-  --radius-field: 0.625rem;
-  --radius-box: 1rem;
+  --radius-selector: 4px;
+  --radius-field: 4px;
+  --radius-box: 4px;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 1;
+  --depth: 0;
   --noise: 0;
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     @apply bg-base-100 text-base-content antialiased;
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
   }
 
-  /* Theme swap should not animate every element on the page — limit the
-     transition to the surface colors that actually change. */
-  body,
-  header,
-  footer,
-  section {
-    transition:
-      background-color 0.25s ease,
-      border-color 0.25s ease;
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-
     *,
     *::before,
     *::after {
@@ -150,61 +147,44 @@
 }
 
 @layer components {
-  /* Shared page gutter — every section aligns to this one grid.
-     Scales across mobile / tablet / desktop. */
+  /* Shared page gutter — every section aligns to this grid. */
   .container-px {
-    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-10;
   }
 
-  /* Section rhythm — consistent vertical spacing per breakpoint. */
+  /* Section rhythm. */
   .section-y {
-    @apply py-14 sm:py-16 lg:py-24;
+    @apply py-12 sm:py-16 lg:py-20;
   }
 
-  /* The four-stop brand gradient, used for hero washes and accent bars. */
-  .brand-gradient {
-    background-image: linear-gradient(
-      135deg,
-      var(--color-brand-1) 0%,
-      var(--color-brand-2) 35%,
-      var(--color-brand-3) 68%,
-      var(--color-brand-4) 100%
-    );
+  /* Small caps label above section headings. */
+  .eyebrow {
+    @apply text-[11px] font-semibold tracking-[0.22em] text-base-content/45 uppercase;
   }
 
-  .brand-text-gradient {
-    background-image: linear-gradient(
-      110deg,
-      var(--color-brand-1),
-      var(--color-brand-2) 45%,
-      var(--color-brand-3)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  /* Rectangular primary button — sharp corners, no shadow, tracking. */
+  .btn-shop {
+    @apply inline-flex items-center justify-center gap-2 border border-primary bg-primary px-7 py-3 text-xs font-semibold tracking-[0.14em] text-primary-content uppercase transition-colors duration-200;
   }
 
-  /* Soft tinted section backgrounds. Each maps to one ramp stop and stays
-     legible in both themes because the alpha is low and the text token
-     is inherited. */
-  .tint-1 {
-    background-color: color-mix(in oklab, var(--color-brand-1) 10%, var(--color-base-100));
-  }
-  .tint-2 {
-    background-color: color-mix(in oklab, var(--color-brand-2) 14%, var(--color-base-100));
-  }
-  .tint-3 {
-    background-color: color-mix(in oklab, var(--color-brand-3) 16%, var(--color-base-100));
-  }
-  .tint-4 {
-    background-color: color-mix(in oklab, var(--color-brand-4) 18%, var(--color-base-100));
+  .btn-shop:hover {
+    @apply bg-transparent text-primary;
   }
 
-  .card-surface {
-    @apply rounded-box border border-base-300 bg-base-100 transition-all duration-300;
+  .btn-shop-outline {
+    @apply inline-flex items-center justify-center gap-2 border border-primary bg-transparent px-7 py-3 text-xs font-semibold tracking-[0.14em] text-primary uppercase transition-colors duration-200;
   }
 
-  .card-surface:hover {
-    @apply -translate-y-1 border-primary/40 shadow-lg shadow-primary/10;
+  .btn-shop-outline:hover {
+    @apply bg-primary text-primary-content;
+  }
+
+  /* Inverted variant for use on dark imagery. */
+  .btn-shop-light {
+    @apply inline-flex items-center justify-center gap-2 border border-white bg-white px-7 py-3 text-xs font-semibold tracking-[0.14em] text-ink uppercase transition-colors duration-200;
+  }
+
+  .btn-shop-light:hover {
+    @apply bg-transparent text-white;
   }
 }

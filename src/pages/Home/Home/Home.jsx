@@ -1,22 +1,28 @@
 import React from 'react';
 import Banner from './Banner';
 import ShopCategories from './ShopCategories';
-import FeaturedProducts from './FeaturedProducts';
-import TrendingNow from './TrendingNow';
-import WhyChooseUs from './WhyChooseUs';
-import AuthorizedBrands from './AuthorizedBrands';
-import NewsletterCta from './NewsletterCta';
+import MostPopular from './MostPopular';
+import SplitBanners from './SplitBanners';
+import DealOfTheDay from './DealOfTheDay';
+import NewestProducts from './NewestProducts';
+import PromoStrip from './PromoStrip';
+import AboutStore from './AboutStore';
+import Testimonial from './Testimonial';
+import Benefits from './Benefits';
 
 const Home = () => {
     return (
         <div>
             <Banner />
             <ShopCategories />
-            <FeaturedProducts />
-            <TrendingNow />
-            <WhyChooseUs />
-            <AuthorizedBrands />
-            <NewsletterCta />
+            <MostPopular />
+            <SplitBanners />
+            <DealOfTheDay />
+            <NewestProducts />
+            <PromoStrip />
+            <AboutStore />
+            <Testimonial />
+            <Benefits />
         </div>
     );
 };

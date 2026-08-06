@@ -17,14 +17,14 @@ const Login = () => {
 
     return (
         <div>
-            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Welcome back</h1>
+            <h1 className="font-display text-3xl font-semibold">Welcome back</h1>
             <p className="mt-2 text-sm text-base-content/60">
                 Sign in to track orders and check out faster.
             </p>
 
-            <form onSubmit={handleLogin} className="mt-8 space-y-4">
+            <form onSubmit={handleLogin} className="mt-8 space-y-5">
                 <div>
-                    <label htmlFor="email" className="mb-2 block text-sm font-medium">
+                    <label htmlFor="email" className="eyebrow mb-2 block">
                         Email
                     </label>
                     <input
@@ -34,12 +34,12 @@ const Login = () => {
                         required
                         autoComplete="email"
                         placeholder="you@example.com"
-                        className="input w-full border-base-300 bg-base-100 focus:border-primary"
+                        className="w-full border border-base-300 bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-base-content/50"
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="password" className="mb-2 block text-sm font-medium">
+                    <label htmlFor="password" className="eyebrow mb-2 block">
                         Password
                     </label>
                     <input
@@ -49,7 +49,7 @@ const Login = () => {
                         required
                         autoComplete="current-password"
                         placeholder="••••••••"
-                        className="input w-full border-base-300 bg-base-100 focus:border-primary"
+                        className="w-full border border-base-300 bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-base-content/50"
                     />
                 </div>
 
@@ -59,17 +59,23 @@ const Login = () => {
                     </p>
                 )}
 
-                <button type="submit" className="btn btn-primary w-full rounded-full">
-                    Sign In
+                <button type="submit" className="btn-shop w-full">
+                    Sign in
                 </button>
             </form>
 
-            <div className="divider text-xs text-base-content/40">OR</div>
+            <div className="my-7 flex items-center gap-4">
+                <span className="h-px flex-1 bg-base-300" />
+                <span className="text-[11px] tracking-[0.14em] text-base-content/40 uppercase">
+                    or
+                </span>
+                <span className="h-px flex-1 bg-base-300" />
+            </div>
 
             <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="btn w-full rounded-full border-base-300 bg-base-100 hover:border-primary"
+                className="flex w-full items-center justify-center gap-3 border border-base-300 py-3 text-sm font-medium transition-colors hover:border-base-content/40"
             >
                 <FcGoogle className="text-lg" />
                 Continue with Google
@@ -77,7 +83,7 @@ const Login = () => {
 
             <p className="mt-8 text-center text-sm text-base-content/60">
                 New here?{' '}
-                <Link to="/register" className="text-primary hover:underline">
+                <Link to="/register" className="font-medium text-base-content underline">
                     Create an account
                 </Link>
             </p>

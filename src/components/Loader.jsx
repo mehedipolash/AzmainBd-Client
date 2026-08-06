@@ -7,7 +7,7 @@ const Loader = ({ fullScreen = false }) => {
             role="status"
             aria-live="polite"
         >
-            <span className="loading loading-spinner loading-lg text-primary" />
+            <span className="size-8 animate-spin rounded-full border-2 border-base-300 border-t-base-content" />
             <span className="sr-only">Loading</span>
         </div>
     );

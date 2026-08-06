@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiSun, FiMoon } from 'react-icons/fi';
+import { FaSun, FaMoon } from 'react-icons/fa6';
 import UseTheme from '../Hooks/UseTheme';
 
 const ThemeToggle = ({ className = '' }) => {
@@ -9,11 +9,11 @@ const ThemeToggle = ({ className = '' }) => {
         <button
             type="button"
             onClick={toggleTheme}
-            className={`btn btn-ghost btn-circle btn-sm ${className}`}
+            className={`p-2 text-base transition-opacity hover:opacity-60 ${className}`}
             aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
             title={`Switch to ${isDark ? 'light' : 'dark'} theme`}
         >
-            {isDark ? <FiSun className="text-lg" /> : <FiMoon className="text-lg" />}
+            {isDark ? <FaSun /> : <FaMoon />}
         </button>
     );
 };

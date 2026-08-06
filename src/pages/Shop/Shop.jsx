@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { FiFilter, FiX } from 'react-icons/fi';
+import { FaSliders, FaXmark } from 'react-icons/fa6';
 import ProductCard from '../../components/ProductCard';
 import EmptyState from '../../components/EmptyState';
 import ShopFilters from './ShopFilters';
-import { products } from '../../data/products';
+import { products, isSoldOut, byAvailability } from '../../data/products';
 import { SORT_OPTIONS } from '../../utils/constants';
 
 // Price bounds are derived from the catalogue rather than hardcoded, so the
@@ -24,6 +24,7 @@ const Shop = () => {
     const [selectedBrands, setSelectedBrands] = useState([]);
     const [selectedTech, setSelectedTech] = useState([]);
     const [maxPrice, setMaxPrice] = useState(PRICE_BOUNDS.max);
+    const [inStockOnly, setInStockOnly] = useState(false);
     const [sortBy, setSortBy] = useState('newest');
     const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -38,6 +39,7 @@ const Shop = () => {
         setSelectedBrands([]);
         setSelectedTech([]);
         setMaxPrice(PRICE_BOUNDS.max);
+        setInStockOnly(false);
     };
 
     const visibleProducts = useMemo(() => {
@@ -51,21 +53,28 @@ const Shop = () => {
                 return false;
             }
             if (product.price > maxPrice) return false;
+            if (inStockOnly && isSoldOut(product)) return false;
             return true;
         });
 
-        // Sort a copy so the source array is never mutated.
+        // Sort a copy so the source array is never mutated. Availability is the
+        // primary key on every ordering — customers should never lead with
+        // items they cannot buy.
         switch (sortBy) {
             case 'price-asc':
-                return [...filtered].sort((a, b) => a.price - b.price);
+                return [...filtered].sort((a, b) => byAvailability(a, b) || a.price - b.price);
             case 'price-desc':
-                return [...filtered].sort((a, b) => b.price - a.price);
+                return [...filtered].sort((a, b) => byAvailability(a, b) || b.price - a.price);
             case 'rating':
-                return [...filtered].sort((a, b) => b.rating - a.rating);
+                return [...filtered].sort((a, b) => byAvailability(a, b) || b.rating - a.rating);
             default:
-                return filtered;
+                return [...filtered].sort(
+                    (a, b) => byAvailability(a, b) || new Date(b.createdAt) - new Date(a.createdAt),
+                );
         }
-    }, [category, search, selectedBrands, selectedTech, maxPrice, sortBy]);
+    }, [category, search, selectedBrands, selectedTech, maxPrice, inStockOnly, sortBy]);
+
+    const soldOutCount = visibleProducts.filter(isSoldOut).length;
 
     const filterProps = {
         selectedBrands,
@@ -74,56 +83,60 @@ const Shop = () => {
         onToggleTech: toggle(setSelectedTech),
         maxPrice,
         onMaxPriceChange: setMaxPrice,
+        inStockOnly,
+        onInStockOnlyChange: setInStockOnly,
         priceBounds: PRICE_BOUNDS,
         onClearAll: handleClearAll,
     };
 
     return (
         <div>
-            {/* Tinted page header keeps Shop visually distinct from Home. */}
-            <div className="tint-2 border-b border-base-300">
-                <div className="container-px py-8 sm:py-10">
-                    <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
-                        {search ? `Results for "${search}"` : 'Shop All Products'}
+            <div className="border-b border-base-300 bg-base-200">
+                <div className="container-px py-12 text-center sm:py-16">
+                    <p className="eyebrow mb-3">Shop</p>
+                    <h1 className="font-display text-3xl font-semibold sm:text-4xl">
+                        {search ? `Results for “${search}”` : 'All products'}
                     </h1>
-                    <span className="brand-gradient mt-3 block h-1 w-16 rounded-full" />
                 </div>
             </div>
 
-            <div className="container-px py-8 sm:py-10 lg:py-12">
-                <div className="flex flex-col gap-8 lg:flex-row">
-                    <aside className="hidden w-64 shrink-0 lg:block">
-                        <div className="sticky top-24 rounded-box border border-base-300 bg-base-100 p-5">
+            <div className="container-px py-10 lg:py-14">
+                <div className="flex flex-col gap-10 lg:flex-row lg:gap-14">
+                    <aside className="hidden w-60 shrink-0 lg:block">
+                        <div className="sticky top-28">
                             <ShopFilters {...filterProps} />
                         </div>
                     </aside>
 
                     <div className="min-w-0 flex-1">
-                        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:mb-8">
-                            <p className="text-sm text-base-content/60">
-                                Showing{' '}
-                                <span className="font-bold text-primary">
-                                    {visibleProducts.length}
-                                </span>{' '}
-                                {search ? 'results' : 'premium products'}
+                        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-base-300 pb-5">
+                            <p className="text-[13px] text-base-content/55">
+                                {visibleProducts.length}{' '}
+                                {visibleProducts.length === 1 ? 'product' : 'products'}
+                                {soldOutCount > 0 && (
+                                    <span className="text-base-content/40">
+                                        {' '}
+                                        · {soldOutCount} sold out
+                                    </span>
+                                )}
                             </p>
 
-                            <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="flex items-center gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setDrawerOpen(true)}
-                                    className="btn btn-sm rounded-full lg:hidden"
+                                    className="flex items-center gap-2 border border-base-300 px-4 py-2 text-[11px] font-semibold tracking-[0.14em] uppercase lg:hidden"
                                 >
-                                    <FiFilter />
+                                    <FaSliders className="text-xs" />
                                     Filters
                                 </button>
 
-                                <label className="flex items-center gap-2 text-sm text-base-content/60">
-                                    <span className="hidden sm:inline">Sort by:</span>
+                                <label className="flex items-center gap-2 text-[13px] text-base-content/55">
+                                    <span className="hidden sm:inline">Sort:</span>
                                     <select
                                         value={sortBy}
                                         onChange={(e) => setSortBy(e.target.value)}
-                                        className="select select-sm w-40 rounded-full border-base-300 bg-base-100 sm:w-44"
+                                        className="border border-base-300 bg-base-100 px-3 py-2 text-[13px] outline-none focus:border-base-content/40"
                                         aria-label="Sort products"
                                     >
                                         {SORT_OPTIONS.map((option) => (
@@ -137,13 +150,9 @@ const Shop = () => {
                         </div>
 
                         {visibleProducts.length > 0 ? (
-                            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
+                            <div className="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-3 lg:gap-x-8">
                                 {visibleProducts.map((product) => (
-                                    <ProductCard
-                                        key={product._id}
-                                        product={product}
-                                        variant="compact"
-                                    />
+                                    <ProductCard key={product._id} product={product} />
                                 ))}
                             </div>
                         ) : (
@@ -161,18 +170,18 @@ const Shop = () => {
             {drawerOpen && (
                 <div className="fixed inset-0 z-50 lg:hidden">
                     <div
-                        className="absolute inset-0 bg-neutral/60"
+                        className="absolute inset-0 bg-ink/50"
                         onClick={() => setDrawerOpen(false)}
                         aria-hidden="true"
                     />
-                    <div className="absolute inset-y-0 left-0 w-80 max-w-[85%] overflow-y-auto border-r border-base-300 bg-base-100 p-6">
+                    <div className="absolute inset-y-0 left-0 w-75 max-w-[85%] overflow-y-auto bg-base-100 p-6">
                         <button
                             type="button"
                             onClick={() => setDrawerOpen(false)}
-                            className="btn btn-ghost btn-circle btn-sm absolute top-4 right-4"
+                            className="absolute top-5 right-5 text-lg"
                             aria-label="Close filters"
                         >
-                            <FiX />
+                            <FaXmark />
                         </button>
                         <ShopFilters {...filterProps} />
                     </div>

@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { FiShoppingCart, FiCheck, FiTruck, FiShield, FiStar } from 'react-icons/fi';
+import {
+    FaStar,
+    FaTruckFast,
+    FaShieldHalved,
+    FaRotateLeft,
+    FaCheck,
+    FaRegHeart,
+} from 'react-icons/fa6';
 import ProductCard from '../../components/ProductCard';
 import EmptyState from '../../components/EmptyState';
 import SectionTitle from '../../components/SectionTitle';
-import { products } from '../../data/products';
+import {
+    products,
+    getRelated,
+    isSoldOut,
+    isLowStock,
+    LOW_STOCK_THRESHOLD,
+} from '../../data/products';
 import { formatCurrency, calcDiscount } from '../../utils/formatCurrency';
 
 const ProductDetails = () => {
@@ -15,7 +28,7 @@ const ProductDetails = () => {
 
     if (!product) {
         return (
-            <div className="container-px py-16">
+            <div className="container-px py-20">
                 <EmptyState
                     title="Product not found"
                     message="The product you are looking for is no longer available."
@@ -26,152 +39,221 @@ const ProductDetails = () => {
         );
     }
 
-    const related = products
-        .filter((item) => item.category === product.category && item._id !== product._id)
-        .slice(0, 3);
-
+    const soldOut = isSoldOut(product);
+    const lowStock = isLowStock(product);
+    const related = getRelated(product, 4);
     const discount = calcDiscount(product.price, product.oldPrice);
+
+    // Never let the customer request more than we hold.
+    const maxQuantity = Math.max(1, product.stock);
 
     const handleAddToCart = () => {
         // Wired to CartContext once that is built.
     };
 
     return (
-        <div className="container-px py-8 sm:py-10 lg:py-12">
-            <div className="breadcrumbs mb-6 text-sm text-base-content/60 sm:mb-8">
-                <ul>
-                    <li>
-                        <Link to="/">Home</Link>
-                    </li>
-                    <li>
-                        <Link to={`/shop?category=${product.category}`}>{product.category}</Link>
-                    </li>
-                    <li className="text-base-content">{product.name}</li>
-                </ul>
+        <div>
+            <div className="border-b border-base-300 bg-base-200">
+                <div className="container-px py-4">
+                    <nav aria-label="Breadcrumb">
+                        <ol className="flex flex-wrap items-center gap-2 text-[13px] text-base-content/50">
+                            <li>
+                                <Link to="/" className="hover:text-base-content">
+                                    Home
+                                </Link>
+                            </li>
+                            <li aria-hidden="true">/</li>
+                            <li>
+                                <Link
+                                    to={`/shop?category=${product.category}`}
+                                    className="capitalize hover:text-base-content"
+                                >
+                                    {product.category}
+                                </Link>
+                            </li>
+                            <li aria-hidden="true">/</li>
+                            <li className="text-base-content">{product.name}</li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
 
-            <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-                <figure className="overflow-hidden rounded-box border border-base-300 bg-base-200 shadow-lg shadow-primary/5">
-                    <img
-                        src={product.image}
-                        alt={product.name}
-                        className="aspect-square w-full object-cover"
-                    />
-                </figure>
-
-                <div>
-                    <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-                        {product.brand}
-                    </p>
-                    <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
-                        {product.name}
-                    </h1>
-
-                    <div className="mt-4 flex items-center gap-2 text-sm">
-                        <span className="flex items-center gap-1 text-primary">
-                            <FiStar className="fill-current" aria-hidden="true" />
-                            {product.rating}
-                        </span>
-                        <span className="text-base-content/50">({product.reviews} reviews)</span>
-                    </div>
-
-                    <div className="mt-6 flex flex-wrap items-baseline gap-3">
-                        <span className="text-3xl font-bold text-primary">
-                            {formatCurrency(product.price)}
-                        </span>
-                        {product.oldPrice && (
-                            <>
-                                <span className="text-lg text-base-content/40 line-through">
-                                    {formatCurrency(product.oldPrice)}
-                                </span>
-                                <span className="rounded bg-primary/15 px-2 py-1 text-xs font-semibold text-primary">
-                                    Save {discount}%
-                                </span>
-                            </>
+            <div className="container-px py-10 lg:py-16">
+                <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+                    <div className="relative overflow-hidden bg-base-200">
+                        <img
+                            src={product.image}
+                            alt={product.name}
+                            className={`aspect-square w-full object-cover ${
+                                soldOut ? 'opacity-50 grayscale' : ''
+                            }`}
+                        />
+                        {discount > 0 && !soldOut && (
+                            <span className="absolute top-5 left-5 bg-base-content px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-base-100 uppercase">
+                                Save {discount}%
+                            </span>
                         )}
                     </div>
 
-                    <p className="mt-6 leading-relaxed text-base-content/70">
-                        {product.description}
-                    </p>
+                    <div>
+                        <p className="eyebrow mb-3">{product.brand}</p>
 
-                    <ul className="mt-6 flex flex-wrap gap-2">
-                        {product.specs.map((spec) => (
-                            <li
-                                key={spec}
-                                className="rounded-md bg-base-200 px-3 py-1 text-xs text-base-content/70"
-                            >
-                                {spec}
-                            </li>
-                        ))}
-                    </ul>
+                        <h1 className="font-display text-3xl leading-tight font-semibold sm:text-4xl">
+                            {product.name}
+                        </h1>
 
-                    <p
-                        className={`mt-6 flex items-center gap-2 text-sm ${
-                            product.inStock ? 'text-success' : 'text-error'
-                        }`}
-                    >
-                        <FiCheck aria-hidden="true" />
-                        {product.inStock ? 'In stock — ships within 24 hours' : 'Out of stock'}
-                    </p>
-
-                    <div className="mt-8 flex flex-wrap items-center gap-4">
-                        <div className="join border border-base-300">
-                            <button
-                                type="button"
-                                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                                className="btn join-item btn-sm btn-ghost"
-                                aria-label="Decrease quantity"
-                            >
-                                −
-                            </button>
+                        <div className="mt-4 flex items-center gap-2 text-[13px]">
                             <span
-                                className="join-item flex w-12 items-center justify-center text-sm font-semibold"
-                                aria-live="polite"
+                                className="flex items-center gap-1"
+                                aria-label={`Rated ${product.rating} out of 5`}
                             >
-                                {quantity}
+                                {Array.from({ length: 5 }, (_, index) => (
+                                    <FaStar
+                                        key={index}
+                                        className={`text-[11px] ${
+                                            index < Math.round(product.rating)
+                                                ? 'text-warning'
+                                                : 'text-base-content/20'
+                                        }`}
+                                        aria-hidden="true"
+                                    />
+                                ))}
                             </span>
+                            <span className="text-base-content/50">
+                                {product.rating} ({product.reviews} reviews)
+                            </span>
+                        </div>
+
+                        <div className="mt-6 flex flex-wrap items-baseline gap-3">
+                            <span className="text-3xl font-medium">
+                                {formatCurrency(product.price)}
+                            </span>
+                            {product.oldPrice && (
+                                <span className="text-lg text-base-content/35 line-through">
+                                    {formatCurrency(product.oldPrice)}
+                                </span>
+                            )}
+                        </div>
+
+                        <p className="mt-6 text-[15px] leading-relaxed text-base-content/65">
+                            {product.description}
+                        </p>
+
+                        <ul className="mt-6 flex flex-wrap gap-2">
+                            {product.specs.map((spec) => (
+                                <li
+                                    key={spec}
+                                    className="border border-base-300 px-3 py-1.5 text-[12px] text-base-content/65"
+                                >
+                                    {spec}
+                                </li>
+                            ))}
+                        </ul>
+
+                        {/* Availability line — the exact stock count is shown
+                            only when it is low enough to matter. */}
+                        <div className="mt-7 border-y border-base-300 py-5">
+                            {soldOut ? (
+                                <p className="text-sm font-medium text-error">
+                                    Currently sold out — join the waitlist below.
+                                </p>
+                            ) : (
+                                <p className="flex items-center gap-2 text-sm">
+                                    <FaCheck className="text-xs text-success" aria-hidden="true" />
+                                    <span className="font-medium text-success">In stock</span>
+                                    <span className="text-base-content/50">
+                                        {lowStock
+                                            ? `— only ${product.stock} left, order soon`
+                                            : '— ships within 24 hours'}
+                                    </span>
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="mt-7 flex flex-wrap items-stretch gap-3">
+                            {!soldOut && (
+                                <div className="flex items-stretch border border-base-300">
+                                    <button
+                                        type="button"
+                                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                                        disabled={quantity <= 1}
+                                        className="px-4 text-lg disabled:opacity-30"
+                                        aria-label="Decrease quantity"
+                                    >
+                                        −
+                                    </button>
+                                    <span
+                                        className="flex w-12 items-center justify-center text-sm font-medium"
+                                        aria-live="polite"
+                                    >
+                                        {quantity}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setQuantity((q) => Math.min(maxQuantity, q + 1))
+                                        }
+                                        disabled={quantity >= maxQuantity}
+                                        className="px-4 text-lg disabled:opacity-30"
+                                        aria-label="Increase quantity"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            )}
+
                             <button
                                 type="button"
-                                onClick={() => setQuantity((q) => q + 1)}
-                                className="btn join-item btn-sm btn-ghost"
-                                aria-label="Increase quantity"
+                                onClick={handleAddToCart}
+                                className={soldOut ? 'btn-shop-outline flex-1' : 'btn-shop flex-1'}
                             >
-                                +
+                                {soldOut ? 'Notify when available' : 'Add to cart'}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="flex items-center justify-center border border-base-300 px-4 transition-colors hover:border-base-content/40"
+                                aria-label="Add to wishlist"
+                            >
+                                <FaRegHeart />
                             </button>
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={handleAddToCart}
-                            disabled={!product.inStock}
-                            className="btn btn-primary flex-1 rounded-full shadow-lg shadow-primary/20 sm:flex-none sm:px-10"
-                        >
-                            <FiShoppingCart />
-                            Add to Cart
-                        </button>
-                    </div>
+                        {lowStock && (
+                            <p className="mt-3 text-[12px] text-base-content/45">
+                                Maximum {maxQuantity} per order while stock is below{' '}
+                                {LOW_STOCK_THRESHOLD} units.
+                            </p>
+                        )}
 
-                    <div className="mt-8 grid gap-3 border-t border-base-300 pt-6 sm:grid-cols-2">
-                        <p className="flex items-center gap-3 text-sm text-base-content/70">
-                            <FiTruck className="text-primary" aria-hidden="true" />
-                            Free delivery across Bangladesh
-                        </p>
-                        <p className="flex items-center gap-3 text-sm text-base-content/70">
-                            <FiShield className="text-primary" aria-hidden="true" />
-                            Official brand warranty
-                        </p>
+                        <ul className="mt-8 space-y-3 text-sm text-base-content/60">
+                            <li className="flex items-center gap-3">
+                                <FaTruckFast className="text-sm" aria-hidden="true" />
+                                Free delivery across Bangladesh on orders over ৳ 5,000
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <FaShieldHalved className="text-sm" aria-hidden="true" />
+                                Official brand warranty included
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <FaRotateLeft className="text-sm" aria-hidden="true" />
+                                7-day returns, no questions asked
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
             {related.length > 0 && (
-                <section className="mt-20">
-                    <SectionTitle title="Related Products" />
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {related.map((item) => (
-                            <ProductCard key={item._id} product={item} />
-                        ))}
+                <section className="border-t border-base-300 bg-base-200">
+                    <div className="container-px section-y">
+                        <SectionTitle eyebrow="You may also like" title="Related products" />
+
+                        <div className="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+                            {related.map((item) => (
+                                <ProductCard key={item._id} product={item} />
+                            ))}
+                        </div>
                     </div>
                 </section>
             )}

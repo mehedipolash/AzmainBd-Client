@@ -1,15 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { FiInbox } from 'react-icons/fi';
+import { FaBoxOpen } from 'react-icons/fa6';
 
 const EmptyState = ({ title, message, actionLabel, actionPath }) => {
     return (
-        <div className="flex flex-col items-center justify-center rounded-box border border-dashed border-base-300 py-20 text-center">
-            <FiInbox className="mb-4 text-4xl text-base-content/30" aria-hidden="true" />
-            <h3 className="text-lg font-semibold">{title}</h3>
-            {message && <p className="mt-2 max-w-sm text-sm text-base-content/60">{message}</p>}
+        <div className="flex flex-col items-center justify-center border border-base-300 py-20 text-center">
+            <FaBoxOpen className="mb-5 text-3xl text-base-content/20" aria-hidden="true" />
+            <h3 className="font-display text-xl font-semibold">{title}</h3>
+            {message && (
+                <p className="mt-2 max-w-sm text-sm text-base-content/55">{message}</p>
+            )}
             {actionLabel && actionPath && (
-                <Link to={actionPath} className="btn btn-primary btn-sm mt-6">
+                <Link to={actionPath} className="btn-shop-outline mt-7">
                     {actionLabel}
                 </Link>
             )}
