@@ -1,0 +1,210 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* ---------------------------------------------------------------------------
+   Brand palette — the four ramp colors from the design source.
+
+     brand-1  #7579E7  indigo      primary actions, headings
+     brand-2  #9AB3F5  periwinkle  secondary surfaces, accents
+     brand-3  #A3D8F4  sky         informational sections
+     brand-4  #B9FFFC  aqua        highlights, badges, CTA glow
+
+   Sections alternate through the ramp so the page reads as one system rather
+   than four unrelated blocks. Components reference semantic tokens
+   (primary/secondary/accent/info), never raw hex, so retheming is one file.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-brand-1: #7579e7;
+  --color-brand-2: #9ab3f5;
+  --color-brand-3: #a3d8f4;
+  --color-brand-4: #b9fffc;
+
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Light theme — the default. */
+@plugin "daisyui/theme" {
+  name: "azmainlight";
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(97.5% 0.008 260);
+  --color-base-300: oklch(93% 0.015 260);
+  --color-base-content: oklch(24% 0.04 275);
+
+  --color-primary: #7579e7;
+  --color-primary-content: oklch(100% 0 0);
+
+  --color-secondary: #9ab3f5;
+  --color-secondary-content: oklch(25% 0.05 270);
+
+  --color-accent: #b9fffc;
+  --color-accent-content: oklch(30% 0.06 220);
+
+  --color-info: #a3d8f4;
+  --color-info-content: oklch(28% 0.05 235);
+
+  --color-neutral: oklch(28% 0.04 275);
+  --color-neutral-content: oklch(97% 0.01 260);
+
+  --color-success: oklch(72% 0.16 155);
+  --color-success-content: oklch(20% 0.03 155);
+  --color-warning: oklch(80% 0.15 78);
+  --color-warning-content: oklch(25% 0.04 78);
+  --color-error: oklch(60% 0.21 25);
+  --color-error-content: oklch(100% 0 0);
+
+  --radius-selector: 0.75rem;
+  --radius-field: 0.625rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Dark theme — same hues, re-tuned for a dark surface. The ramp colors are
+   lightened rather than darkened so they stay vivid against near-black. */
+@plugin "daisyui/theme" {
+  name: "azmaindark";
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: oklch(17% 0.022 275);
+  --color-base-200: oklch(21% 0.026 275);
+  --color-base-300: oklch(27% 0.03 275);
+  --color-base-content: oklch(95% 0.012 265);
+
+  --color-primary: oklch(70% 0.155 280);
+  --color-primary-content: oklch(15% 0.03 280);
+
+  --color-secondary: oklch(76% 0.1 265);
+  --color-secondary-content: oklch(16% 0.03 265);
+
+  --color-accent: oklch(88% 0.12 190);
+  --color-accent-content: oklch(16% 0.03 200);
+
+  --color-info: oklch(82% 0.09 230);
+  --color-info-content: oklch(16% 0.03 230);
+
+  --color-neutral: oklch(25% 0.028 275);
+  --color-neutral-content: oklch(95% 0.012 265);
+
+  --color-success: oklch(74% 0.16 155);
+  --color-success-content: oklch(16% 0.03 155);
+  --color-warning: oklch(82% 0.15 78);
+  --color-warning-content: oklch(18% 0.04 78);
+  --color-error: oklch(66% 0.2 25);
+  --color-error-content: oklch(15% 0.03 25);
+
+  --radius-selector: 0.75rem;
+  --radius-field: 0.625rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-base-100 text-base-content antialiased;
+    font-family: var(--font-display);
+  }
+
+  /* Theme swap should not animate every element on the page — limit the
+     transition to the surface colors that actually change. */
+  body,
+  header,
+  footer,
+  section {
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  ::selection {
+    @apply bg-primary text-primary-content;
+  }
+}
+
+@layer components {
+  /* Shared page gutter — every section aligns to this one grid.
+     Scales across mobile / tablet / desktop. */
+  .container-px {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section rhythm — consistent vertical spacing per breakpoint. */
+  .section-y {
+    @apply py-14 sm:py-16 lg:py-24;
+  }
+
+  /* The four-stop brand gradient, used for hero washes and accent bars. */
+  .brand-gradient {
+    background-image: linear-gradient(
+      135deg,
+      var(--color-brand-1) 0%,
+      var(--color-brand-2) 35%,
+      var(--color-brand-3) 68%,
+      var(--color-brand-4) 100%
+    );
+  }
+
+  .brand-text-gradient {
+    background-image: linear-gradient(
+      110deg,
+      var(--color-brand-1),
+      var(--color-brand-2) 45%,
+      var(--color-brand-3)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Soft tinted section backgrounds. Each maps to one ramp stop and stays
+     legible in both themes because the alpha is low and the text token
+     is inherited. */
+  .tint-1 {
+    background-color: color-mix(in oklab, var(--color-brand-1) 10%, var(--color-base-100));
+  }
+  .tint-2 {
+    background-color: color-mix(in oklab, var(--color-brand-2) 14%, var(--color-base-100));
+  }
+  .tint-3 {
+    background-color: color-mix(in oklab, var(--color-brand-3) 16%, var(--color-base-100));
+  }
+  .tint-4 {
+    background-color: color-mix(in oklab, var(--color-brand-4) 18%, var(--color-base-100));
+  }
+
+  .card-surface {
+    @apply rounded-box border border-base-300 bg-base-100 transition-all duration-300;
+  }
+
+  .card-surface:hover {
+    @apply -translate-y-1 border-primary/40 shadow-lg shadow-primary/10;
+  }
+}

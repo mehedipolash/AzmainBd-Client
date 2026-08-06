@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Azmain BD Int — premium electronics and home appliances with official warranty, EMI facilities and 24/7 support." />
+    <title>Azmain BD Int — Premium Electronics</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Set the theme before first paint so dark-theme users never see a
+      // white flash. Mirrors the logic in ThemeProvider.
+      (function () {
+        try {
+          var stored = localStorage.getItem('azmainbd-theme');
+          var dark =
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.setAttribute(
+            'data-theme',
+            dark ? 'azmaindark' : 'azmainlight'
+          );
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'azmainlight');
+        }
+      })();
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
