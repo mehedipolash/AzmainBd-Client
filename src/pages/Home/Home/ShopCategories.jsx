@@ -15,7 +15,7 @@ const ShopCategories = () => {
                 subtitle="Browse our most requested departments, each stocked with authorised products only."
             />
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8" data-aos="fade-up">
                 {featured.map((category) => (
                     <Link
                         key={category.id}

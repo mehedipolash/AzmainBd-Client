@@ -5,7 +5,7 @@ const AboutStore = () => {
     return (
         <section className="container-px section-y">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-                <div className="overflow-hidden bg-base-200">
+                <div className="overflow-hidden bg-base-200" data-aos="fade-right">
                     <img
                         src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1000&q=80"
                         alt="Our showroom"

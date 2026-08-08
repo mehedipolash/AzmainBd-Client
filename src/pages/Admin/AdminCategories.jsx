@@ -3,6 +3,7 @@ import { FaPlus, FaTrash } from 'react-icons/fa6';
 import { fetchCategories, createCategory, deleteCategory } from '../../api/products.api';
 import Loader from '../../components/Loader';
 import UseToast from '../../Hooks/UseToast';
+import { confirmAction, alertError } from '../../utils/alerts';
 
 const AdminCategories = () => {
     const { notify } = UseToast();
@@ -48,6 +49,15 @@ const AdminCategories = () => {
     };
 
     const handleDelete = async (category) => {
+        const confirmed = await confirmAction({
+            title: 'Delete category?',
+            text: `"${category.name}" will be removed. Products using it must be moved first.`,
+            confirmLabel: 'Delete',
+            danger: true,
+        });
+
+        if (!confirmed) return;
+
         try {
             await deleteCategory(category._id);
             notify(`${category.name} deleted`);
@@ -55,7 +65,7 @@ const AdminCategories = () => {
         } catch (err) {
             // The server refuses while products still reference the category —
             // surface that reason rather than a generic failure.
-            notify(err.message, 'warning');
+            alertError('Could not delete', err.message);
         }
     };
 

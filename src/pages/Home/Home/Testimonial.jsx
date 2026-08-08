@@ -13,7 +13,7 @@ const Testimonial = () => {
     return (
         <section className="bg-base-200">
             <div className="container-px section-y">
-                <div className="mx-auto max-w-2xl text-center">
+                <div className="mx-auto max-w-2xl text-center" data-aos="fade-up">
                     <FaQuoteLeft
                         className="mx-auto mb-6 text-2xl text-base-content/20"
                         aria-hidden="true"

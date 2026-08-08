@@ -1,6 +1,8 @@
-import { api, buildQuery } from './client';
+import { api } from './client';
 
-export const fetchProducts = (params = {}) => api.get(`/api/products${buildQuery(params)}`);
+// axios drops undefined params, so optional filters can be passed straight
+// through without building the query string by hand.
+export const fetchProducts = (params = {}) => api.get('/api/products', params);
 
 export const fetchProduct = (id) => api.get(`/api/products/${id}`);
 

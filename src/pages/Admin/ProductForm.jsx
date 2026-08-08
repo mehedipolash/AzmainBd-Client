@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
+import { useForm } from 'react-hook-form';
 import { FaArrowLeft } from 'react-icons/fa6';
 import {
     createProduct,
@@ -9,18 +10,16 @@ import {
 } from '../../api/products.api';
 import Loader from '../../components/Loader';
 import UseToast from '../../Hooks/UseToast';
+import { alertError } from '../../utils/alerts';
 
-const EMPTY = {
-    name: '',
-    brand: '',
-    category: '',
-    price: '',
-    oldPrice: '',
-    stock: '',
-    image: '',
-    description: '',
-    specs: '',
-};
+// Defined at module scope — a component created inside render is a new type on
+// every pass, which remounts it and loses focus.
+const FieldError = ({ error }) =>
+    error ? (
+        <p role="alert" className="mt-2 text-[12px] text-error">
+            {error.message}
+        </p>
+    ) : null;
 
 const ProductForm = () => {
     const { id } = useParams();
@@ -28,12 +27,34 @@ const ProductForm = () => {
     const navigate = useNavigate();
     const { notify } = UseToast();
 
-    const [form, setForm] = useState(EMPTY);
     const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(isEdit);
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState('');
-    const [fieldError, setFieldError] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [formError, setFormError] = useState('');
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        setError,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        mode: 'onTouched',
+        defaultValues: {
+            name: '',
+            brand: '',
+            category: '',
+            price: '',
+            oldPrice: '',
+            stock: '',
+            image: '',
+            description: '',
+            specs: '',
+        },
+    });
+
+    // Live preview of whatever URL is currently typed.
+    const imageUrl = watch('image');
 
     useEffect(() => {
         let cancelled = false;
@@ -47,7 +68,9 @@ const ProductForm = () => {
                     const product = await fetchProduct(id);
                     if (cancelled) return;
 
-                    setForm({
+                    // reset() populates the whole form at once, which also
+                    // clears any dirty state from a previous edit.
+                    reset({
                         name: product.name ?? '',
                         brand: product.brand ?? '',
                         category: product.category ?? '',
@@ -59,8 +82,8 @@ const ProductForm = () => {
                         specs: (product.specs ?? []).join(', '),
                     });
                 }
-            } catch (err) {
-                if (!cancelled) setError(err.message);
+            } catch (error) {
+                if (!cancelled) setFormError(error.message);
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -70,28 +93,23 @@ const ProductForm = () => {
         return () => {
             cancelled = true;
         };
-    }, [id, isEdit]);
+    }, [id, isEdit, reset]);
 
-    const setField = (field) => (e) => setForm((current) => ({ ...current, [field]: e.target.value }));
+    const onSubmit = async (values) => {
+        setFormError('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setFieldError('');
-        setSaving(true);
-
-        // The server validates all of this again — this is only to give faster
+        // The server validates all of this again — this is only for faster
         // feedback, never the authority.
         const payload = {
-            name: form.name.trim(),
-            brand: form.brand.trim(),
-            category: form.category,
-            description: form.description.trim(),
-            image: form.image.trim(),
-            price: Number(form.price),
-            oldPrice: form.oldPrice === '' ? null : Number(form.oldPrice),
-            stock: Number(form.stock),
-            specs: form.specs
+            name: values.name.trim(),
+            brand: values.brand.trim(),
+            category: values.category,
+            description: values.description.trim(),
+            image: values.image.trim(),
+            price: Number(values.price),
+            oldPrice: values.oldPrice === '' ? null : Number(values.oldPrice),
+            stock: Number(values.stock),
+            specs: values.specs
                 .split(',')
                 .map((item) => item.trim())
                 .filter(Boolean),
@@ -106,20 +124,25 @@ const ProductForm = () => {
                 notify(`${payload.name} added to the catalogue`);
             }
             navigate('/admin/products');
-        } catch (err) {
-            setError(err.message);
-            if (err.field) setFieldError(err.field);
-        } finally {
-            setSaving(false);
+        } catch (error) {
+            // The API names the offending field, so attach the message to that
+            // input rather than only showing a banner.
+            if (error.field) {
+                setError(error.field, { type: 'server', message: error.message });
+            } else {
+                alertError('Could not save', error.message);
+            }
+            setFormError(error.message);
         }
     };
 
     if (loading) return <Loader fullScreen />;
 
-    const fieldClass = (field) =>
+    const fieldClass = (invalid) =>
         `w-full border bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-primary ${
-            fieldError === field ? 'border-error' : 'border-base-300'
+            invalid ? 'border-error' : 'border-base-300'
         }`;
+
 
     return (
         <div className="p-5 sm:p-8 lg:p-10">
@@ -134,11 +157,11 @@ const ProductForm = () => {
             <header className="mb-8">
                 <p className="eyebrow mb-2">{isEdit ? 'Edit' : 'New'}</p>
                 <h1 className="font-display text-3xl font-semibold">
-                    {isEdit ? form.name || 'Edit product' : 'Add a product'}
+                    {isEdit ? 'Edit product' : 'Add a product'}
                 </h1>
             </header>
 
-            <form onSubmit={handleSubmit} className="max-w-2xl space-y-5" noValidate>
+            <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl space-y-5" noValidate>
                 <div className="grid gap-5 sm:grid-cols-2">
                     <div>
                         <label htmlFor="name" className="eyebrow mb-2 block">
@@ -146,12 +169,15 @@ const ProductForm = () => {
                         </label>
                         <input
                             id="name"
-                            value={form.name}
-                            onChange={setField('name')}
-                            required
                             placeholder="UltraThin OLED 65&quot;"
-                            className={fieldClass('name')}
+                            aria-invalid={Boolean(errors.name)}
+                            className={fieldClass(errors.name)}
+                            {...register('name', {
+                                required: 'Enter a product name.',
+                                maxLength: { value: 400, message: 'That name is too long.' },
+                            })}
                         />
+                        <FieldError error={errors.name} />
                     </div>
 
                     <div>
@@ -160,12 +186,12 @@ const ProductForm = () => {
                         </label>
                         <input
                             id="brand"
-                            value={form.brand}
-                            onChange={setField('brand')}
-                            required
                             placeholder="Samsung"
-                            className={fieldClass('brand')}
+                            aria-invalid={Boolean(errors.brand)}
+                            className={fieldClass(errors.brand)}
+                            {...register('brand', { required: 'Enter a brand.' })}
                         />
+                        <FieldError error={errors.brand} />
                     </div>
                 </div>
 
@@ -175,10 +201,9 @@ const ProductForm = () => {
                     </label>
                     <select
                         id="category"
-                        value={form.category}
-                        onChange={setField('category')}
-                        required
-                        className={fieldClass('category')}
+                        aria-invalid={Boolean(errors.category)}
+                        className={fieldClass(errors.category)}
+                        {...register('category', { required: 'Choose a category.' })}
                     >
                         <option value="">Choose a category…</option>
                         {categories.map((category) => (
@@ -187,6 +212,7 @@ const ProductForm = () => {
                             </option>
                         ))}
                     </select>
+                    <FieldError error={errors.category} />
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-3">
@@ -198,12 +224,15 @@ const ProductForm = () => {
                             id="price"
                             type="number"
                             min="1"
-                            value={form.price}
-                            onChange={setField('price')}
-                            required
                             placeholder="89999"
-                            className={fieldClass('price')}
+                            aria-invalid={Boolean(errors.price)}
+                            className={fieldClass(errors.price)}
+                            {...register('price', {
+                                required: 'Enter a price.',
+                                min: { value: 1, message: 'Price must be at least ৳1.' },
+                            })}
                         />
+                        <FieldError error={errors.price} />
                     </div>
 
                     <div>
@@ -214,11 +243,19 @@ const ProductForm = () => {
                             id="oldPrice"
                             type="number"
                             min="1"
-                            value={form.oldPrice}
-                            onChange={setField('oldPrice')}
                             placeholder="95000"
-                            className={fieldClass('oldPrice')}
+                            aria-invalid={Boolean(errors.oldPrice)}
+                            className={fieldClass(errors.oldPrice)}
+                            {...register('oldPrice', {
+                                // Cross-field rule: a strike-through price that
+                                // is not higher would show a negative discount.
+                                validate: (value, values) =>
+                                    value === '' ||
+                                    Number(value) > Number(values.price) ||
+                                    'Must be higher than the price.',
+                            })}
                         />
+                        <FieldError error={errors.oldPrice} />
                     </div>
 
                     <div>
@@ -229,12 +266,15 @@ const ProductForm = () => {
                             id="stock"
                             type="number"
                             min="0"
-                            value={form.stock}
-                            onChange={setField('stock')}
-                            required
                             placeholder="12"
-                            className={fieldClass('stock')}
+                            aria-invalid={Boolean(errors.stock)}
+                            className={fieldClass(errors.stock)}
+                            {...register('stock', {
+                                required: 'Enter a stock count.',
+                                min: { value: 0, message: 'Stock cannot be negative.' },
+                            })}
                         />
+                        <FieldError error={errors.stock} />
                     </div>
                 </div>
 
@@ -245,15 +285,21 @@ const ProductForm = () => {
                     <input
                         id="image"
                         type="url"
-                        value={form.image}
-                        onChange={setField('image')}
-                        required
                         placeholder="https://…"
-                        className={fieldClass('image')}
+                        aria-invalid={Boolean(errors.image)}
+                        className={fieldClass(errors.image)}
+                        {...register('image', {
+                            required: 'Enter an image URL.',
+                            pattern: {
+                                value: /^https?:\/\/.+/i,
+                                message: 'Must start with http:// or https://',
+                            },
+                        })}
                     />
-                    {form.image && (
+                    <FieldError error={errors.image} />
+                    {imageUrl && !errors.image && (
                         <img
-                            src={form.image}
+                            src={imageUrl}
                             alt=""
                             className="mt-3 size-28 border border-base-300 object-cover"
                         />
@@ -266,10 +312,9 @@ const ProductForm = () => {
                     </label>
                     <input
                         id="specs"
-                        value={form.specs}
-                        onChange={setField('specs')}
                         placeholder="5G, 256GB, 120Hz"
-                        className={fieldClass('specs')}
+                        className={fieldClass(false)}
+                        {...register('specs')}
                     />
                     <p className="mt-2 text-[12px] text-base-content/45">Separate with commas.</p>
                 </div>
@@ -281,26 +326,29 @@ const ProductForm = () => {
                     <textarea
                         id="description"
                         rows={4}
-                        value={form.description}
-                        onChange={setField('description')}
-                        required
                         placeholder="What makes this product worth buying?"
-                        className={`${fieldClass('description')} resize-y`}
+                        aria-invalid={Boolean(errors.description)}
+                        className={`${fieldClass(errors.description)} resize-y`}
+                        {...register('description', {
+                            required: 'Write a short description.',
+                            minLength: { value: 10, message: 'Add a little more detail.' },
+                        })}
                     />
+                    <FieldError error={errors.description} />
                 </div>
 
-                {error && (
+                {formError && (
                     <p
                         role="alert"
                         className="border-l-2 border-error bg-error/8 px-4 py-3 text-sm text-error"
                     >
-                        {error}
+                        {formError}
                     </p>
                 )}
 
                 <div className="flex gap-3 pt-2">
-                    <button type="submit" disabled={saving} className="btn-shop">
-                        {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Add product'}
+                    <button type="submit" disabled={isSubmitting} className="btn-shop">
+                        {isSubmitting ? 'Saving…' : isEdit ? 'Save changes' : 'Add product'}
                     </button>
                     <Link to="/admin/products" className="btn-shop-outline">
                         Cancel

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { FaPhone, FaEnvelope, FaLocationDot, FaClock, FaWhatsapp } from 'react-icons/fa6';
 import PageHeader from '../../components/PageHeader';
-import UseToast from '../../Hooks/UseToast';
+import { alertSuccess } from '../../utils/alerts';
 
 const CHANNELS = [
     {
@@ -27,25 +28,36 @@ const CHANNELS = [
     },
 ];
 
+// Defined at module scope — a component created inside render is a new type on
+// every pass, which remounts it and loses focus.
+const FieldError = ({ error }) =>
+    error ? (
+        <p role="alert" className="mt-2 text-[12px] text-error">
+            {error.message}
+        </p>
+    ) : null;
+
 const Contact = () => {
-    const { notify } = UseToast();
-    const [sending, setSending] = useState(false);
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm({ mode: 'onTouched' });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setSending(true);
-
-        // Posts to the backend once it exists; the form already collects and
-        // validates everything that endpoint will need.
-        setTimeout(() => {
-            setSending(false);
-            e.target.reset();
-            notify('Thanks — we will reply within one working day');
-        }, 600);
+    // Posts to the backend once the endpoint exists; the form already collects
+    // and validates everything it will need.
+    const onSubmit = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        reset();
+        alertSuccess('Message sent', 'We will reply within one working day.');
     };
 
-    const fieldClass =
-        'w-full border border-base-300 bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-primary';
+    const fieldClass = (invalid) =>
+        `w-full border bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-primary ${
+            invalid ? 'border-error' : 'border-base-300'
+        }`;
+
 
     return (
         <div>
@@ -140,7 +152,11 @@ const Contact = () => {
                             Include your order number if the question is about an existing purchase.
                         </p>
 
-                        <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+                        <form
+                            onSubmit={handleSubmit(onSubmit)}
+                            className="mt-7 space-y-5"
+                            noValidate
+                        >
                             <div className="grid gap-5 sm:grid-cols-2">
                                 <div>
                                     <label htmlFor="name" className="eyebrow mb-2 block">
@@ -148,13 +164,14 @@ const Contact = () => {
                                     </label>
                                     <input
                                         id="name"
-                                        name="name"
                                         type="text"
-                                        required
                                         autoComplete="name"
                                         placeholder="Full name"
-                                        className={fieldClass}
+                                        aria-invalid={Boolean(errors.name)}
+                                        className={fieldClass(errors.name)}
+                                        {...register('name', { required: 'Enter your name.' })}
                                     />
+                                    <FieldError error={errors.name} />
                                 </div>
 
                                 <div>
@@ -163,13 +180,20 @@ const Contact = () => {
                                     </label>
                                     <input
                                         id="phone"
-                                        name="phone"
                                         type="tel"
-                                        required
                                         autoComplete="tel"
                                         placeholder="+880"
-                                        className={fieldClass}
+                                        aria-invalid={Boolean(errors.phone)}
+                                        className={fieldClass(errors.phone)}
+                                        {...register('phone', {
+                                            required: 'Enter a phone number.',
+                                            pattern: {
+                                                value: /^[+\d][\d\s-]{6,}$/,
+                                                message: 'That does not look like a phone number.',
+                                            },
+                                        })}
                                     />
+                                    <FieldError error={errors.phone} />
                                 </div>
                             </div>
 
@@ -179,20 +203,31 @@ const Contact = () => {
                                 </label>
                                 <input
                                     id="email"
-                                    name="email"
                                     type="email"
-                                    required
                                     autoComplete="email"
                                     placeholder="you@example.com"
-                                    className={fieldClass}
+                                    aria-invalid={Boolean(errors.email)}
+                                    className={fieldClass(errors.email)}
+                                    {...register('email', {
+                                        required: 'Enter your email address.',
+                                        pattern: {
+                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
+                                            message: 'That does not look like a valid email.',
+                                        },
+                                    })}
                                 />
+                                <FieldError error={errors.email} />
                             </div>
 
                             <div>
                                 <label htmlFor="topic" className="eyebrow mb-2 block">
                                     Topic
                                 </label>
-                                <select id="topic" name="topic" className={fieldClass}>
+                                <select
+                                    id="topic"
+                                    className={fieldClass(false)}
+                                    {...register('topic')}
+                                >
                                     <option>Product question</option>
                                     <option>Order status</option>
                                     <option>Warranty or repair</option>
@@ -207,16 +242,23 @@ const Contact = () => {
                                 </label>
                                 <textarea
                                     id="message"
-                                    name="message"
-                                    required
                                     rows={5}
                                     placeholder="How can we help?"
-                                    className={`${fieldClass} resize-y`}
+                                    aria-invalid={Boolean(errors.message)}
+                                    className={`${fieldClass(errors.message)} resize-y`}
+                                    {...register('message', {
+                                        required: 'Tell us how we can help.',
+                                        minLength: {
+                                            value: 10,
+                                            message: 'Please add a little more detail.',
+                                        },
+                                    })}
                                 />
+                                <FieldError error={errors.message} />
                             </div>
 
-                            <button type="submit" disabled={sending} className="btn-shop w-full">
-                                {sending ? 'Sending…' : 'Send message'}
+                            <button type="submit" disabled={isSubmitting} className="btn-shop w-full">
+                                {isSubmitting ? 'Sending…' : 'Send message'}
                             </button>
                         </form>
                     </div>

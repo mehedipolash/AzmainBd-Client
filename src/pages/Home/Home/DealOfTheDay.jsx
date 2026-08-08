@@ -26,7 +26,7 @@ const DealOfTheDay = () => {
     return (
         <section className="container-px section-y">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-                <div className="relative overflow-hidden bg-base-200">
+                <div className="relative overflow-hidden bg-base-200" data-aos="fade-right">
                     <img
                         src={deal.image}
                         alt={deal.name}

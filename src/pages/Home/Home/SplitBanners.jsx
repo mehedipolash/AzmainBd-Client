@@ -11,7 +11,7 @@ const SplitBanners = () => {
 
     return (
         <section className="container-px pb-12 sm:pb-16 lg:pb-20">
-            <div className="grid gap-5 sm:grid-cols-2 lg:gap-6">
+            <div className="grid gap-5 sm:grid-cols-2 lg:gap-6" data-aos="fade-up">
                 {splitBanners.map((banner) => (
                     <PromoBanner key={banner._id} banner={banner} variant="split" />
                 ))}

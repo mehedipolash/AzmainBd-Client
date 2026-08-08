@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
+import { useForm } from 'react-hook-form';
+import Lottie from 'lottie-react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import UseAuth from '../../Hooks/UseAuth';
 import UseToast from '../../Hooks/UseToast';
-import { getAuthErrorMessage, isValidEmail } from '../../utils/authErrors';
+import { getAuthErrorMessage } from '../../utils/authErrors';
+import loginAnimation from '../../assets/lottie-files/login.json';
 
 const Login = () => {
     const { signIn, signInWithGoogle } = UseAuth();
@@ -12,76 +15,86 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [error, setError] = useState('');
-    const [busy, setBusy] = useState(false);
+    const [formError, setFormError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm({ mode: 'onTouched' });
 
     // Return the visitor to whatever they were trying to reach before the
     // redirect, falling back to the homepage.
     const redirectTo = location.state?.from ?? '/';
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setError('');
+    const onSubmit = async ({ email, password }) => {
+        setFormError('');
 
-        const email = e.target.email.value.trim();
-        const password = e.target.password.value;
-
-        if (!isValidEmail(email)) {
-            setError('That does not look like a valid email address.');
-            return;
-        }
-
-        setBusy(true);
         try {
-            const { user } = await signIn(email, password);
+            const { user } = await signIn(email.trim(), password);
             notify(`Welcome back${user.displayName ? `, ${user.displayName}` : ''}`);
             navigate(redirectTo, { replace: true });
-        } catch (err) {
-            setError(getAuthErrorMessage(err));
-        } finally {
-            setBusy(false);
+        } catch (error) {
+            setFormError(getAuthErrorMessage(error));
         }
     };
 
     const handleGoogleLogin = async () => {
-        setError('');
-        setBusy(true);
+        setFormError('');
+
         try {
             const { user } = await signInWithGoogle();
             notify(`Signed in as ${user.displayName ?? user.email}`);
             navigate(redirectTo, { replace: true });
-        } catch (err) {
-            setError(getAuthErrorMessage(err));
-        } finally {
-            setBusy(false);
+        } catch (error) {
+            setFormError(getAuthErrorMessage(error));
         }
     };
 
-    const fieldClass =
-        'w-full border border-base-300 bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-primary';
+    const fieldClass = (invalid) =>
+        `w-full border bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-primary ${
+            invalid ? 'border-error' : 'border-base-300'
+        }`;
 
     return (
         <div>
+            {/* Lottie sits above the form on narrow screens where the decorative
+                side panel is hidden, so the page still has a focal point. */}
+            <div className="mx-auto mb-6 max-w-55 lg:hidden">
+                <Lottie animationData={loginAnimation} loop aria-hidden="true" />
+            </div>
+
             <h1 className="font-display text-3xl font-semibold">Welcome back</h1>
             <p className="mt-2 text-sm text-base-content/60">
                 Sign in to track orders and check out faster.
             </p>
 
-            <form onSubmit={handleLogin} className="mt-8 space-y-5" noValidate>
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5" noValidate>
                 <div>
                     <label htmlFor="email" className="eyebrow mb-2 block">
                         Email
                     </label>
                     <input
                         id="email"
-                        name="email"
                         type="email"
-                        required
                         autoComplete="email"
                         placeholder="you@example.com"
-                        className={fieldClass}
+                        aria-invalid={Boolean(errors.email)}
+                        className={fieldClass(errors.email)}
+                        {...register('email', {
+                            required: 'Enter your email address.',
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
+                                message: 'That does not look like a valid email address.',
+                            },
+                        })}
                     />
+                    {errors.email && (
+                        <p role="alert" className="mt-2 text-[12px] text-error">
+                            {errors.email.message}
+                        </p>
+                    )}
                 </div>
 
                 <div>
@@ -100,12 +113,12 @@ const Login = () => {
                     <div className="relative">
                         <input
                             id="password"
-                            name="password"
                             type={showPassword ? 'text' : 'password'}
-                            required
                             autoComplete="current-password"
                             placeholder="••••••••"
-                            className={`${fieldClass} pr-12`}
+                            aria-invalid={Boolean(errors.password)}
+                            className={`${fieldClass(errors.password)} pr-12`}
+                            {...register('password', { required: 'Enter your password.' })}
                         />
                         <button
                             type="button"
@@ -116,16 +129,24 @@ const Login = () => {
                             {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
                     </div>
+                    {errors.password && (
+                        <p role="alert" className="mt-2 text-[12px] text-error">
+                            {errors.password.message}
+                        </p>
+                    )}
                 </div>
 
-                {error && (
-                    <p role="alert" className="border-l-2 border-error bg-error/8 px-4 py-3 text-sm text-error">
-                        {error}
+                {formError && (
+                    <p
+                        role="alert"
+                        className="border-l-2 border-error bg-error/8 px-4 py-3 text-sm text-error"
+                    >
+                        {formError}
                     </p>
                 )}
 
-                <button type="submit" disabled={busy} className="btn-shop w-full">
-                    {busy ? 'Signing in…' : 'Sign in'}
+                <button type="submit" disabled={isSubmitting} className="btn-shop w-full">
+                    {isSubmitting ? 'Signing in…' : 'Sign in'}
                 </button>
             </form>
 
@@ -140,7 +161,7 @@ const Login = () => {
             <button
                 type="button"
                 onClick={handleGoogleLogin}
-                disabled={busy}
+                disabled={isSubmitting}
                 className="flex w-full items-center justify-center gap-3 border border-base-300 py-3 text-sm font-medium transition-colors hover:border-base-content/40 disabled:opacity-60"
             >
                 <FcGoogle className="text-lg" />

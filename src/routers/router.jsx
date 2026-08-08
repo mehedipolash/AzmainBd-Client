@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 import RootLayout from "../Layouts/RootLayout";
 import AuthLayout from "../Layouts/AuthLayout";
@@ -14,11 +15,15 @@ import Disclaimer from "../pages/Disclaimer/Disclaimer";
 import Profile from "../pages/Profile/Profile";
 import PrivateRoute from "./PrivateRoute";
 import AdminRoute from "./AdminRoute";
-import AdminLayout from "../Layouts/AdminLayout";
-import Dashboard from "../pages/Admin/Dashboard";
-import AdminProducts from "../pages/Admin/AdminProducts";
-import ProductForm from "../pages/Admin/ProductForm";
-import AdminCategories from "../pages/Admin/AdminCategories";
+import Loader from "../components/Loader";
+import {
+  AdminLayout,
+  Dashboard,
+  AdminProducts,
+  ProductForm,
+  AdminCategories,
+} from "./adminRoutes";
+
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import ForgotPassword from "../pages/Auth/ForgotPassword";
@@ -108,7 +113,11 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <AdminRoute>
-        <AdminLayout></AdminLayout>
+        {/* Suspense covers the lazily-loaded admin chunks, including the
+            nested route elements rendered through the layout's Outlet. */}
+        <Suspense fallback={<Loader fullScreen />}>
+          <AdminLayout></AdminLayout>
+        </Suspense>
       </AdminRoute>
     ),
     errorElement: <ErrorPage></ErrorPage>,

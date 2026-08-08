@@ -18,7 +18,7 @@ const MostPopular = () => {
                     subtitle="The products our customers reach for most this season."
                 />
 
-                <div className="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+                <div className="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4 lg:gap-x-8" data-aos="fade-up">
                     {popular.map((product) => (
                         <ProductCard key={product._id} product={product} />
                     ))}

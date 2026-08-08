@@ -4,6 +4,7 @@ import { FaPlus, FaPen, FaTrash, FaMagnifyingGlass } from 'react-icons/fa6';
 import { fetchProducts, deleteProduct } from '../../api/products.api';
 import Loader from '../../components/Loader';
 import UseToast from '../../Hooks/UseToast';
+import { confirmAction, alertError } from '../../utils/alerts';
 import { formatCurrency } from '../../utils/formatCurrency';
 
 const AdminProducts = () => {
@@ -12,7 +13,6 @@ const AdminProducts = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
-    const [confirming, setConfirming] = useState(null);
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -34,13 +34,21 @@ const AdminProducts = () => {
     }, [load]);
 
     const handleDelete = async (product) => {
+        const confirmed = await confirmAction({
+            title: 'Delete product?',
+            text: `"${product.name}" will be removed permanently. This cannot be undone.`,
+            confirmLabel: 'Delete',
+            danger: true,
+        });
+
+        if (!confirmed) return;
+
         try {
             await deleteProduct(product._id);
             notify(`${product.name} deleted`);
-            setConfirming(null);
             load();
         } catch (err) {
-            notify(err.message, 'warning');
+            alertError('Could not delete', err.message);
         }
     };
 
@@ -142,7 +150,7 @@ const AdminProducts = () => {
                                             </Link>
                                             <button
                                                 type="button"
-                                                onClick={() => setConfirming(product)}
+                                                onClick={() => handleDelete(product)}
                                                 className="p-2 text-xs text-base-content/50 transition-colors hover:text-error"
                                                 aria-label={`Delete ${product.name}`}
                                             >
@@ -157,45 +165,6 @@ const AdminProducts = () => {
                 </div>
             )}
 
-            {/* Deleting is irreversible, so it always goes through a confirm. */}
-            {confirming && (
-                <div className="fixed inset-0 z-90 flex items-center justify-center p-4">
-                    <button
-                        type="button"
-                        aria-hidden="true"
-                        tabIndex={-1}
-                        onClick={() => setConfirming(null)}
-                        className="absolute inset-0 cursor-default bg-ink/60"
-                    />
-                    <div
-                        role="dialog"
-                        aria-modal="true"
-                        className="relative w-full max-w-sm border border-base-300 bg-base-100 p-6"
-                    >
-                        <h2 className="font-display text-xl font-semibold">Delete product?</h2>
-                        <p className="mt-3 text-sm text-base-content/65">
-                            <span className="font-medium text-base-content">{confirming.name}</span>{' '}
-                            will be removed permanently. This cannot be undone.
-                        </p>
-                        <div className="mt-6 flex gap-3">
-                            <button
-                                type="button"
-                                onClick={() => handleDelete(confirming)}
-                                className="flex-1 border border-error bg-error px-5 py-2.5 text-[11px] font-semibold tracking-[0.14em] text-error-content uppercase transition-opacity hover:opacity-85"
-                            >
-                                Delete
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setConfirming(null)}
-                                className="btn-shop-outline flex-1"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

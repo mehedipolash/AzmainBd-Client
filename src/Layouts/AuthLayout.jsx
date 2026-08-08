@@ -1,8 +1,17 @@
 import React from 'react';
-import { Link, Outlet } from 'react-router';
+import { Link, Outlet, useLocation } from 'react-router';
+import Lottie from 'lottie-react';
 import { SITE_NAME } from '../utils/constants';
+import loginAnimation from '../assets/lottie-files/login.json';
+import registerAnimation from '../assets/lottie-files/register.json';
 
 const AuthLayout = () => {
+    const { pathname } = useLocation();
+
+    // Register gets its own animation; every other auth screen shares the
+    // login one.
+    const animation = pathname.startsWith('/register') ? registerAnimation : loginAnimation;
+
     return (
         <div className="grid min-h-screen lg:grid-cols-2">
             <div className="flex flex-col justify-center px-5 py-12 sm:px-12">
@@ -16,17 +25,14 @@ const AuthLayout = () => {
                 </div>
             </div>
 
-            {/* Decorative panel — hidden on small screens where it adds nothing. */}
-            <div className="relative hidden lg:block">
-                <img
-                    src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80"
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-ink/50" />
+            {/* Decorative panel — hidden on small screens, where the form
+                already carries the animation inline. */}
+            <div className="relative hidden flex-col justify-center bg-brand-surface px-12 py-16 lg:flex">
+                <div className="mx-auto w-full max-w-md">
+                    <Lottie animationData={animation} loop aria-hidden="true" />
+                </div>
 
-                <div className="absolute right-12 bottom-14 left-12">
+                <div className="mt-10">
                     <blockquote className="font-display text-3xl leading-snug font-semibold text-white">
                         Authorised stock, sealed boxes, real warranties.
                     </blockquote>
