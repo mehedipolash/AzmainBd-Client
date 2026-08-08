@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router';
-import Lottie from 'lottie-react';
+import LottieBox from '../components/LottieBox';
 import { SITE_NAME } from '../utils/constants';
 import loginAnimation from '../assets/lottie-files/login.json';
 import registerAnimation from '../assets/lottie-files/register.json';
@@ -28,9 +28,7 @@ const AuthLayout = () => {
             {/* Decorative panel — hidden on small screens, where the form
                 already carries the animation inline. */}
             <div className="relative hidden flex-col justify-center bg-brand-surface px-12 py-16 lg:flex">
-                <div className="mx-auto w-full max-w-md">
-                    <Lottie animationData={animation} loop aria-hidden="true" />
-                </div>
+                <LottieBox animationData={animation} className="mx-auto w-full max-w-md" />
 
                 <div className="mt-10">
                     <blockquote className="font-display text-3xl leading-snug font-semibold text-white">

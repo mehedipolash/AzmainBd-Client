@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
-import Lottie from 'lottie-react';
+import LottieBox from '../../components/LottieBox';
 import { FcGoogle } from 'react-icons/fc';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa6';
 import UseAuth from '../../Hooks/UseAuth';
@@ -65,9 +65,7 @@ const Register = () => {
 
     return (
         <div>
-            <div className="mx-auto mb-6 max-w-55 lg:hidden">
-                <Lottie animationData={registerAnimation} loop aria-hidden="true" />
-            </div>
+            <LottieBox animationData={registerAnimation} className="mx-auto mb-6 max-w-55 lg:hidden" />
 
             <h1 className="font-display text-3xl font-semibold">Create your account</h1>
             <p className="mt-2 text-sm text-base-content/60">
