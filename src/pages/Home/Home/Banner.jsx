@@ -1,25 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { FaStar, FaArrowRight, FaTruckFast, FaShieldHalved } from 'react-icons/fa6';
 import { getHeroBanner } from '../../../data/banners';
 import {
-    getHeroProduct,
+    getHeroProducts,
     getStoreStats,
     isLowStock,
     getDeliveryEstimate,
 } from '../../../data/products';
 import { formatCurrency, calcDiscount } from '../../../utils/formatCurrency';
+import UseRotator from '../../../Hooks/UseRotator';
 
 const Banner = () => {
     const hero = getHeroBanner();
-    // A real catalogue item fills the right side, so the hero proves the shop
+    // Real catalogue items fill the right side, so the hero proves the shop
     // works rather than showing a stock photograph. Becomes an API call later
     // without changing this component.
-    const product = getHeroProduct();
+    const featured = getHeroProducts(3);
     const stats = getStoreStats();
+
+    // Pause the rotation while the pointer or keyboard focus is on the card,
+    // so it never changes out from under someone reading it.
+    const [paused, setPaused] = useState(false);
+    const { index, goTo, isStatic } = UseRotator(featured.length, { paused });
 
     if (!hero) return null;
 
+    const product = featured[index] ?? null;
     const discount = product ? calcDiscount(product.price, product.oldPrice) : 0;
     const deliveryDate = product ? getDeliveryEstimate(product) : null;
 
@@ -37,7 +44,7 @@ const Banner = () => {
             {/* A soft brand glow behind the product card lifts it off the photo. */}
             <div
                 aria-hidden="true"
-                className="absolute -top-24 -right-24 hidden size-[34rem] rounded-full bg-primary/25 blur-3xl lg:block"
+                className="absolute -top-24 -right-24 hidden size-136 rounded-full bg-primary/25 blur-3xl lg:block"
             />
 
             <div className="container-px relative py-16 sm:py-20 lg:py-24">
@@ -112,10 +119,22 @@ const Banner = () => {
                         </dl>
                     </div>
 
-                    {/* Live product card — the proof that this is a working shop. */}
+                    {/* Live product card — the proof that this is a working shop.
+                        Rotates through the featured items on a timer. */}
                     {product && (
-                        <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
-                            <article className="bg-base-100 shadow-2xl">
+                        <div
+                            className="relative mx-auto w-full max-w-sm lg:max-w-none"
+                            onMouseEnter={() => setPaused(true)}
+                            onMouseLeave={() => setPaused(false)}
+                            onFocusCapture={() => setPaused(true)}
+                            onBlurCapture={() => setPaused(false)}
+                        >
+                            {/* Keyed so each product animates in as it becomes
+                                active rather than the content swapping in place. */}
+                            <article
+                                key={product._id}
+                                className="bg-base-100 shadow-2xl motion-safe:animate-[card-in_420ms_ease-out]"
+                            >
                                 <Link
                                     to={`/product/${product._id}`}
                                     className="group relative block overflow-hidden"
@@ -217,9 +236,38 @@ const Banner = () => {
                                 </div>
                             </article>
 
-                            <p className="mt-4 text-center text-[11px] tracking-[0.16em] text-white/45 uppercase">
-                                Featured this week
-                            </p>
+                            {/* Manual controls — the only way to change slides
+                                for anyone who has auto-rotation disabled. */}
+                            {featured.length > 1 && (
+                                <div className="mt-5 flex items-center justify-center gap-4">
+                                    <span className="text-[11px] tracking-[0.16em] text-white/45 uppercase">
+                                        Featured
+                                    </span>
+
+                                    <div className="flex gap-2">
+                                        {featured.map((item, dot) => (
+                                            <button
+                                                key={item._id}
+                                                type="button"
+                                                onClick={() => goTo(dot)}
+                                                aria-label={`Show ${item.name}`}
+                                                aria-current={dot === index}
+                                                className={`h-1.5 rounded-full transition-all duration-300 ${
+                                                    dot === index
+                                                        ? 'w-7 bg-white'
+                                                        : 'w-1.5 bg-white/35 hover:bg-white/60'
+                                                }`}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {!isStatic && (
+                                        <span className="sr-only" aria-live="polite">
+                                            Showing {product.name}, {index + 1} of {featured.length}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

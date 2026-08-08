@@ -7,6 +7,10 @@ import Categories from "../pages/Categories/Categories";
 import Deals from "../pages/Deals/Deals";
 import ProductDetails from "../pages/ProductDetails/ProductDetails";
 import Cart from "../pages/Cart/Cart";
+import About from "../pages/About/About";
+import Contact from "../pages/Contact/Contact";
+import ReturnPolicy from "../pages/ReturnPolicy/ReturnPolicy";
+import Disclaimer from "../pages/Disclaimer/Disclaimer";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
@@ -40,6 +44,22 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart></Cart>,
+      },
+      {
+        path: "about",
+        element: <About></About>,
+      },
+      {
+        path: "contact",
+        element: <Contact></Contact>,
+      },
+      {
+        path: "return-policy",
+        element: <ReturnPolicy></ReturnPolicy>,
+      },
+      {
+        path: "disclaimer",
+        element: <Disclaimer></Disclaimer>,
       },
     ],
   },

@@ -276,6 +276,18 @@
   }
 }
 
+/* Hero product card entering as the featured item rotates. */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Soft ring expanding out of each step icon as it lands. */
 @keyframes halo {
   0% {

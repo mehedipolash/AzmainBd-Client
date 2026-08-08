@@ -23,7 +23,7 @@ export const FOOTER_LINKS = [
             { label: "Laptops", path: "/shop?category=laptops" },
             { label: "Smartphones", path: "/shop?category=smartphones" },
             { label: "Appliances", path: "/shop?category=appliances" },
-            { label: "Accessories", path: "/shop?category=accessories" },
+            { label: "Audio Gear", path: "/shop?category=audio" },
         ],
     },
 ];

@@ -16,10 +16,12 @@ const PageHeader = ({ eyebrow, title, subtitle, image, crumbs = [] }) => {
                 />
             )}
 
-            {/* Brand wash over the photograph — dark enough that white text
-                clears contrast regardless of the image behind it. */}
-            <div className="absolute inset-0 bg-primary/92" />
-            <div className="absolute inset-0 bg-linear-to-r from-ink/55 via-transparent to-transparent" />
+            {/* Two thin layers rather than one opaque wash: a teal tint that
+                tells you which site you are on, over a dark scrim that carries
+                the text contrast. The photograph stays legible through both —
+                a single high-opacity brand fill hides it entirely. */}
+            <div className="absolute inset-0 bg-ink/55" />
+            <div className="absolute inset-0 bg-primary/45 mix-blend-multiply" />
 
             <div className="container-px relative py-14 text-center sm:py-18 lg:py-22">
                 {eyebrow && (

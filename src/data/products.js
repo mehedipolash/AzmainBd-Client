@@ -410,12 +410,15 @@ export const getDealOfTheDay = () => {
 // The product the hero showcases. Picks the best-rated in-stock item so the
 // homepage always leads with something buyable and well-reviewed — never a
 // sold-out unit. Swaps to an API call later without touching the component.
-export const getHeroProduct = () => {
-    const available = products.filter(isInStock);
-    if (available.length === 0) return null;
+export const getHeroProduct = () => getHeroProducts(1)[0] ?? null;
 
-    return available.sort((a, b) => b.rating - a.rating || b.reviews - a.reviews)[0];
-};
+// The products the hero rotates through. Best-rated in-stock items only, so
+// the homepage never showcases something a customer cannot buy.
+export const getHeroProducts = (limit = 3) =>
+    products
+        .filter(isInStock)
+        .sort((a, b) => b.rating - a.rating || b.reviews - a.reviews)
+        .slice(0, limit);
 
 // Trust figures shown under the hero. Derived from the catalogue rather than
 // invented, so they stay honest as stock changes.
