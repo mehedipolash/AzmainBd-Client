@@ -11,8 +11,12 @@ import About from "../pages/About/About";
 import Contact from "../pages/Contact/Contact";
 import ReturnPolicy from "../pages/ReturnPolicy/ReturnPolicy";
 import Disclaimer from "../pages/Disclaimer/Disclaimer";
+import Profile from "../pages/Profile/Profile";
+import PrivateRoute from "./PrivateRoute";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
+import ForgotPassword from "../pages/Auth/ForgotPassword";
+import VerifyEmail from "../pages/Auth/VerifyEmail";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
 
 const router = createBrowserRouter([
@@ -61,6 +65,14 @@ const router = createBrowserRouter([
         path: "disclaimer",
         element: <Disclaimer></Disclaimer>,
       },
+      {
+        path: "profile",
+        element: (
+          <PrivateRoute>
+            <Profile></Profile>
+          </PrivateRoute>
+        ),
+      },
     ],
   },
   {
@@ -75,6 +87,14 @@ const router = createBrowserRouter([
       {
         path: "register",
         element: <Register></Register>,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword></ForgotPassword>,
+      },
+      {
+        path: "verify-email",
+        element: <VerifyEmail></VerifyEmail>,
       },
     ],
   },

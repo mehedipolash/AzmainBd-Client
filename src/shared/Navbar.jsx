@@ -10,7 +10,9 @@ import {
     FaTruckFast,
 } from 'react-icons/fa6';
 import ThemeToggle from '../components/ThemeToggle';
+import UserMenu from '../components/UserMenu';
 import UseCart from '../Hooks/UseCart';
+import UseAuth from '../Hooks/UseAuth';
 import { formatCurrency } from '../utils/formatCurrency';
 import { NAV_LINKS, SITE_NAME } from '../utils/constants';
 
@@ -20,6 +22,7 @@ const Navbar = () => {
     const [term, setTerm] = useState('');
     const navigate = useNavigate();
     const { count: cartCount, subtotal } = UseCart();
+    const { isLoggedIn, loading: authLoading, logOut } = UseAuth();
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -136,14 +139,35 @@ const Navbar = () => {
                             )}
                         </Link>
 
-                        {/* Solid pill anchors the right end of the bar. */}
-                        <Link
-                            to="/login"
-                            className="ml-1 hidden items-center gap-2 rounded-full bg-neutral px-5 py-2.5 text-[13px] font-semibold text-neutral-content transition-opacity hover:opacity-85 sm:inline-flex"
-                        >
-                            <FaUser className="text-xs" />
-                            Sign In
-                        </Link>
+                        {/* Reserve the slot while auth resolves, so the header
+                            does not flash "Sign In" at someone already logged
+                            in on every page load. */}
+                        {authLoading ? (
+                            <span
+                                className="ml-1 size-9 rounded-full bg-base-200 motion-safe:animate-pulse"
+                                aria-hidden="true"
+                            />
+                        ) : isLoggedIn ? (
+                            <span className="ml-1">
+                                <UserMenu />
+                            </span>
+                        ) : (
+                            <>
+                                <Link
+                                    to="/register"
+                                    className="ml-1 hidden text-[13px] font-medium text-base-content/70 transition-colors hover:text-base-content lg:inline"
+                                >
+                                    Register
+                                </Link>
+                                <Link
+                                    to="/login"
+                                    className="ml-1 hidden items-center gap-2 rounded-full bg-neutral px-5 py-2.5 text-[13px] font-semibold text-neutral-content transition-opacity hover:opacity-85 sm:inline-flex"
+                                >
+                                    <FaUser className="text-xs" />
+                                    Sign In
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </nav>
             </div>
@@ -221,15 +245,48 @@ const Navbar = () => {
                             ))}
                         </ul>
 
-                        <div className="border-t border-base-300 p-5">
-                            <Link
-                                to="/login"
-                                onClick={() => setMenuOpen(false)}
-                                className="btn-shop w-full"
-                            >
-                                <FaUser className="text-xs" />
-                                Sign In
-                            </Link>
+                        <div className="space-y-3 border-t border-base-300 p-5">
+                            {isLoggedIn ? (
+                                <>
+                                    <Link
+                                        to="/profile"
+                                        onClick={() => setMenuOpen(false)}
+                                        className="btn-shop-outline w-full"
+                                    >
+                                        <FaUser className="text-xs" />
+                                        My account
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            setMenuOpen(false);
+                                            await logOut();
+                                            navigate('/', { replace: true });
+                                        }}
+                                        className="w-full py-2 text-[13px] font-medium text-error"
+                                    >
+                                        Sign out
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link
+                                        to="/login"
+                                        onClick={() => setMenuOpen(false)}
+                                        className="btn-shop w-full"
+                                    >
+                                        <FaUser className="text-xs" />
+                                        Sign In
+                                    </Link>
+                                    <Link
+                                        to="/register"
+                                        onClick={() => setMenuOpen(false)}
+                                        className="btn-shop-outline w-full"
+                                    >
+                                        Create account
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

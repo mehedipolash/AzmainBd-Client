@@ -291,6 +291,18 @@
   }
 }
 
+/* Account dropdown opening from the header. */
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Hero product card entering as the featured item rotates. */
 @keyframes card-in {
   from {
