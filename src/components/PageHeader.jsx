@@ -7,21 +7,23 @@ import { Link } from 'react-router';
 const PageHeader = ({ eyebrow, title, subtitle, image, crumbs = [] }) => {
     return (
         <section className="relative overflow-hidden">
+            {/* Brand colour is the ground; the photograph sits on top at low
+                opacity as texture only. Keeping the image faint means the
+                heading contrast never depends on which photo is used. */}
+            <div className="absolute inset-0 bg-brand-surface" />
+
             {image && (
                 <img
                     src={image}
                     alt=""
                     aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full object-cover opacity-18 mix-blend-luminosity"
                 />
             )}
 
-            {/* Two thin layers rather than one opaque wash: a teal tint that
-                tells you which site you are on, over a dark scrim that carries
-                the text contrast. The photograph stays legible through both —
-                a single high-opacity brand fill hides it entirely. */}
-            <div className="absolute inset-0 bg-ink/55" />
-            <div className="absolute inset-0 bg-primary/45 mix-blend-multiply" />
+            {/* Slight darkening toward the edges keeps centred text clear of
+                any bright area in the underlying photograph. */}
+            <div className="absolute inset-0 bg-linear-to-b from-ink/25 via-transparent to-ink/25" />
 
             <div className="container-px relative py-14 text-center sm:py-18 lg:py-22">
                 {eyebrow && (

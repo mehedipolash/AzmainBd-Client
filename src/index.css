@@ -48,6 +48,14 @@
   --color-amber-deep: #a8610f;
   --color-amber-mid: #c8791a;
   --color-amber-tint: #fdf3e6;
+
+  /* Large filled surfaces — page headers, the footer — use their own token
+     rather than --color-primary. A hue bright enough to read as small text on
+     a dark ground is overwhelming across a full-width block, so the dark theme
+     redefines this to a deep slate-teal while primary stays vivid for text,
+     buttons and links. */
+  --color-brand-surface: #0f6b5c;
+  --color-brand-surface-content: #ffffff;
 }
 
 /* Light theme — the default. Near-monochrome, mint section tint. */
@@ -231,6 +239,13 @@
   :where(a, button, input, select, textarea, [tabindex]):focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+
+  /* Dark theme mutes the large filled surfaces to a deep slate-teal. The
+     bright primary stays as-is for text, buttons and links. */
+  [data-theme='azmaindark'] {
+    --color-brand-surface: #10221f;
+    --color-brand-surface-content: #dfe9e6;
   }
 }
 

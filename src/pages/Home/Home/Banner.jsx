@@ -47,10 +47,14 @@ const Banner = () => {
                 className="absolute -top-24 -right-24 hidden size-136 rounded-full bg-primary/25 blur-3xl lg:block"
             />
 
-            <div className="container-px relative py-16 sm:py-20 lg:py-24">
-                <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-                    <div>
-                        <p className="mb-5 inline-flex items-center gap-2 border border-white/20 bg-white/8 px-3 py-1.5 text-[11px] font-semibold tracking-[0.2em] text-white/85 uppercase backdrop-blur-sm">
+            <div className="container-px relative py-14 sm:py-16 lg:py-20">
+                {/* Columns align to the top, not the centre. The product card is
+                    considerably taller than the copy, so centring the copy
+                    against it pushed the headline down and left a gap under the
+                    navbar. */}
+                <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16">
+                    <div className="lg:pt-2">
+                        <p className="mb-4 inline-flex items-center gap-2 border border-white/20 bg-white/8 px-3 py-1.5 text-[11px] font-semibold tracking-[0.2em] text-white/85 uppercase backdrop-blur-sm">
                             <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
                             {hero.eyebrow}
                         </p>
@@ -78,7 +82,7 @@ const Banner = () => {
 
                         {/* Figures come from the catalogue, so they stay true as
                             stock changes rather than being decorative. */}
-                        <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-8">
+                        <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-7">
                             <div>
                                 <dt className="sr-only">Products in stock</dt>
                                 <dd>

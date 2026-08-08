@@ -28,7 +28,7 @@ const Footer = () => {
     };
 
     return (
-        <footer className="relative mt-20 bg-primary text-primary-content">
+        <footer className="relative mt-20 bg-brand-surface text-brand-surface-content">
             {/* Wave crest — the footer rises out of the page rather than
                 starting at a hard rule. Sits above the footer and is pulled up
                 by its own height so it never adds layout space. */}
@@ -44,7 +44,7 @@ const Footer = () => {
                     <path
                         d="M0,64 C240,120 480,8 720,32 C960,56 1200,120 1440,72 L1440,120 L0,120 Z"
                         fill="currentColor"
-                        className="text-primary"
+                        className="text-brand-surface"
                     />
                 </svg>
             </div>
@@ -65,7 +65,7 @@ const Footer = () => {
                     <div className="flex flex-wrap gap-3">
                         <Link
                             to="/shop"
-                            className="inline-flex items-center justify-center gap-2 bg-base-100 px-7 py-3 text-xs font-semibold tracking-[0.14em] text-primary uppercase transition-opacity hover:opacity-90"
+                            className="inline-flex items-center justify-center gap-2 bg-base-100 px-7 py-3 text-xs font-semibold tracking-[0.14em] text-base-content uppercase transition-opacity hover:opacity-90"
                         >
                             Start shopping
                             <FaArrowRight className="text-[11px]" />
@@ -101,7 +101,7 @@ const Footer = () => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         aria-label={social.label}
-                                        className="flex size-9 items-center justify-center border border-white/25 text-xs transition-colors hover:border-white hover:bg-white hover:text-primary"
+                                        className="flex size-9 items-center justify-center border border-white/25 text-xs transition-colors hover:border-white hover:bg-base-100 hover:text-base-content"
                                     >
                                         <Icon />
                                     </a>
@@ -176,7 +176,7 @@ const Footer = () => {
                             />
                             <button
                                 type="submit"
-                                className="shrink-0 bg-base-100 px-4 text-[11px] font-semibold tracking-[0.12em] text-primary uppercase transition-opacity hover:opacity-90"
+                                className="shrink-0 bg-base-100 px-4 text-[11px] font-semibold tracking-[0.12em] text-base-content uppercase transition-opacity hover:opacity-90"
                             >
                                 Join
                             </button>
