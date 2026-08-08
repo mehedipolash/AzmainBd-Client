@@ -5,6 +5,7 @@ import {
     FaRightFromBracket,
     FaBagShopping,
     FaTriangleExclamation,
+    FaGaugeHigh,
 } from 'react-icons/fa6';
 import UseAuth from '../Hooks/UseAuth';
 import UseToast from '../Hooks/UseToast';
@@ -21,7 +22,7 @@ const getInitials = (user) => {
 };
 
 const UserMenu = () => {
-    const { user, isVerified, logOut } = UseAuth();
+    const { user, isVerified, isAdmin, logOut } = UseAuth();
     const { notify } = UseToast();
     const navigate = useNavigate();
 
@@ -124,6 +125,19 @@ const UserMenu = () => {
                     </div>
 
                     <ul className="py-1.5">
+                        {isAdmin && (
+                            <li>
+                                <Link
+                                    to="/admin"
+                                    role="menuitem"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-base-200"
+                                >
+                                    <FaGaugeHigh className="text-xs" aria-hidden="true" />
+                                    Admin panel
+                                </Link>
+                            </li>
+                        )}
                         <li>
                             {/* Points at the cart until order history exists —
                                 a menu item that 404s is worse than one that

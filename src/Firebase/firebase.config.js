@@ -1,28 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
-/* ---------------------------------------------------------------------------
-   Firebase initialisation.
 
-   Values come from .env.local (see .env.example for the template) so the same
-   build can target a staging or production project without a code change.
-
-   A note on what this does and does not protect:
-
-   Vite inlines every VITE_* variable into the public JS bundle, so these values
-   are visible to anyone who opens devtools. That is expected — Firebase web
-   config is designed to be public and identifies the project, it does not
-   authorise anything. What actually protects your data is Firebase Security
-   Rules plus server-side token verification.
-
-   Moving them to .env.local still matters: it keeps credentials out of git, so
-   the repository can be shared or made public without leaking which project a
-   deployment points at, and it lets staging and production differ.
-
-   Never put a service-account key, the Firebase Admin private key, the
-   SSLCommerz store password, or a Mongo URI in a VITE_* variable. Those belong
-   on the Express server only.
---------------------------------------------------------------------------- */
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

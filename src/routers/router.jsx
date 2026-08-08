@@ -13,6 +13,12 @@ import ReturnPolicy from "../pages/ReturnPolicy/ReturnPolicy";
 import Disclaimer from "../pages/Disclaimer/Disclaimer";
 import Profile from "../pages/Profile/Profile";
 import PrivateRoute from "./PrivateRoute";
+import AdminRoute from "./AdminRoute";
+import AdminLayout from "../Layouts/AdminLayout";
+import Dashboard from "../pages/Admin/Dashboard";
+import AdminProducts from "../pages/Admin/AdminProducts";
+import ProductForm from "../pages/Admin/ProductForm";
+import AdminCategories from "../pages/Admin/AdminCategories";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import ForgotPassword from "../pages/Auth/ForgotPassword";
@@ -95,6 +101,37 @@ const router = createBrowserRouter([
       {
         path: "verify-email",
         element: <VerifyEmail></VerifyEmail>,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <AdminRoute>
+        <AdminLayout></AdminLayout>
+      </AdminRoute>
+    ),
+    errorElement: <ErrorPage></ErrorPage>,
+    children: [
+      {
+        index: true,
+        element: <Dashboard></Dashboard>,
+      },
+      {
+        path: "products",
+        element: <AdminProducts></AdminProducts>,
+      },
+      {
+        path: "products/new",
+        element: <ProductForm></ProductForm>,
+      },
+      {
+        path: "products/:id",
+        element: <ProductForm></ProductForm>,
+      },
+      {
+        path: "categories",
+        element: <AdminCategories></AdminCategories>,
       },
     ],
   },

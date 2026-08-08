@@ -11,10 +11,14 @@ import {
 } from 'firebase/auth';
 import { AuthContext } from './AuthContext.jsx';
 import { auth, googleProvider } from '../Firebase/firebase.config.js';
+import { syncUser } from '../api/products.api.js';
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    // Role is whatever the server says it is. Nothing here can change it, and
+    // it is only used to decide what to show — the API re-checks on every write.
+    const [role, setRole] = useState(null);
 
     // Creates the account, sets the display name, then sends the verification
     // email — all before resolving, so callers get a fully-prepared user rather
@@ -100,9 +104,26 @@ const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
-            setLoading(false);
+
+            if (!currentUser) {
+                setRole(null);
+                setLoading(false);
+                return;
+            }
+
+            // Create or refresh the server-side record and read back the role.
+            try {
+                const account = await syncUser();
+                setRole(account?.role ?? 'customer');
+            } catch {
+                // Server unreachable — treat as the least-privileged role so a
+                // network failure can never surface admin UI.
+                setRole('customer');
+            } finally {
+                setLoading(false);
+            }
         });
 
         return () => unsubscribe();
@@ -111,9 +132,11 @@ const AuthProvider = ({ children }) => {
     const authInfo = {
         user,
         loading,
-        // Derived so components never re-check the two conditions themselves.
+        role,
+        // Derived so components never re-check the conditions themselves.
         isLoggedIn: !!user,
         isVerified: !!user?.emailVerified,
+        isAdmin: role === 'admin',
         createUser,
         signIn,
         signInWithGoogle,
