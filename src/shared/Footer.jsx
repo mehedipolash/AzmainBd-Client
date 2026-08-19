@@ -91,7 +91,7 @@ const Footer = () => {
 
                 <div className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
-                        <Logo size="lg" tile={false} />
+                        <Logo size="lg" />
 
                         <p className="mt-2 text-[11px] font-medium tracking-[0.18em] text-white/50 uppercase">
                             {SITE_TAGLINE}

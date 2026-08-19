@@ -39,7 +39,7 @@ const Navbar = () => {
     // NavLink gives us isActive; the underline makes the current page legible
     // without relying on colour alone.
     const linkClass = ({ isActive }) =>
-        `rounded-full px-4 py-2 text-[14px] font-medium transition-colors ${
+        `rounded-lg px-4 py-2 text-[14px] font-medium transition-colors ${
             isActive
                 ? 'bg-primary text-primary-content shadow-sm'
                 : 'text-base-content/65 hover:bg-base-100 hover:text-base-content'
@@ -80,7 +80,7 @@ const Navbar = () => {
                 rounded card, so it reads as a control surface rather than a
                 border. */}
             <div className="bg-base-200/70 px-3 py-3 backdrop-blur-lg sm:px-4">
-                <nav className="container-px flex h-14 items-center justify-between gap-4 rounded-full border border-base-300 bg-base-100 px-4 shadow-sm sm:px-6 lg:h-16">
+                <nav className="container-px flex h-16 items-center justify-between gap-4 rounded-2xl border border-base-300 bg-base-100 px-4 shadow-sm sm:px-6 lg:h-20">
                     <button
                         type="button"
                         onClick={() => setMenuOpen(true)}
@@ -90,12 +90,12 @@ const Navbar = () => {
                         <FaBars />
                     </button>
 
-                    <Logo size="md" />
+                    <Logo variant="wide" size="md" />
 
                     {/* Links grouped inside their own pill, one list so adding a
                         nav item never unbalances the header. */}
                     <ul className="hidden flex-1 items-center justify-center lg:flex">
-                        <li className="flex items-center gap-1 rounded-full bg-base-200 p-1">
+                        <li className="flex items-center gap-1 rounded-xl bg-base-200 p-1">
                             {NAV_LINKS.map((link) => (
                                 <NavLink
                                     key={link.path}
@@ -222,7 +222,7 @@ const Navbar = () => {
                     />
                     <div className="absolute inset-y-0 left-0 flex w-75 max-w-[85%] flex-col bg-base-100">
                         <div className="flex items-center justify-between border-b border-base-300 px-5 py-4">
-                            <Logo size="sm" to={null} />
+                            <Logo variant="wide" size="sm" to={null} />
                             <button
                                 type="button"
                                 onClick={() => setMenuOpen(false)}

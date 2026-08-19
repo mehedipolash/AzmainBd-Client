@@ -4,12 +4,14 @@ import { FaPlus, FaPen, FaTrash, FaMagnifyingGlass } from 'react-icons/fa6';
 import { fetchProducts, deleteProduct } from '../../api/products.api';
 import Loader from '../../components/Loader';
 import UseToast from '../../Hooks/UseToast';
+import UseCatalogue from '../../Hooks/UseCatalogue';
 import { confirmAction, alertError } from '../../utils/alerts';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { resolveImageUrl } from '../../utils/imageUrl';
 
 const AdminProducts = () => {
     const { notify } = UseToast();
+    const { reload: reloadCatalogue } = UseCatalogue();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -48,6 +50,10 @@ const AdminProducts = () => {
             await deleteProduct(product._id);
             notify(`${product.name} deleted`);
             load();
+            // The storefront holds a cached catalogue; refresh it so the
+            // deleted product disappears there too rather than lingering
+            // until the next full page load.
+            reloadCatalogue();
         } catch (err) {
             alertError('Could not delete', err.message);
         }

@@ -1,19 +1,32 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FaPlus, FaTrash } from 'react-icons/fa6';
-import { fetchCategories, createCategory, deleteCategory } from '../../api/products.api';
+import { FaPlus, FaTrash, FaPen, FaXmark } from 'react-icons/fa6';
+import {
+    fetchCategories,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+} from '../../api/products.api';
 import Loader from '../../components/Loader';
 import UseToast from '../../Hooks/UseToast';
+import UseCatalogue from '../../Hooks/UseCatalogue';
 import { confirmAction, alertError } from '../../utils/alerts';
 import ImageUploader from '../../components/ImageUploader';
 import { resolveImageUrl } from '../../utils/imageUrl';
 
+const EMPTY = { name: '', image: '' };
+
 const AdminCategories = () => {
     const { notify } = UseToast();
+    const { reload: reloadCatalogue } = UseCatalogue();
+
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
-    const [form, setForm] = useState({ name: '', image: '' });
+    const [form, setForm] = useState(EMPTY);
+
+    // When set, the side panel edits this category instead of creating one.
+    const [editingId, setEditingId] = useState(null);
 
     const load = useCallback(async () => {
         try {
@@ -33,16 +46,42 @@ const AdminCategories = () => {
         return () => clearTimeout(timer);
     }, [load]);
 
-    const handleCreate = async (e) => {
+    // A category change alters the storefront's navigation and filters, so the
+    // shared catalogue is refreshed rather than left stale until a reload.
+    const refreshEverything = () => {
+        load();
+        reloadCatalogue();
+    };
+
+    const startEdit = (category) => {
+        setEditingId(category._id);
+        setForm({ name: category.name, image: category.image ?? '' });
+        setError('');
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setForm(EMPTY);
+        setError('');
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSaving(true);
 
+        const payload = { name: form.name.trim(), image: form.image.trim() };
+
         try {
-            await createCategory({ name: form.name.trim(), image: form.image.trim() });
-            notify(`${form.name} added`);
-            setForm({ name: '', image: '' });
-            load();
+            if (editingId) {
+                await updateCategory(editingId, payload);
+                notify(`${payload.name} updated`);
+            } else {
+                await createCategory(payload);
+                notify(`${payload.name} added`);
+            }
+            cancelEdit();
+            refreshEverything();
         } catch (err) {
             setError(err.message);
         } finally {
@@ -63,7 +102,8 @@ const AdminCategories = () => {
         try {
             await deleteCategory(category._id);
             notify(`${category.name} deleted`);
-            load();
+            if (editingId === category._id) cancelEdit();
+            refreshEverything();
         } catch (err) {
             // The server refuses while products still reference the category —
             // surface that reason rather than a generic failure.
@@ -79,12 +119,20 @@ const AdminCategories = () => {
             <header className="mb-8">
                 <p className="eyebrow mb-2">Catalogue</p>
                 <h1 className="font-display text-3xl font-semibold">Categories</h1>
+                <p className="mt-2 max-w-lg text-sm text-base-content/55">
+                    Categories drive the shop filters and the storefront navigation. Changes appear
+                    on the site immediately.
+                </p>
             </header>
 
-            <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+            <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
                 <div>
                     {loading ? (
                         <Loader />
+                    ) : items.length === 0 ? (
+                        <p className="border border-dashed border-base-300 px-5 py-10 text-center text-sm text-base-content/50">
+                            No categories yet. Add your first one on the right.
+                        </p>
                     ) : (
                         <div className="overflow-x-auto border border-base-300 bg-base-100">
                             <table className="w-full text-sm">
@@ -104,7 +152,9 @@ const AdminCategories = () => {
                                     {items.map((category) => (
                                         <tr
                                             key={category._id}
-                                            className="border-b border-base-300 last:border-0"
+                                            className={`border-b border-base-300 last:border-0 ${
+                                                editingId === category._id ? 'bg-secondary/40' : ''
+                                            }`}
                                         >
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
@@ -125,15 +175,25 @@ const AdminCategories = () => {
                                             <td className="px-4 py-3 tabular-nums">
                                                 {category.inStockCount}
                                             </td>
-                                            <td className="px-4 py-3 text-right">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleDelete(category)}
-                                                    className="p-2 text-xs text-base-content/50 transition-colors hover:text-error"
-                                                    aria-label={`Delete ${category.name}`}
-                                                >
-                                                    <FaTrash />
-                                                </button>
+                                            <td className="px-4 py-3">
+                                                <div className="flex justify-end gap-1">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => startEdit(category)}
+                                                        className="p-2 text-xs text-base-content/50 transition-colors hover:text-primary"
+                                                        aria-label={`Edit ${category.name}`}
+                                                    >
+                                                        <FaPen />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDelete(category)}
+                                                        className="p-2 text-xs text-base-content/50 transition-colors hover:text-error"
+                                                        aria-label={`Delete ${category.name}`}
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -145,10 +205,24 @@ const AdminCategories = () => {
 
                 <aside>
                     <form
-                        onSubmit={handleCreate}
+                        onSubmit={handleSubmit}
                         className="space-y-4 border border-base-300 bg-base-100 p-5"
                     >
-                        <h2 className="font-display text-lg font-semibold">Add a category</h2>
+                        <div className="flex items-center justify-between">
+                            <h2 className="font-display text-lg font-semibold">
+                                {editingId ? 'Edit category' : 'Add a category'}
+                            </h2>
+                            {editingId && (
+                                <button
+                                    type="button"
+                                    onClick={cancelEdit}
+                                    className="flex items-center gap-1 text-[11px] tracking-wide text-base-content/50 uppercase hover:text-base-content"
+                                >
+                                    <FaXmark className="text-[10px]" />
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
 
                         <div>
                             <label htmlFor="cat-name" className="eyebrow mb-2 block">
@@ -159,9 +233,16 @@ const AdminCategories = () => {
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 required
-                                placeholder="Wearables"
+                                placeholder="Face Care"
                                 className={fieldClass}
                             />
+                            {/* The slug is derived server-side from the name, so
+                                renaming a category changes its shop URL. */}
+                            {editingId && (
+                                <p className="mt-2 text-[11px] leading-relaxed text-base-content/45">
+                                    Renaming changes the category's shop link.
+                                </p>
+                            )}
                         </div>
 
                         <div>
@@ -182,8 +263,12 @@ const AdminCategories = () => {
                         )}
 
                         <button type="submit" disabled={saving} className="btn-shop w-full">
-                            <FaPlus className="text-[11px]" />
-                            {saving ? 'Adding…' : 'Add category'}
+                            {!editingId && <FaPlus className="text-[11px]" />}
+                            {saving
+                                ? 'Saving…'
+                                : editingId
+                                  ? 'Save changes'
+                                  : 'Add category'}
                         </button>
                     </form>
                 </aside>

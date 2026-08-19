@@ -1,62 +1,60 @@
 import React from 'react';
 import { Link } from 'react-router';
-import logo from '../assets/logo.png';
+import logoStacked from '../assets/logo.png';
+import logoWide from '../assets/logo-wide.png';
 import { SITE_NAME } from '../utils/constants';
 
 /* ---------------------------------------------------------------------------
-   The client's logo, exactly as their designer drew it.
+   The client's logo, on a transparent background.
 
-   The artwork is built on black, and the black is not merely a backdrop: the
-   "A" monogram contains a black diagonal, and every letterform carries a black
-   drop shadow. Both are the same black as the background and connected to it,
-   so keying it out to transparency either erases the diagonal or leaves a
-   heavy outline around the wordmark. Tried both; both look broken.
+   The supplied artwork sits on solid black, and earlier attempts to key that
+   out failed because they tried to preserve it. The black was doing two
+   different jobs: drop shadows behind the wordmark, which only exist to lift
+   the letters off a dark ground, and the "A" monogram's diagonal, which is
+   real design.
 
-   So the mark keeps its black and sits on a deliberate dark tile. The site's
-   palette is now drawn from this logo — its green is the brand primary — so
-   the tile reads as a considered dark chip in a green scheme rather than a
-   stray black rectangle.
+   The shadows are discarded — on a transparent logo they are what produces a
+   heavy outline — while the monogram's diagonal is recovered geometrically, as
+   the dark region enclosed by the red strokes. Alpha follows colour
+   saturation, so the anti-aliased curves survive intact.
+
+   The result drops straight onto either theme with no plate behind it, which
+   is what lets the mark read as the brand rather than as a picture of a logo.
+
+   Two lockups ship, because a navbar constrains HEIGHT and the full mark is
+   nearly square — shrinking it to fit a bar leaves the wordmark and tagline
+   unreadable. `variant="wide"` places the mark beside the wordmark instead of
+   above it, so the same bar height gives the type roughly twice the size.
 
    `size` controls height only; width follows the aspect ratio, since fixing
    both would distort the mark.
-
-   `tile={false}` is for surfaces that are already dark (the footer), where the
-   artwork's own black blends into the background and a tile would be visible
-   as a lighter patch.
 --------------------------------------------------------------------------- */
 
+// Heights are per-variant: the wide lockup is 3.8:1, so it needs less height
+// than the stacked mark to reach the same optical weight.
 const SIZES = {
-    sm: 'h-9',
-    md: 'h-10 sm:h-11',
-    lg: 'h-14 sm:h-16',
+    stacked: { sm: 'h-12', md: 'h-16 sm:h-18', lg: 'h-24 sm:h-28' },
+    wide: { sm: 'h-8', md: 'h-9 sm:h-11', lg: 'h-12 sm:h-14' },
 };
 
-const Logo = ({ size = 'md', to = '/', className = '', tile = true }) => {
+const Logo = ({ size = 'md', to = '/', className = '', variant = 'stacked' }) => {
+    const scale = SIZES[variant] ?? SIZES.stacked;
+
     const image = (
         <img
-            src={logo}
+            src={variant === 'wide' ? logoWide : logoStacked}
             alt={SITE_NAME}
             // Eager and high priority: the logo is above the fold in the
             // navbar, and lazy-loading it produces a visible pop on first
             // paint.
             loading="eager"
             fetchPriority="high"
-            className={`${SIZES[size] ?? SIZES.md} w-auto object-contain`}
+            className={`${scale[size] ?? scale.md} w-auto object-contain`}
         />
     );
 
-    const content = tile ? (
-        // The tile picks up the deep brand green rather than pure black, and a
-        // faint green ring ties it to the surrounding palette.
-        <span className="inline-flex items-center rounded-xl bg-[#07130b] px-3 py-2 ring-1 ring-primary/25">
-            {image}
-        </span>
-    ) : (
-        image
-    );
-
     if (!to) {
-        return <span className={`inline-flex items-center ${className}`}>{content}</span>;
+        return <span className={`inline-flex items-center ${className}`}>{image}</span>;
     }
 
     return (
@@ -65,7 +63,7 @@ const Logo = ({ size = 'md', to = '/', className = '', tile = true }) => {
             aria-label={`${SITE_NAME} — home`}
             className={`inline-flex items-center transition-opacity hover:opacity-85 ${className}`}
         >
-            {content}
+            {image}
         </Link>
     );
 };
