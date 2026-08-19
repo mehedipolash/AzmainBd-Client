@@ -14,7 +14,7 @@ export const banners = [
         body: 'OGX, NIVEA, Pantene, L’Oréal, Sensodyne and more — imported direct and sold from our Gulshan showroom. Message us on WhatsApp and we will pack your order today.',
         ctaLabel: 'Browse the shop',
         ctaPath: '/shop',
-        image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1600&q=80',
+        image: '/banners/hero.jpg',
         align: 'left',
     },
     {
@@ -24,7 +24,7 @@ export const banners = [
         title: 'Shampoo, conditioner & treatments',
         ctaLabel: 'Explore hair care',
         ctaPath: '/shop?category=hair-care',
-        image: 'https://images.unsplash.com/photo-1626015449072-2a4ba0e6ad06?w=900&q=80',
+        image: '/products/ogx-strength-length-keratin-oil-shampoo.jpg',
     },
     {
         _id: 'b3',
@@ -33,7 +33,7 @@ export const banners = [
         title: 'Lotions that actually last',
         ctaLabel: 'Explore body care',
         ctaPath: '/shop?category=body-care',
-        image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=900&q=80',
+        image: '/products/nivea-cocoa-nourish-body-lotion.jpg',
     },
     {
         _id: 'b4',
@@ -43,7 +43,7 @@ export const banners = [
         body: 'Charcoal lavender, gulab rose and original — made by hand with natural essential oils.',
         ctaLabel: 'Shop herbal soap',
         ctaPath: '/shop?category=herbal-soap',
-        image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=1600&q=80',
+        image: '/products/vica-premium-herbal-soap.jpg',
     },
 ];
 

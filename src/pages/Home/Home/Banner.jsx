@@ -52,8 +52,8 @@ const Banner = () => {
                     considerably taller than the copy, so centring the copy
                     against it pushed the headline down and left a gap under the
                     navbar. */}
-                <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16">
-                    <div className="lg:pt-2">
+                <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14">
+                    <div>
                         <p className="mb-4 inline-flex items-center gap-2 border border-white/20 bg-white/8 px-3 py-1.5 text-[11px] font-semibold tracking-[0.2em] text-white/85 uppercase backdrop-blur-sm">
                             <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
                             {hero.eyebrow}
@@ -126,7 +126,7 @@ const Banner = () => {
                         Rotates through the featured items on a timer. */}
                     {product && (
                         <div
-                            className="relative mx-auto w-full max-w-sm lg:max-w-none"
+                            className="relative mx-auto w-full max-w-sm lg:max-w-md"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
                             onFocusCapture={() => setPaused(true)}
@@ -145,7 +145,12 @@ const Banner = () => {
                                     <img
                                         src={resolveImageUrl(product.image)}
                                         alt={product.name}
-                                        className="aspect-4/3 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        // Capped rather than given a fixed
+                                        // ratio: the client's photography is
+                                        // tall portrait, and a 4:5 box here
+                                        // pushes the card's button below the
+                                        // fold on a laptop.
+                                        className="h-56 w-full bg-white object-contain transition-transform duration-700 group-hover:scale-105 lg:h-64"
                                     />
 
                                     {discount > 0 && (
@@ -161,7 +166,7 @@ const Banner = () => {
                                     )}
                                 </Link>
 
-                                <div className="p-6">
+                                <div className="p-5">
                                     <p className="text-[11px] font-semibold tracking-[0.18em] text-base-content/45 uppercase">
                                         {product.brand}
                                     </p>

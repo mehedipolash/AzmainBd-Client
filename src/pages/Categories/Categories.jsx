@@ -16,7 +16,7 @@ const Categories = () => {
                 eyebrow="Departments"
                 title="Shop by category"
                 subtitle="Genuine branded personal care, sourced direct and stocked in Gulshan."
-                image="https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=1600&q=80"
+                image="/banners/categories.jpg"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Categories' }]}
             />
 
@@ -49,7 +49,7 @@ const Categories = () => {
                                         src={resolveImageUrl(category.image)}
                                         alt={category.name}
                                         loading="lazy"
-                                        className="aspect-4/3 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        className="aspect-4/5 w-full bg-white object-contain transition-transform duration-700 group-hover:scale-105"
                                     />
                                 </div>
 

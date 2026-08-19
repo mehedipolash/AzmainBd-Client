@@ -91,7 +91,7 @@ const WelcomeOffer = () => {
 
                 <div className="relative hidden min-h-72 sm:block">
                     <img
-                        src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80"
+                        src="/products/vica-premium-herbal-soap-charcoal-lavender.jpg"
                         alt=""
                         aria-hidden="true"
                         className="absolute inset-0 h-full w-full object-cover"

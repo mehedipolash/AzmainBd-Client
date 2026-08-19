@@ -28,7 +28,7 @@ const Cart = () => {
             <PageHeader
                 eyebrow="Checkout"
                 title="Your cart"
-                image="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80"
+                image="/banners/shop.jpg"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Cart' }]}
             />
 
@@ -80,7 +80,7 @@ const Cart = () => {
                                                 src={item.image}
                                                 alt={item.name}
                                                 loading="lazy"
-                                                className="size-24 object-cover sm:size-28"
+                                                className="size-24 bg-white object-contain sm:size-28"
                                             />
                                         </Link>
 

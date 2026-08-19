@@ -37,7 +37,7 @@ const DealOfTheDay = () => {
                         src={resolveImageUrl(deal.image)}
                         alt={deal.name}
                         loading="lazy"
-                        className="aspect-square w-full object-cover"
+                        className="aspect-4/5 w-full bg-white object-contain"
                     />
                     {discount > 0 && (
                         <span className="absolute top-5 left-5 bg-warning px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-warning-content uppercase">

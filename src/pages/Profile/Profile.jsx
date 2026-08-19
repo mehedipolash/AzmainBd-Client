@@ -39,7 +39,7 @@ const Profile = () => {
             <PageHeader
                 eyebrow="Account"
                 title="Your profile"
-                image="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"
+                image="/banners/about.jpg"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Profile' }]}
             />
 

@@ -121,7 +121,7 @@ const AdminProducts = () => {
                                                 src={resolveImageUrl(product.image)}
                                                 alt=""
                                                 loading="lazy"
-                                                className="size-10 shrink-0 border border-base-300 object-cover"
+                                                className="size-10 shrink-0 border border-base-300 bg-white object-contain"
                                             />
                                             <div className="min-w-0">
                                                 <p className="truncate font-medium">{product.name}</p>

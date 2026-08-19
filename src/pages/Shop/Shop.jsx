@@ -137,7 +137,7 @@ const Shop = () => {
                         : (activeCategory?.name ?? 'All products')
                 }
                 subtitle="Genuine branded stock, sourced direct. Order any item on WhatsApp."
-                image="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1600&q=80"
+                image="/banners/shop.jpg"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Shop' }]}
             />
 

@@ -33,7 +33,7 @@ const ShopCategories = () => {
                                 src={resolveImageUrl(category.image)}
                                 alt={category.name}
                                 loading="lazy"
-                                className="aspect-4/5 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                className="aspect-4/5 w-full bg-white object-contain transition-transform duration-700 group-hover:scale-105"
                             />
                         </div>
 

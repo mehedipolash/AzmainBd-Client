@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
                         src={resolveImageUrl(image)}
                         alt={name}
                         loading="lazy"
-                        className={`aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105 ${
+                        className={`aspect-4/5 w-full bg-white object-contain transition-transform duration-700 group-hover:scale-105 ${
                             soldOut ? 'opacity-45 grayscale' : ''
                         }`}
                     />

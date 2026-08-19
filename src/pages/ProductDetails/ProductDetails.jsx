@@ -149,7 +149,7 @@ const ProductDetails = () => {
                         <img
                             src={resolveImageUrl(product.image)}
                             alt={product.name}
-                            className={`aspect-square w-full object-cover ${
+                            className={`aspect-4/5 w-full bg-white object-contain ${
                                 soldOut ? 'opacity-50 grayscale' : ''
                             }`}
                         />

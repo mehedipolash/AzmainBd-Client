@@ -74,7 +74,7 @@ const Deals = () => {
                 eyebrow="Featured"
                 title={hasRealDiscounts ? 'Deals & special offers' : 'Featured products'}
                 subtitle="Genuine branded stock at honest prices. Order any item on WhatsApp."
-                image="https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1600&q=80"
+                image="/banners/deals.jpg"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Deals' }]}
             />
 

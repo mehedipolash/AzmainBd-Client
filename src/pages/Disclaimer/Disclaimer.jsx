@@ -66,7 +66,7 @@ const Disclaimer = () => (
         eyebrow="Legal"
         title="Disclaimer"
         subtitle="What we stand behind, what the brand claims, and where the limits sit."
-        image="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1600&q=80"
+        image="/banners/policy.jpg"
         crumbLabel="Disclaimer"
         updated="19 August 2026"
         sections={SECTIONS}

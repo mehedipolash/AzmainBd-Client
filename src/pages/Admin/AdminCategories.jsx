@@ -112,7 +112,7 @@ const AdminCategories = () => {
                                                         src={resolveImageUrl(category.image)}
                                                         alt=""
                                                         loading="lazy"
-                                                        className="size-10 shrink-0 border border-base-300 object-cover"
+                                                        className="size-10 shrink-0 border border-base-300 bg-white object-contain"
                                                     />
                                                     <span className="font-medium">
                                                         {category.name}

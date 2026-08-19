@@ -94,7 +94,7 @@ const Contact = () => {
                 eyebrow="Contact"
                 title="Talk to a human"
                 subtitle="Questions about a product, an order, or a warranty claim — we answer all three."
-                image="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1600&q=80"
+                image="/banners/contact.jpg"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Contact' }]}
             />
 

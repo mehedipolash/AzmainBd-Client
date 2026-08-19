@@ -165,7 +165,7 @@ const ImageUploader = ({ value, onChange, error }) => {
                     <img
                         src={resolveImageUrl(value)}
                         alt="Product preview"
-                        className="size-24 border border-base-300 object-cover"
+                        className="size-24 border border-base-300 bg-white object-contain"
                     />
                     <button
                         type="button"

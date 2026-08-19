@@ -39,7 +39,7 @@ const About = () => {
                 eyebrow="Our story"
                 title="Built on what the box actually contains"
                 subtitle="House of global brands — imported personal care, sold from Gulshan-1, Dhaka."
-                image="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"
+                image="/banners/about.jpg"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'About' }]}
             />
 
@@ -47,7 +47,7 @@ const About = () => {
                 <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
                     <div className="overflow-hidden bg-base-200">
                         <img
-                            src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1000&q=80"
+                            src="/products/vica-premium-herbal-soap-natural-gulab-soap.jpg"
                             alt="Our Dhaka showroom"
                             loading="lazy"
                             className="aspect-4/3 w-full object-cover"

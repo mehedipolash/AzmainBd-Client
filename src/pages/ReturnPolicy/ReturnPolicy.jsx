@@ -62,7 +62,7 @@ const ReturnPolicy = () => (
         eyebrow="Policy"
         title="Returns & refunds"
         subtitle="Sealed products, honest exchanges, and a real person to talk to."
-        image="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1600&q=80"
+        image="/banners/policy.jpg"
         crumbLabel="Return Policy"
         sections={SECTIONS}
     />
