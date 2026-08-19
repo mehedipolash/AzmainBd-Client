@@ -18,12 +18,13 @@
 
    Colour discipline — two accents, each with exactly one job:
 
-     teal   brand. Buttons, links, active nav, focus rings, prices.
-     amber  urgency only. Low stock, countdowns, sale badges.
+     green  brand. Buttons, links, active nav, focus rings, prices.
+     red    urgency only. Low stock and sale badges.
 
-   Amber is never decorative. If it appears, something is scarce or ending —
-   so it keeps its meaning and the page stays calm. Everything else is
-   monochrome, letting product photography carry the page.
+   Both are taken from the client's logo, so the mark sits in the palette
+   rather than on top of it. Red is never decorative — if it appears,
+   something is scarce. Everything else is monochrome, letting the product
+   photography carry the page.
 
    No gradients. Corners stay sharp (4px). Buttons are rectangular.
 --------------------------------------------------------------------------- */
@@ -35,26 +36,26 @@
   --color-ink: #111111;
   --color-ink-soft: #2d2d2d;
   --color-ink-muted: #616161;
-  --color-mint: #f1f8f6;
+  --color-mint: #f2f8f3;
   --color-line: #eaeaea;
 
-  /* Brand teal — deepened out of the existing mint tint so the accent reads
-     as native to the palette rather than applied on top of it. */
-  --color-teal-deep: #0f6b5c;
-  --color-teal-mid: #14806e;
-  --color-teal-tint: #e8f4f1;
+  /* Brand green, sampled from the client's logo. The deep shade carries white
+     text; the tint backs pills and quiet section bands. */
+  --color-green-deep: #0a3f1c;
+  --color-green-mid: #0b7a2f;
+  --color-green-tint: #e6f4e8;
 
-  /* Urgency amber. */
-  --color-amber-deep: #a8610f;
-  --color-amber-mid: #c8791a;
-  --color-amber-tint: #fdf3e6;
+  /* The logo's red, reserved for urgency — low stock and sale badges. */
+  --color-red-deep: #9e1815;
+  --color-red-mid: #c9201d;
+  --color-red-tint: #fdeceb;
 
   /* Large filled surfaces — page headers, the footer — use their own token
      rather than --color-primary. A hue bright enough to read as small text on
      a dark ground is overwhelming across a full-width block, so the dark theme
-     redefines this to a deep slate-teal while primary stays vivid for text,
+     redefines this to a near-black green while primary stays vivid for text,
      buttons and links. */
-  --color-brand-surface: #0f6b5c;
+  --color-brand-surface: #0a3f1c;
   --color-brand-surface-content: #ffffff;
 }
 
@@ -65,28 +66,30 @@
   color-scheme: light;
 
   --color-base-100: #ffffff;
-  --color-base-200: #f6faf9;
-  --color-base-300: #e4eae8;
-  --color-base-content: #111111;
+  --color-base-200: #f4f9f4;
+  --color-base-300: #dfe8df;
+  --color-base-content: #111511;
 
-  /* Teal carries every brand action. */
-  --color-primary: #0f6b5c;
+  /* Brand green, sampled from the logo and deepened until it carries white
+     text at AA (5.47:1). The logo's own lighter green then reads as a
+     highlight of the same hue rather than a clash. */
+  --color-primary: #0b7a2f;
   --color-primary-content: #ffffff;
 
-  --color-secondary: #e8f4f1;
-  --color-secondary-content: #0b4c41;
+  --color-secondary: #e6f4e8;
+  --color-secondary-content: #08501f;
 
-  /* Amber is the urgency accent — surfaced through daisyUI's warning slot so
-     countdowns and low-stock warnings inherit it automatically. */
-  --color-accent: #c8791a;
+  /* The logo's red is the urgency accent — low stock, sale badges. Used
+     sparingly so it keeps its force. */
+  --color-accent: #c9201d;
   --color-accent-content: #ffffff;
 
-  --color-neutral: #111111;
+  --color-neutral: #111511;
   --color-neutral-content: #ffffff;
 
   --color-info: #2d6a9f;
   --color-info-content: #ffffff;
-  --color-success: #14806e;
+  --color-success: #0b7a2f;
   --color-success-content: #ffffff;
   --color-warning: #a8610f;
   --color-warning-content: #ffffff;
@@ -110,30 +113,30 @@
   prefersdark: true;
   color-scheme: dark;
 
-  --color-base-100: #0e1211;
-  --color-base-200: #151b1a;
-  --color-base-300: #253230;
-  --color-base-content: #f2f4f3;
+  --color-base-100: #0d100d;
+  --color-base-200: #141a14;
+  --color-base-300: #253026;
+  --color-base-content: #f1f4f1;
 
-  /* Both accents lift in lightness for the dark ground — the light-theme
-     values would fail contrast here. */
-  --color-primary: #4fbfa8;
-  --color-primary-content: #06201b;
+  /* Same hues as the light theme, lifted in lightness for the dark ground —
+     the light-theme values would fail contrast here. */
+  --color-primary: #43c46a;
+  --color-primary-content: #04220e;
 
-  --color-secondary: #172624;
-  --color-secondary-content: #cfe9e3;
+  --color-secondary: #16251a;
+  --color-secondary-content: #cfe9d6;
 
-  --color-accent: #e8a24a;
-  --color-accent-content: #21150a;
+  --color-accent: #ff6b62;
+  --color-accent-content: #2a0806;
 
   --color-neutral: #f2f4f3;
   --color-neutral-content: #111111;
 
   --color-info: #7aa4e0;
-  --color-info-content: #0e1211;
-  --color-success: #4fbfa8;
-  --color-success-content: #06201b;
-  --color-warning: #e8a24a;
+  --color-info-content: #0d100d;
+  --color-success: #43c46a;
+  --color-success-content: #04220e;
+  --color-warning: #f0a23c;
   --color-warning-content: #21150a;
   --color-error: #e8776d;
   --color-error-content: #21100e;
@@ -241,11 +244,11 @@
     outline-offset: 2px;
   }
 
-  /* Dark theme mutes the large filled surfaces to a deep slate-teal. The
+  /* Dark theme mutes the large filled surfaces to a near-black green. The
      bright primary stays as-is for text, buttons and links. */
   [data-theme='azmaindark'] {
-    --color-brand-surface: #10221f;
-    --color-brand-surface-content: #dfe9e6;
+    --color-brand-surface: #0c1a11;
+    --color-brand-surface-content: #e2ebe4;
   }
 }
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { FaTrash, FaWhatsapp, FaTruckFast } from 'react-icons/fa6';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
+import OrderButton from '../../components/OrderButton';
 import UseCart from '../../Hooks/UseCart';
 import UseToast from '../../Hooks/UseToast';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -187,15 +188,14 @@ const Cart = () => {
                                     WhatsApp, so the cart hands the whole basket
                                     over as a pre-written message rather than
                                     pretending a checkout exists. */}
-                                <a
+                                <OrderButton
                                     href={cartEnquiryLink(items)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    signedOutLabel="Sign in to order"
                                     className="mt-7 flex w-full items-center justify-center gap-2 bg-[#25D366] py-3.5 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
                                 >
                                     <FaWhatsapp className="text-base" aria-hidden="true" />
                                     Order on WhatsApp
-                                </a>
+                                </OrderButton>
 
                                 <p className="mt-4 text-center text-[12px] leading-relaxed text-base-content/50">
                                     Your basket is sent as a message. We confirm

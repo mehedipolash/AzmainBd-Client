@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { FaWhatsapp } from 'react-icons/fa6';
+import OrderButton from '../../../components/OrderButton';
 import UseCatalogue from '../../../Hooks/UseCatalogue';
 import { getDealOfTheDay, LOW_STOCK_THRESHOLD } from '../../../utils/catalogue';
 import { formatCurrency, calcDiscount, hasPrice } from '../../../utils/formatCurrency';
@@ -108,15 +109,14 @@ const DealOfTheDay = () => {
                         <Link to={`/product/${deal._id}`} className="btn-shop">
                             View details
                         </Link>
-                        <a
+                        <OrderButton
                             href={productEnquiryLink(deal)}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            signedOutLabel="Sign in to order"
                             className="inline-flex items-center justify-center gap-2 bg-[#25D366] px-7 py-3 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
                         >
                             <FaWhatsapp className="text-base" aria-hidden="true" />
                             Order on WhatsApp
-                        </a>
+                        </OrderButton>
                     </div>
                 </div>
             </div>

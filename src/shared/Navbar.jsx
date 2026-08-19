@@ -63,7 +63,7 @@ const Navbar = () => {
                             className="flex items-center gap-2 transition-opacity hover:opacity-75"
                         >
                             <FaWhatsapp className="text-xs" aria-hidden="true" />
-                            Order on WhatsApp
+                            WhatsApp us
                         </a>
                         <a
                             href={PHONE_HREF}

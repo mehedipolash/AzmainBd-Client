@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { FaXmark, FaWhatsapp } from 'react-icons/fa6';
-import { buildWhatsAppLink, PHONE_DISPLAY } from '../utils/business';
+import { PHONE_DISPLAY } from '../utils/business';
 
 const STORAGE_KEY = 'azmainbd-welcome-seen';
 const OPEN_DELAY_MS = 1400;
@@ -113,7 +113,7 @@ const WelcomeOffer = () => {
                     </h2>
 
                     <p className="mt-4 text-sm leading-relaxed text-base-content/65">
-                        Browse the shop, then tap the WhatsApp button on any product. Your basket
+                        Create an account, then tap the WhatsApp button on any product. Your basket
                         arrives with us as a message and we confirm stock, delivery and payment on
                         chat — usually within minutes.
                     </p>
@@ -123,16 +123,13 @@ const WelcomeOffer = () => {
                     </p>
 
                     <div className="mt-6 grid gap-2">
-                        <a
-                            href={buildWhatsAppLink('Hello Azmain BD, I would like to order.')}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link
+                            to="/register"
                             onClick={() => setOpen(false)}
-                            className="flex items-center justify-center gap-2 bg-[#25D366] py-3.5 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
+                            className="flex items-center justify-center gap-2 bg-primary py-3.5 text-xs font-semibold tracking-[0.14em] text-primary-content uppercase transition-opacity hover:opacity-90"
                         >
-                            <FaWhatsapp className="text-base" aria-hidden="true" />
-                            Message us now
-                        </a>
+                            Create an account
+                        </Link>
 
                         <Link to="/shop" onClick={() => setOpen(false)} className="btn-shop-outline">
                             Browse the shop

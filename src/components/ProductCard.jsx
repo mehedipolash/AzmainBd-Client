@@ -5,6 +5,7 @@ import { formatCurrency, calcDiscount, hasPrice } from '../utils/formatCurrency'
 import { getStockBadge, isSoldOut, isLowStock } from '../utils/catalogue';
 import { resolveImageUrl } from '../utils/imageUrl';
 import { productEnquiryLink } from '../utils/business';
+import OrderButton from './OrderButton';
 import UseCart from '../Hooks/UseCart';
 import UseToast from '../Hooks/UseToast';
 
@@ -75,15 +76,13 @@ const ProductCard = ({ product }) => {
                 {!soldOut && (
                     <div className="pointer-events-none absolute top-3 right-3 flex translate-x-3 flex-col gap-2 opacity-0 transition-all duration-300 group-hover:pointer-events-auto group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-x-0 group-focus-within:opacity-100">
                         {discount > 0 && <span className="h-6" aria-hidden="true" />}
-                        <a
+                        <OrderButton
                             href={productEnquiryLink(product)}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            signedOutLabel=""
                             className="flex size-9 items-center justify-center bg-base-100 text-sm shadow-sm transition-colors hover:bg-[#25D366] hover:text-white"
-                            aria-label={`Ask about ${name} on WhatsApp`}
                         >
                             <FaWhatsapp />
-                        </a>
+                        </OrderButton>
                     </div>
                 )}
 
@@ -109,15 +108,14 @@ const ProductCard = ({ product }) => {
                     ) : (
                         /* No price means no cart total to compute, so the only
                            honest action is to ask. */
-                        <a
+                        <OrderButton
                             href={productEnquiryLink(product)}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            signedOutLabel="Sign in to ask"
                             className="flex w-full items-center justify-center gap-2 bg-[#25D366] py-3 text-[11px] font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
                         >
                             <FaWhatsapp className="text-[13px]" aria-hidden="true" />
                             Ask Price
-                        </a>
+                        </OrderButton>
                     )}
                 </div>
             </div>

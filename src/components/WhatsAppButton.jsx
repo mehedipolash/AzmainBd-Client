@@ -9,6 +9,11 @@ import { buildWhatsAppLink, PHONE_DISPLAY } from '../utils/business';
    most important control on the site — it is present on every storefront page
    and never scrolls away.
 
+   This is a general enquiry route, open to everyone — the number is public on
+   the contact page, so gating it would achieve nothing. Placing an ORDER does
+   require an account; that rule lives on the per-product buttons, which is why
+   this one says "Chat with us" rather than "Order".
+
    Sits above the footer wave and clears the mobile bottom bar. z-40 keeps it
    under modals (z-50) so it can never cover a dialog's close button.
 --------------------------------------------------------------------------- */
@@ -59,7 +64,7 @@ const WhatsAppButton = () => {
                     expanded ? 'max-w-45 pr-5' : 'max-w-0 pr-0'
                 }`}
             >
-                Order on WhatsApp
+                Chat with us
             </span>
         </a>
     );

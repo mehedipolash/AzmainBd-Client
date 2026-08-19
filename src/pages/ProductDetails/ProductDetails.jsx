@@ -11,6 +11,7 @@ import ProductCard from '../../components/ProductCard';
 import EmptyState from '../../components/EmptyState';
 import SectionTitle from '../../components/SectionTitle';
 import Loader from '../../components/Loader';
+import OrderButton from '../../components/OrderButton';
 import UseCatalogue from '../../Hooks/UseCatalogue';
 import { fetchProduct } from '../../api/products.api';
 import {
@@ -305,15 +306,14 @@ const ProductDetails = () => {
 
                             {/* WhatsApp is the primary action: it is how this
                                 shop actually takes orders. */}
-                            <a
+                            <OrderButton
                                 href={productEnquiryLink(product, { variant, quantity })}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                signedOutLabel={soldOut ? 'Sign in to ask' : 'Sign in to order'}
                                 className="flex flex-1 items-center justify-center gap-2 bg-[#25D366] px-6 py-3.5 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
                             >
                                 <FaWhatsapp className="text-base" aria-hidden="true" />
                                 {soldOut ? 'Ask about restock' : 'Order on WhatsApp'}
-                            </a>
+                            </OrderButton>
 
                             {/* The cart stays as a way to gather several items
                                 before sending one message, so it is only

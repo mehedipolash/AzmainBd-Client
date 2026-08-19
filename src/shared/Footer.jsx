@@ -10,6 +10,7 @@ import {
     FaArrowRight,
 } from 'react-icons/fa6';
 import Logo from '../components/Logo';
+import OrderButton from '../components/OrderButton';
 import { FOOTER_LINKS, SITE_NAME, SITE_TAGLINE } from '../utils/constants';
 import {
     ADDRESS_LINES,
@@ -185,15 +186,14 @@ const Footer = () => {
                             </li>
                         </ul>
 
-                        <a
+                        <OrderButton
                             href={buildWhatsAppLink('Hello Azmain BD, I would like to order.')}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            signedOutLabel="Sign in to order"
                             className="mt-6 flex items-center justify-center gap-2 bg-[#25D366] py-3 text-[11px] font-semibold tracking-[0.12em] text-white uppercase transition-opacity hover:opacity-90"
                         >
                             <FaWhatsapp className="text-sm" aria-hidden="true" />
                             Order on WhatsApp
-                        </a>
+                        </OrderButton>
                     </div>
                 </div>
 
