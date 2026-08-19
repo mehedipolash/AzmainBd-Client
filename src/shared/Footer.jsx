@@ -3,29 +3,35 @@ import { Link } from 'react-router';
 import {
     FaFacebookF,
     FaInstagram,
-    FaXTwitter,
-    FaYoutube,
+    FaWhatsapp,
     FaLocationDot,
     FaPhone,
     FaEnvelope,
     FaArrowRight,
 } from 'react-icons/fa6';
-import { FOOTER_LINKS, SITE_NAME } from '../utils/constants';
+import Logo from '../components/Logo';
+import { FOOTER_LINKS, SITE_NAME, SITE_TAGLINE } from '../utils/constants';
+import {
+    ADDRESS_LINES,
+    EMAIL,
+    EMAIL_HREF,
+    MAP_URL,
+    PHONE_DISPLAY,
+    PHONE_HREF,
+    SOCIAL_LINKS,
+    buildWhatsAppLink,
+} from '../utils/business';
 
+// Only the accounts the client actually runs. An icon linking to a profile
+// that does not exist is worse than no icon at all.
 const SOCIALS = [
-    { icon: FaFacebookF, label: 'Facebook', href: 'https://facebook.com' },
-    { icon: FaInstagram, label: 'Instagram', href: 'https://instagram.com' },
-    { icon: FaXTwitter, label: 'X', href: 'https://x.com' },
-    { icon: FaYoutube, label: 'YouTube', href: 'https://youtube.com' },
+    { icon: FaFacebookF, label: 'Facebook', href: SOCIAL_LINKS.facebook },
+    { icon: FaInstagram, label: 'Instagram', href: SOCIAL_LINKS.instagram },
+    { icon: FaWhatsapp, label: 'WhatsApp', href: buildWhatsAppLink() },
 ];
 
 const Footer = () => {
     const year = new Date().getFullYear();
-
-    const handleSubscribe = (e) => {
-        e.preventDefault();
-        // Wired to the newsletter endpoint once the backend exists.
-    };
 
     return (
         <footer className="relative mt-20 bg-brand-surface text-brand-surface-content">
@@ -57,8 +63,8 @@ const Footer = () => {
                             Ready to upgrade your setup?
                         </h2>
                         <p className="mt-3 max-w-md text-sm leading-relaxed text-white/70">
-                            Authorised stock, official warranty and free delivery over ৳ 5,000 —
-                            with support that picks up the phone.
+                            Genuine global brands, free delivery over ৳ 5,000, and a real person
+                            on WhatsApp who answers.
                         </p>
                     </div>
 
@@ -70,24 +76,29 @@ const Footer = () => {
                             Start shopping
                             <FaArrowRight className="text-[11px]" />
                         </Link>
-                        <Link
-                            to="/contact"
+                        <a
+                            href={buildWhatsAppLink('Hello Azmain BD, I have a question.')}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-2 border border-white/45 px-7 py-3 text-xs font-semibold tracking-[0.14em] uppercase transition-colors hover:border-white hover:bg-white/10"
                         >
-                            Talk to us
-                        </Link>
+                            <FaWhatsapp className="text-sm" aria-hidden="true" />
+                            WhatsApp us
+                        </a>
                     </div>
                 </div>
 
                 <div className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
-                        <Link to="/" className="font-display text-2xl font-semibold">
-                            Azmain <span className="text-white/60">BD</span>
-                        </Link>
+                        <Logo size="lg" className="brightness-0 invert" />
+
+                        <p className="mt-2 text-[11px] font-medium tracking-[0.18em] text-white/50 uppercase">
+                            {SITE_TAGLINE}
+                        </p>
 
                         <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/65">
-                            Authorised retailer of premium electronics and home appliances, serving
-                            customers across Bangladesh since 2019.
+                            Importer and retailer of genuine global personal-care brands, serving
+                            customers across Bangladesh from our Gulshan showroom.
                         </p>
 
                         <div className="mt-6 flex gap-2">
@@ -141,46 +152,48 @@ const Footer = () => {
                                     <FaEnvelope className="text-[11px]" aria-hidden="true" />
                                 </span>
                                 <a
-                                    href="mailto:support@azmainbd.com"
-                                    className="pt-1.5 transition-colors hover:text-white"
+                                    href={EMAIL_HREF}
+                                    className="pt-1.5 break-all transition-colors hover:text-white"
                                 >
-                                    support@azmainbd.com
+                                    {EMAIL}
                                 </a>
                             </li>
                             <li className="flex gap-3">
                                 <span className="flex size-8 shrink-0 items-center justify-center border border-white/20">
                                     <FaPhone className="text-[11px]" aria-hidden="true" />
                                 </span>
-                                <a
-                                    href="tel:+8801000000000"
-                                    className="pt-1.5 transition-colors hover:text-white"
-                                >
-                                    +880 1000-000000
+                                <a href={PHONE_HREF} className="pt-1.5 transition-colors hover:text-white">
+                                    {PHONE_DISPLAY}
                                 </a>
                             </li>
                             <li className="flex gap-3">
                                 <span className="flex size-8 shrink-0 items-center justify-center border border-white/20">
                                     <FaLocationDot className="text-[11px]" aria-hidden="true" />
                                 </span>
-                                <span className="pt-1.5">Gulshan Avenue, Dhaka 1212</span>
+                                <a
+                                    href={MAP_URL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="pt-1.5 transition-colors hover:text-white"
+                                >
+                                    {ADDRESS_LINES.map((line) => (
+                                        <span key={line} className="block">
+                                            {line}
+                                        </span>
+                                    ))}
+                                </a>
                             </li>
                         </ul>
 
-                        <form onSubmit={handleSubscribe} className="mt-6 flex items-stretch">
-                            <input
-                                type="email"
-                                required
-                                placeholder="Email address"
-                                aria-label="Email address"
-                                className="w-full border border-white/25 bg-white/10 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/45 focus:border-white"
-                            />
-                            <button
-                                type="submit"
-                                className="shrink-0 bg-base-100 px-4 text-[11px] font-semibold tracking-[0.12em] text-base-content uppercase transition-opacity hover:opacity-90"
-                            >
-                                Join
-                            </button>
-                        </form>
+                        <a
+                            href={buildWhatsAppLink('Hello Azmain BD, I would like to order.')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-6 flex items-center justify-center gap-2 bg-[#25D366] py-3 text-[11px] font-semibold tracking-[0.12em] text-white uppercase transition-opacity hover:opacity-90"
+                        >
+                            <FaWhatsapp className="text-sm" aria-hidden="true" />
+                            Order on WhatsApp
+                        </a>
                     </div>
                 </div>
 
@@ -188,7 +201,9 @@ const Footer = () => {
                     <p className="text-xs text-white/55">
                         © {year} {SITE_NAME}. All rights reserved.
                     </p>
-                    <p className="text-xs text-white/55">Secure payments powered by SSLCommerz</p>
+                    <p className="text-xs text-white/55">
+                        Orders and payment confirmed on WhatsApp
+                    </p>
                 </div>
             </div>
         </footer>

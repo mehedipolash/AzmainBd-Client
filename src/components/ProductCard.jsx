@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { FaStar, FaRegHeart, FaArrowRightArrowLeft } from 'react-icons/fa6';
-import { formatCurrency, calcDiscount } from '../utils/formatCurrency';
-import { getStockBadge, isSoldOut, isLowStock } from '../data/products';
+import { FaWhatsapp, FaCartShopping } from 'react-icons/fa6';
+import { formatCurrency, calcDiscount, hasPrice } from '../utils/formatCurrency';
+import { getStockBadge, isSoldOut, isLowStock } from '../utils/catalogue';
+import { resolveImageUrl } from '../utils/imageUrl';
+import { productEnquiryLink } from '../utils/business';
 import UseCart from '../Hooks/UseCart';
 import UseToast from '../Hooks/UseToast';
 
@@ -17,7 +19,7 @@ const TONE_CLASSES = {
 // shows: sold-out items dim their image, lose the cart button and surface a
 // "notify me" affordance instead.
 const ProductCard = ({ product }) => {
-    const { _id, name, image, price, oldPrice, rating, reviews } = product;
+    const { _id, name, image, price, oldPrice } = product;
     const { addItem } = UseCart();
     const { notify } = UseToast();
 
@@ -25,6 +27,7 @@ const ProductCard = ({ product }) => {
     const lowStock = isLowStock(product);
     const badge = getStockBadge(product);
     const discount = calcDiscount(price, oldPrice);
+    const priced = hasPrice(product);
 
     const handleAddToCart = () => {
         addItem(product, 1);
@@ -40,7 +43,7 @@ const ProductCard = ({ product }) => {
             <div className="relative overflow-hidden bg-base-200">
                 <Link to={`/product/${_id}`} className="block">
                     <img
-                        src={image}
+                        src={resolveImageUrl(image)}
                         alt={name}
                         loading="lazy"
                         className={`aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105 ${
@@ -65,25 +68,22 @@ const ProductCard = ({ product }) => {
                     </span>
                 )}
 
-                {/* Secondary actions appear on hover; always reachable via
-                    keyboard because focus-within keeps them visible. */}
+                {/* Direct WhatsApp enquiry, appearing on hover and always
+                    reachable by keyboard because focus-within keeps it shown.
+                    Orders are placed on WhatsApp, so this is a shortcut past
+                    the cart rather than a decorative extra. */}
                 {!soldOut && (
                     <div className="pointer-events-none absolute top-3 right-3 flex translate-x-3 flex-col gap-2 opacity-0 transition-all duration-300 group-hover:pointer-events-auto group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-x-0 group-focus-within:opacity-100">
                         {discount > 0 && <span className="h-6" aria-hidden="true" />}
-                        <button
-                            type="button"
-                            className="flex size-9 items-center justify-center bg-base-100 text-sm shadow-sm transition-colors hover:bg-primary hover:text-primary-content"
-                            aria-label={`Add ${name} to wishlist`}
+                        <a
+                            href={productEnquiryLink(product)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex size-9 items-center justify-center bg-base-100 text-sm shadow-sm transition-colors hover:bg-[#25D366] hover:text-white"
+                            aria-label={`Ask about ${name} on WhatsApp`}
                         >
-                            <FaRegHeart />
-                        </button>
-                        <button
-                            type="button"
-                            className="flex size-9 items-center justify-center bg-base-100 text-sm shadow-sm transition-colors hover:bg-primary hover:text-primary-content"
-                            aria-label={`Compare ${name}`}
-                        >
-                            <FaArrowRightArrowLeft />
-                        </button>
+                            <FaWhatsapp />
+                        </a>
                     </div>
                 )}
 
@@ -97,14 +97,27 @@ const ProductCard = ({ product }) => {
                         >
                             Notify Me
                         </button>
-                    ) : (
+                    ) : priced ? (
                         <button
                             type="button"
                             onClick={handleAddToCart}
-                            className="w-full bg-primary py-3 text-[11px] font-semibold tracking-[0.14em] text-primary-content uppercase transition-opacity hover:opacity-90"
+                            className="flex w-full items-center justify-center gap-2 bg-primary py-3 text-[11px] font-semibold tracking-[0.14em] text-primary-content uppercase transition-opacity hover:opacity-90"
                         >
+                            <FaCartShopping className="text-[12px]" aria-hidden="true" />
                             Add to Cart
                         </button>
+                    ) : (
+                        /* No price means no cart total to compute, so the only
+                           honest action is to ask. */
+                        <a
+                            href={productEnquiryLink(product)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex w-full items-center justify-center gap-2 bg-[#25D366] py-3 text-[11px] font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
+                        >
+                            <FaWhatsapp className="text-[13px]" aria-hidden="true" />
+                            Ask Price
+                        </a>
                     )}
                 </div>
             </div>
@@ -116,19 +129,26 @@ const ProductCard = ({ product }) => {
                     </h3>
                 </Link>
 
-                <div className="mt-1.5 flex items-center justify-center gap-1.5">
-                    <span className="flex items-center gap-0.5 text-[11px] text-base-content/70">
-                        <FaStar className="text-[10px] text-warning" aria-hidden="true" />
-                        {rating}
-                    </span>
-                    <span className="text-[11px] text-base-content/35">({reviews})</span>
-                </div>
+                {/* Brand, not a star rating: this shop has no review system,
+                    and printing an invented score on a real client's site is a
+                    claim they cannot stand behind. */}
+                {product.brand && (
+                    <p className="mt-1.5 text-[11px] tracking-[0.1em] text-base-content/45 uppercase">
+                        {product.brand}
+                    </p>
+                )}
 
                 <div className="mt-2 flex items-baseline justify-center gap-2">
-                    <span className="text-[16px] font-semibold text-primary">
+                    <span
+                        className={
+                            priced
+                                ? 'text-[16px] font-semibold text-primary'
+                                : 'text-[13px] font-medium text-base-content/55 italic'
+                        }
+                    >
                         {formatCurrency(price)}
                     </span>
-                    {oldPrice && (
+                    {priced && oldPrice && (
                         <span className="text-[13px] text-base-content/35 line-through">
                             {formatCurrency(oldPrice)}
                         </span>

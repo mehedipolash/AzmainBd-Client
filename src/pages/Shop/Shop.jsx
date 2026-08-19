@@ -1,102 +1,143 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { FaSliders, FaXmark } from 'react-icons/fa6';
 import ProductCard from '../../components/ProductCard';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
+import Loader from '../../components/Loader';
 import ShopFilters from './ShopFilters';
-import { products, isSoldOut, byAvailability } from '../../data/products';
+import UseCatalogue from '../../Hooks/UseCatalogue';
+import { isSoldOut, byAvailability, getBrands } from '../../utils/catalogue';
 import { SORT_OPTIONS } from '../../utils/constants';
-
-// Price bounds are derived from the catalogue rather than hardcoded, so the
-// slider stays correct when the real API replaces the mock data.
-const PRICE_BOUNDS = {
-    min: 0,
-    max: Math.max(...products.map((product) => product.price)),
-};
 
 const Shop = () => {
     // Category and search live in the URL so results stay shareable and the
     // browser back button behaves. Local filters stay in state.
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const category = searchParams.get('category') ?? '';
     const search = searchParams.get('search') ?? '';
 
+    const { products, categories, loading, error } = UseCatalogue();
+
     const [selectedBrands, setSelectedBrands] = useState([]);
-    const [selectedTech, setSelectedTech] = useState([]);
-    const [maxPrice, setMaxPrice] = useState(PRICE_BOUNDS.max);
+    const [maxPrice, setMaxPrice] = useState(null);
     const [inStockOnly, setInStockOnly] = useState(false);
     const [sortBy, setSortBy] = useState('newest');
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    const toggle = (setter) => (value) =>
-        setter((current) =>
+    // Bounds follow the live catalogue. Unpriced items are excluded from the
+    // max calculation — they have no price to be the ceiling.
+    const priceBounds = useMemo(() => {
+        const prices = products.map((product) => product.price).filter(Boolean);
+        return { min: 0, max: prices.length ? Math.max(...prices) : 10000 };
+    }, [products]);
+
+    // maxPrice starts as null and adopts the real ceiling once products land,
+    // so the slider is never pinned to a stale bound from the first render.
+    useEffect(() => {
+        setMaxPrice((current) => (current === null ? priceBounds.max : current));
+    }, [priceBounds.max]);
+
+    const brands = useMemo(() => getBrands(products), [products]);
+
+    const toggleBrand = (value) =>
+        setSelectedBrands((current) =>
             current.includes(value)
                 ? current.filter((item) => item !== value)
                 : [...current, value],
         );
 
+    const handleCategoryChange = (slug) => {
+        const next = new URLSearchParams(searchParams);
+        if (slug) next.set('category', slug);
+        else next.delete('category');
+        setSearchParams(next);
+        setDrawerOpen(false);
+    };
+
     const handleClearAll = () => {
         setSelectedBrands([]);
-        setSelectedTech([]);
-        setMaxPrice(PRICE_BOUNDS.max);
+        setMaxPrice(priceBounds.max);
         setInStockOnly(false);
     };
 
     const visibleProducts = useMemo(() => {
         const term = search.trim().toLowerCase();
+        const ceiling = maxPrice ?? priceBounds.max;
 
         const filtered = products.filter((product) => {
             if (category && product.category !== category) return false;
             if (term && !product.name.toLowerCase().includes(term)) return false;
             if (selectedBrands.length && !selectedBrands.includes(product.brand)) return false;
-            if (selectedTech.length && !selectedTech.some((tech) => product.specs.includes(tech))) {
-                return false;
-            }
-            if (product.price > maxPrice) return false;
+            // An unpriced item has nothing to compare against the slider, so it
+            // stays visible rather than silently disappearing.
+            if (product.price && product.price > ceiling) return false;
             if (inStockOnly && isSoldOut(product)) return false;
             return true;
         });
 
         // Sort a copy so the source array is never mutated. Availability is the
         // primary key on every ordering — customers should never lead with
-        // items they cannot buy.
+        // items they cannot buy. Unpriced items sort last within price sorts.
+        const byPrice = (direction) => (a, b) => {
+            const availability = byAvailability(a, b);
+            if (availability) return availability;
+            if (!a.price) return 1;
+            if (!b.price) return -1;
+            return direction === 'asc' ? a.price - b.price : b.price - a.price;
+        };
+
         switch (sortBy) {
             case 'price-asc':
-                return [...filtered].sort((a, b) => byAvailability(a, b) || a.price - b.price);
+                return [...filtered].sort(byPrice('asc'));
             case 'price-desc':
-                return [...filtered].sort((a, b) => byAvailability(a, b) || b.price - a.price);
-            case 'rating':
-                return [...filtered].sort((a, b) => byAvailability(a, b) || b.rating - a.rating);
+                return [...filtered].sort(byPrice('desc'));
             default:
                 return [...filtered].sort(
                     (a, b) => byAvailability(a, b) || new Date(b.createdAt) - new Date(a.createdAt),
                 );
         }
-    }, [category, search, selectedBrands, selectedTech, maxPrice, inStockOnly, sortBy]);
+    }, [
+        products,
+        category,
+        search,
+        selectedBrands,
+        maxPrice,
+        priceBounds.max,
+        inStockOnly,
+        sortBy,
+    ]);
 
     const soldOutCount = visibleProducts.filter(isSoldOut).length;
 
     const filterProps = {
+        brands,
         selectedBrands,
-        onToggleBrand: toggle(setSelectedBrands),
-        selectedTech,
-        onToggleTech: toggle(setSelectedTech),
-        maxPrice,
+        onToggleBrand: toggleBrand,
+        categories,
+        selectedCategory: category,
+        onCategoryChange: handleCategoryChange,
+        maxPrice: maxPrice ?? priceBounds.max,
         onMaxPriceChange: setMaxPrice,
         inStockOnly,
         onInStockOnlyChange: setInStockOnly,
-        priceBounds: PRICE_BOUNDS,
+        priceBounds,
         onClearAll: handleClearAll,
     };
+
+    const activeCategory = categories.find((item) => item.slug === category);
 
     return (
         <div>
             <PageHeader
                 eyebrow="Shop"
-                title={search ? `Results for “${search}”` : 'All products'}
-                subtitle="Authorised stock with full manufacturer warranty on every order."
-                image="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"
+                title={
+                    search
+                        ? `Results for “${search}”`
+                        : (activeCategory?.name ?? 'All products')
+                }
+                subtitle="Genuine branded stock, sourced direct. Order any item on WhatsApp."
+                image="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1600&q=80"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Shop' }]}
             />
 
@@ -149,7 +190,16 @@ const Shop = () => {
                             </div>
                         </div>
 
-                        {visibleProducts.length > 0 ? (
+                        {loading ? (
+                            <Loader />
+                        ) : error ? (
+                            <EmptyState
+                                title="Could not load products"
+                                message={error}
+                                actionLabel="Back to home"
+                                actionPath="/"
+                            />
+                        ) : visibleProducts.length > 0 ? (
                             <div className="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-3 lg:gap-x-8">
                                 {visibleProducts.map((product) => (
                                     <ProductCard key={product._id} product={product} />

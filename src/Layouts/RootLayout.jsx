@@ -7,6 +7,7 @@ import Navbar from '../shared/Navbar';
 import Footer from '../shared/Footer';
 import ScrollToTop from '../components/ScrollToTop';
 import WelcomeOffer from '../components/WelcomeOffer';
+import WhatsAppButton from '../components/WhatsAppButton';
 import UseAos from '../Hooks/UseAos';
 
 const RootLayout = () => {
@@ -28,6 +29,9 @@ const RootLayout = () => {
                 <Outlet></Outlet>
             </main>
             <Footer></Footer>
+            {/* Sits outside <main> so it stays fixed over every route — orders
+                are placed on WhatsApp, so this must never scroll away. */}
+            <WhatsAppButton />
         </div>
     );
 };

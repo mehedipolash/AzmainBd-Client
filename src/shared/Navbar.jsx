@@ -7,6 +7,7 @@ import {
     FaXmark,
     FaUser,
     FaPhone,
+    FaWhatsapp,
     FaTruckFast,
 } from 'react-icons/fa6';
 import ThemeToggle from '../components/ThemeToggle';
@@ -14,7 +15,9 @@ import UserMenu from '../components/UserMenu';
 import UseCart from '../Hooks/UseCart';
 import UseAuth from '../Hooks/UseAuth';
 import { formatCurrency } from '../utils/formatCurrency';
-import { NAV_LINKS, SITE_NAME } from '../utils/constants';
+import Logo from '../components/Logo';
+import { NAV_LINKS } from '../utils/constants';
+import { PHONE_DISPLAY, PHONE_HREF, buildWhatsAppLink } from '../utils/business';
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -52,13 +55,24 @@ const Navbar = () => {
                         <FaTruckFast className="text-xs" aria-hidden="true" />
                         Free delivery on orders over ৳ 5,000
                     </p>
-                    <a
-                        href="tel:+8801000000000"
-                        className="flex items-center gap-2 transition-opacity hover:opacity-75"
-                    >
-                        <FaPhone className="text-[10px]" aria-hidden="true" />
-                        +880 1000-000000
-                    </a>
+                    <span className="flex items-center gap-5">
+                        <a
+                            href={buildWhatsAppLink('Hello Azmain BD, I have a question.')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 transition-opacity hover:opacity-75"
+                        >
+                            <FaWhatsapp className="text-xs" aria-hidden="true" />
+                            Order on WhatsApp
+                        </a>
+                        <a
+                            href={PHONE_HREF}
+                            className="flex items-center gap-2 transition-opacity hover:opacity-75"
+                        >
+                            <FaPhone className="text-[10px]" aria-hidden="true" />
+                            {PHONE_DISPLAY}
+                        </a>
+                    </span>
                 </div>
             </div>
 
@@ -76,12 +90,7 @@ const Navbar = () => {
                         <FaBars />
                     </button>
 
-                    <Link
-                        to="/"
-                        className="font-display text-xl leading-none font-semibold tracking-tight lg:text-2xl"
-                    >
-                        Azmain <span className="text-primary">BD</span>
-                    </Link>
+                    <Logo size="md" />
 
                     {/* Links grouped inside their own pill, one list so adding a
                         nav item never unbalances the header. */}
@@ -213,7 +222,7 @@ const Navbar = () => {
                     />
                     <div className="absolute inset-y-0 left-0 flex w-75 max-w-[85%] flex-col bg-base-100">
                         <div className="flex items-center justify-between border-b border-base-300 px-5 py-4">
-                            <span className="font-display text-xl font-semibold">{SITE_NAME}</span>
+                            <Logo size="sm" to={null} />
                             <button
                                 type="button"
                                 onClick={() => setMenuOpen(false)}

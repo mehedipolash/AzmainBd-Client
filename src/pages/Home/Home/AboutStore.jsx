@@ -22,13 +22,13 @@ const AboutStore = () => {
                     </h2>
 
                     <p className="mt-6 text-[15px] leading-relaxed text-base-content/65">
-                        We are an authorised retail partner for every brand we carry. Each unit
+                        We import the brands we carry and buy the rest through their distributors. Each item
                         arrives sealed, passes a 500-point inspection before dispatch and ships with
-                        full manufacturer warranty paperwork already in the box.
+                        arrives sealed, genuine and in date.
                     </p>
 
                     <p className="mt-4 text-[15px] leading-relaxed text-base-content/65">
-                        No grey imports, no refurbished stock sold as new, and a support line staffed
+                        No counterfeits, no refills sold as new, and a real person on WhatsApp
                         by people who can actually answer a technical question.
                     </p>
 

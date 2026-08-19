@@ -1,43 +1,79 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import SectionTitle from '../../components/SectionTitle';
 import ProductCard from '../../components/ProductCard';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import PromoBanner from '../../components/PromoBanner';
-import { products, byAvailability } from '../../data/products';
+import Loader from '../../components/Loader';
+import UseCatalogue from '../../Hooks/UseCatalogue';
+import { byAvailability, isInStock } from '../../utils/catalogue';
 import { getBannersByPlacement } from '../../data/banners';
 import { calcDiscount } from '../../utils/formatCurrency';
 
-const DEAL_FILTERS = [
-    { label: 'All deals', value: 'all' },
-    { label: 'Laptops', value: 'laptops' },
-    { label: 'Phones', value: 'smartphones' },
-    { label: 'Audio', value: 'audio' },
-    { label: 'Appliances', value: 'appliances' },
-];
+/* ---------------------------------------------------------------------------
+   Offers.
+
+   This page used to list only products carrying a strike-through discount.
+   The client prices each item once rather than running reductions, so that
+   filter matched nothing and the page was permanently empty.
+
+   It now leads with genuine reductions when any exist, and otherwise shows
+   what is actually worth featuring — in-stock items, newest first. The
+   category filters are built from the live catalogue rather than a hardcoded
+   list that would rot the moment a category is renamed.
+--------------------------------------------------------------------------- */
 
 const Deals = () => {
     const [activeFilter, setActiveFilter] = useState('all');
+    const { products, categories, loading, error } = UseCatalogue();
 
     const [strip] = getBannersByPlacement('strip');
 
-    // A deal is any product carrying a real discount. Sorted by depth of
-    // discount, with sold-out items pushed to the end.
-    const discounted = products
-        .filter((product) => calcDiscount(product.price, product.oldPrice) > 0)
-        .filter((product) => activeFilter === 'all' || product.category === activeFilter)
-        .sort(
-            (a, b) =>
-                byAvailability(a, b) ||
-                calcDiscount(b.price, b.oldPrice) - calcDiscount(a.price, a.oldPrice),
+    const filters = useMemo(
+        () => [
+            { label: 'All', value: 'all' },
+            ...categories.map((category) => ({
+                label: category.name,
+                value: category.slug,
+            })),
+        ],
+        [categories],
+    );
+
+    const { featured, hasRealDiscounts } = useMemo(() => {
+        const inCategory = products.filter(
+            (product) => activeFilter === 'all' || product.category === activeFilter,
         );
+
+        const discounted = inCategory.filter(
+            (product) => calcDiscount(product.price, product.oldPrice) > 0,
+        );
+
+        if (discounted.length > 0) {
+            return {
+                hasRealDiscounts: true,
+                featured: [...discounted].sort(
+                    (a, b) =>
+                        byAvailability(a, b) ||
+                        calcDiscount(b.price, b.oldPrice) - calcDiscount(a.price, a.oldPrice),
+                ),
+            };
+        }
+
+        return {
+            hasRealDiscounts: false,
+            featured: inCategory
+                .filter(isInStock)
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+        };
+    }, [products, activeFilter]);
 
     return (
         <div>
             <PageHeader
-                eyebrow="Savings"
-                title="Exclusive deals & special offers"
-                subtitle="Genuine reductions on authorised stock — every price includes full manufacturer warranty."
+                eyebrow="Featured"
+                title={hasRealDiscounts ? 'Deals & special offers' : 'Featured products'}
+                subtitle="Genuine branded stock at honest prices. Order any item on WhatsApp."
                 image="https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1600&q=80"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Deals' }]}
             />
@@ -49,10 +85,13 @@ const Deals = () => {
             )}
 
             <div className="container-px section-y">
-                <SectionTitle eyebrow="Browse" title="Current offers" />
+                <SectionTitle
+                    eyebrow="Browse"
+                    title={hasRealDiscounts ? 'Current offers' : 'In stock now'}
+                />
 
                 <div className="mb-10 flex flex-wrap justify-center gap-2">
-                    {DEAL_FILTERS.map((filter) => (
+                    {filters.map((filter) => (
                         <button
                             key={filter.value}
                             type="button"
@@ -69,18 +108,27 @@ const Deals = () => {
                     ))}
                 </div>
 
-                {discounted.length > 0 ? (
+                {loading ? (
+                    <Loader />
+                ) : error ? (
+                    <EmptyState
+                        title="Could not load products"
+                        message={error}
+                        actionLabel="Back to home"
+                        actionPath="/"
+                    />
+                ) : featured.length > 0 ? (
                     <div className="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
-                        {discounted.map((product) => (
+                        {featured.map((product) => (
                             <ProductCard key={product._id} product={product} />
                         ))}
                     </div>
                 ) : (
                     <EmptyState
-                        title="No deals in this category"
-                        message="Check back soon, or browse everything currently on offer."
-                        actionLabel="View all deals"
-                        actionPath="/deals"
+                        title="Nothing in this category yet"
+                        message="Check back soon, or browse everything currently in stock."
+                        actionLabel="View all products"
+                        actionPath="/shop"
                     />
                 )}
             </div>

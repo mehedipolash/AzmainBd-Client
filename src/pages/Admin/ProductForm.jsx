@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { useForm } from 'react-hook-form';
-import { FaArrowLeft } from 'react-icons/fa6';
+import { useFieldArray, useForm, Controller } from 'react-hook-form';
+import { FaArrowLeft, FaPlus, FaTrash } from 'react-icons/fa6';
 import {
     createProduct,
     updateProduct,
@@ -9,7 +9,9 @@ import {
     fetchCategories,
 } from '../../api/products.api';
 import Loader from '../../components/Loader';
+import ImageUploader from '../../components/ImageUploader';
 import UseToast from '../../Hooks/UseToast';
+import UseCatalogue from '../../Hooks/UseCatalogue';
 import { alertError } from '../../utils/alerts';
 
 // Defined at module scope — a component created inside render is a new type on
@@ -26,6 +28,7 @@ const ProductForm = () => {
     const isEdit = Boolean(id);
     const navigate = useNavigate();
     const { notify } = UseToast();
+    const { reload } = UseCatalogue();
 
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -35,7 +38,7 @@ const ProductForm = () => {
         register,
         handleSubmit,
         reset,
-        watch,
+        control,
         setError,
         formState: { errors, isSubmitting },
     } = useForm({
@@ -50,11 +53,13 @@ const ProductForm = () => {
             image: '',
             description: '',
             specs: '',
+            variants: '',
+            customFields: [],
         },
     });
 
-    // Live preview of whatever URL is currently typed.
-    const imageUrl = watch('image');
+    // Owner-defined detail rows, added and removed as a group.
+    const { fields, append, remove } = useFieldArray({ control, name: 'customFields' });
 
     useEffect(() => {
         let cancelled = false;
@@ -74,12 +79,16 @@ const ProductForm = () => {
                         name: product.name ?? '',
                         brand: product.brand ?? '',
                         category: product.category ?? '',
-                        price: String(product.price ?? ''),
+                        // A null price is a real state ("price on request"),
+                        // so it maps to an empty field rather than a zero.
+                        price: product.price == null ? '' : String(product.price),
                         oldPrice: product.oldPrice ? String(product.oldPrice) : '',
                         stock: String(product.stock ?? ''),
                         image: product.image ?? '',
                         description: product.description ?? '',
                         specs: (product.specs ?? []).join(', '),
+                        variants: (product.variants ?? []).join(', '),
+                        customFields: product.customFields ?? [],
                     });
                 }
             } catch (error) {
@@ -98,6 +107,12 @@ const ProductForm = () => {
     const onSubmit = async (values) => {
         setFormError('');
 
+        const toList = (text) =>
+            text
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean);
+
         // The server validates all of this again — this is only for faster
         // feedback, never the authority.
         const payload = {
@@ -106,13 +121,16 @@ const ProductForm = () => {
             category: values.category,
             description: values.description.trim(),
             image: values.image.trim(),
-            price: Number(values.price),
+            // Empty means "price on request", which the storefront renders as
+            // a WhatsApp prompt rather than an amount.
+            price: values.price === '' ? null : Number(values.price),
             oldPrice: values.oldPrice === '' ? null : Number(values.oldPrice),
             stock: Number(values.stock),
-            specs: values.specs
-                .split(',')
-                .map((item) => item.trim())
-                .filter(Boolean),
+            specs: toList(values.specs),
+            variants: toList(values.variants),
+            customFields: (values.customFields ?? []).filter(
+                (field) => field.label?.trim() && field.value?.trim(),
+            ),
         };
 
         try {
@@ -123,6 +141,10 @@ const ProductForm = () => {
                 await createProduct(payload);
                 notify(`${payload.name} added to the catalogue`);
             }
+
+            // Refresh the shared catalogue so the storefront shows the change
+            // straight away rather than after a reload.
+            reload();
             navigate('/admin/products');
         } catch (error) {
             // The API names the offending field, so attach the message to that
@@ -142,7 +164,6 @@ const ProductForm = () => {
         `w-full border bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-primary ${
             invalid ? 'border-error' : 'border-base-300'
         }`;
-
 
     return (
         <div className="p-5 sm:p-8 lg:p-10">
@@ -169,7 +190,7 @@ const ProductForm = () => {
                         </label>
                         <input
                             id="name"
-                            placeholder="UltraThin OLED 65&quot;"
+                            placeholder="NIVEA Smooth Sensation Body Lotion"
                             aria-invalid={Boolean(errors.name)}
                             className={fieldClass(errors.name)}
                             {...register('name', {
@@ -186,7 +207,7 @@ const ProductForm = () => {
                         </label>
                         <input
                             id="brand"
-                            placeholder="Samsung"
+                            placeholder="NIVEA"
                             aria-invalid={Boolean(errors.brand)}
                             className={fieldClass(errors.brand)}
                             {...register('brand', { required: 'Enter a brand.' })}
@@ -213,6 +234,15 @@ const ProductForm = () => {
                         ))}
                     </select>
                     <FieldError error={errors.category} />
+                    {categories.length === 0 && (
+                        <p className="mt-2 text-[12px] text-warning">
+                            No categories yet —{' '}
+                            <Link to="/admin/categories" className="underline">
+                                create one first
+                            </Link>
+                            .
+                        </p>
+                    )}
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-3">
@@ -224,15 +254,18 @@ const ProductForm = () => {
                             id="price"
                             type="number"
                             min="1"
-                            placeholder="89999"
+                            placeholder="950"
                             aria-invalid={Boolean(errors.price)}
                             className={fieldClass(errors.price)}
                             {...register('price', {
-                                required: 'Enter a price.',
                                 min: { value: 1, message: 'Price must be at least ৳1.' },
                             })}
                         />
                         <FieldError error={errors.price} />
+                        {/* Leaving it blank is a deliberate, supported state. */}
+                        <p className="mt-2 text-[11px] leading-relaxed text-base-content/45">
+                            Leave blank for “Price on request”.
+                        </p>
                     </div>
 
                     <div>
@@ -243,7 +276,7 @@ const ProductForm = () => {
                             id="oldPrice"
                             type="number"
                             min="1"
-                            placeholder="95000"
+                            placeholder="1100"
                             aria-invalid={Boolean(errors.oldPrice)}
                             className={fieldClass(errors.oldPrice)}
                             {...register('oldPrice', {
@@ -251,6 +284,7 @@ const ProductForm = () => {
                                 // is not higher would show a negative discount.
                                 validate: (value, values) =>
                                     value === '' ||
+                                    values.price === '' ||
                                     Number(value) > Number(values.price) ||
                                     'Must be higher than the price.',
                             })}
@@ -279,44 +313,53 @@ const ProductForm = () => {
                 </div>
 
                 <div>
-                    <label htmlFor="image" className="eyebrow mb-2 block">
-                        Image URL
-                    </label>
-                    <input
-                        id="image"
-                        type="url"
-                        placeholder="https://…"
-                        aria-invalid={Boolean(errors.image)}
-                        className={fieldClass(errors.image)}
-                        {...register('image', {
-                            required: 'Enter an image URL.',
-                            pattern: {
-                                value: /^https?:\/\/.+/i,
-                                message: 'Must start with http:// or https://',
-                            },
-                        })}
+                    <span className="eyebrow mb-2 block">Product photo</span>
+                    {/* Controller because the uploader is not a native input —
+                        it reports a URL after the file has been stored. */}
+                    <Controller
+                        name="image"
+                        control={control}
+                        rules={{ required: 'Add a product photo.' }}
+                        render={({ field }) => (
+                            <ImageUploader
+                                value={field.value}
+                                onChange={field.onChange}
+                                error={errors.image?.message}
+                            />
+                        )}
                     />
-                    <FieldError error={errors.image} />
-                    {imageUrl && !errors.image && (
-                        <img
-                            src={imageUrl}
-                            alt=""
-                            className="mt-3 size-28 border border-base-300 object-cover"
-                        />
-                    )}
                 </div>
 
-                <div>
-                    <label htmlFor="specs" className="eyebrow mb-2 block">
-                        Specs
-                    </label>
-                    <input
-                        id="specs"
-                        placeholder="5G, 256GB, 120Hz"
-                        className={fieldClass(false)}
-                        {...register('specs')}
-                    />
-                    <p className="mt-2 text-[12px] text-base-content/45">Separate with commas.</p>
+                <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label htmlFor="specs" className="eyebrow mb-2 block">
+                            Highlights
+                        </label>
+                        <input
+                            id="specs"
+                            placeholder="48h Moisture, Non-Greasy"
+                            className={fieldClass(false)}
+                            {...register('specs')}
+                        />
+                        <p className="mt-2 text-[12px] text-base-content/45">
+                            Separate with commas.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label htmlFor="variants" className="eyebrow mb-2 block">
+                            Variants
+                        </label>
+                        <input
+                            id="variants"
+                            placeholder="500ml, 300ml"
+                            className={fieldClass(false)}
+                            {...register('variants')}
+                        />
+                        <p className="mt-2 text-[12px] text-base-content/45">
+                            Sizes or scents. Separate with commas.
+                        </p>
+                    </div>
                 </div>
 
                 <div>
@@ -336,6 +379,50 @@ const ProductForm = () => {
                     />
                     <FieldError error={errors.description} />
                 </div>
+
+                {/* Anything the shop wants to state about a product that does
+                    not fit a fixed field. */}
+                <fieldset className="border-t border-base-300 pt-6">
+                    <legend className="eyebrow mb-1">Extra details</legend>
+                    <p className="mb-4 text-[12px] text-base-content/45">
+                        Add your own rows — origin, weight, expiry, anything customers ask about.
+                    </p>
+
+                    <div className="space-y-3">
+                        {fields.map((field, index) => (
+                            <div key={field.id} className="flex gap-2">
+                                <input
+                                    placeholder="Label (e.g. Origin)"
+                                    className={`${fieldClass(false)} sm:w-48`}
+                                    {...register(`customFields.${index}.label`)}
+                                />
+                                <input
+                                    placeholder="Value (e.g. Malaysia)"
+                                    className={fieldClass(false)}
+                                    {...register(`customFields.${index}.value`)}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    className="shrink-0 border border-base-300 px-3 text-sm text-base-content/45 transition-colors hover:border-error hover:text-error"
+                                    aria-label={`Remove detail row ${index + 1}`}
+                                >
+                                    <FaTrash className="text-[12px]" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => append({ label: '', value: '' })}
+                        disabled={fields.length >= 20}
+                        className="mt-3 inline-flex items-center gap-2 border border-base-300 px-4 py-2 text-[11px] font-semibold tracking-[0.1em] uppercase transition-colors hover:border-base-content/40 disabled:opacity-40"
+                    >
+                        <FaPlus className="text-[10px]" aria-hidden="true" />
+                        Add a detail
+                    </button>
+                </fieldset>
 
                 {formError && (
                     <p

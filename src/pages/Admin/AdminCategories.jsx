@@ -4,6 +4,8 @@ import { fetchCategories, createCategory, deleteCategory } from '../../api/produ
 import Loader from '../../components/Loader';
 import UseToast from '../../Hooks/UseToast';
 import { confirmAction, alertError } from '../../utils/alerts';
+import ImageUploader from '../../components/ImageUploader';
+import { resolveImageUrl } from '../../utils/imageUrl';
 
 const AdminCategories = () => {
     const { notify } = UseToast();
@@ -107,7 +109,7 @@ const AdminCategories = () => {
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
                                                     <img
-                                                        src={category.image}
+                                                        src={resolveImageUrl(category.image)}
                                                         alt=""
                                                         loading="lazy"
                                                         className="size-10 shrink-0 border border-base-300 object-cover"
@@ -163,17 +165,10 @@ const AdminCategories = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="cat-image" className="eyebrow mb-2 block">
-                                Image URL
-                            </label>
-                            <input
-                                id="cat-image"
-                                type="url"
+                            <span className="eyebrow mb-2 block">Category image</span>
+                            <ImageUploader
                                 value={form.image}
-                                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                                required
-                                placeholder="https://…"
-                                className={fieldClass}
+                                onChange={(image) => setForm({ ...form, image })}
                             />
                         </div>
 

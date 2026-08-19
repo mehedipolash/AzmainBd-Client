@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
     createUserWithEmailAndPassword,
     onAuthStateChanged,
-    sendEmailVerification,
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signInWithPopup,
@@ -33,7 +32,10 @@ const AuthProvider = ({ children }) => {
                 await updateProfile(credential.user, { displayName });
             }
 
-            await sendEmailVerification(credential.user);
+            // No verification email is sent: the client asked for signup to be
+            // immediate, and nothing on this site is gated behind a verified
+            // address. Password *changes* still require proving control of the
+            // inbox, which is where that check actually protects something.
 
             // updateProfile does not re-trigger onAuthStateChanged, so push the
             // fresh user object into state ourselves or the navbar keeps
@@ -73,14 +75,6 @@ const AuthProvider = ({ children }) => {
         }
     };
 
-    // Re-sends the verification email to whoever is currently signed in.
-    const resendVerification = () => {
-        if (!auth.currentUser) {
-            return Promise.reject(new Error('You need to be signed in to resend that email.'));
-        }
-        return sendEmailVerification(auth.currentUser);
-    };
-
     const resetPassword = (email) => sendPasswordResetEmail(auth, email);
 
     const updateUserProfile = async (profile) => {
@@ -92,9 +86,8 @@ const AuthProvider = ({ children }) => {
         setUser({ ...auth.currentUser });
     };
 
-    // Firebase caches emailVerified on the local user object. After someone
-    // clicks the link in their inbox, the app still reads the stale value until
-    // the token is refreshed — so reload on demand.
+    // Pulls the latest profile from Firebase. Used after a profile edit so the
+    // navbar does not keep showing a stale name or photo.
     const refreshUser = async () => {
         if (!auth.currentUser) return null;
 
@@ -135,13 +128,11 @@ const AuthProvider = ({ children }) => {
         role,
         // Derived so components never re-check the conditions themselves.
         isLoggedIn: !!user,
-        isVerified: !!user?.emailVerified,
         isAdmin: role === 'admin',
         createUser,
         signIn,
         signInWithGoogle,
         logOut,
-        resendVerification,
         resetPassword,
         updateUserProfile,
         refreshUser,

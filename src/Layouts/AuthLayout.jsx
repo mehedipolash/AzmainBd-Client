@@ -32,10 +32,10 @@ const AuthLayout = () => {
 
                 <div className="mt-10">
                     <blockquote className="font-display text-3xl leading-snug font-semibold text-white">
-                        Authorised stock, sealed boxes, real warranties.
+                        Genuine global brands, sealed and sourced direct.
                     </blockquote>
                     <p className="mt-4 max-w-sm text-sm text-white/70">
-                        Trusted by more than 12,000 customers across Bangladesh.
+                        Serving customers across Bangladesh from our Gulshan showroom.
                     </p>
                 </div>
             </div>

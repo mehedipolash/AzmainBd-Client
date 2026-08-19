@@ -1,0 +1,68 @@
+import React, { useEffect, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa6';
+import { buildWhatsAppLink, PHONE_DISPLAY } from '../utils/business';
+
+/* ---------------------------------------------------------------------------
+   Floating WhatsApp button.
+
+   Ordering happens over WhatsApp rather than a checkout, so this is the single
+   most important control on the site — it is present on every storefront page
+   and never scrolls away.
+
+   Sits above the footer wave and clears the mobile bottom bar. z-40 keeps it
+   under modals (z-50) so it can never cover a dialog's close button.
+--------------------------------------------------------------------------- */
+
+const WhatsAppButton = () => {
+    // The label expands after a moment rather than on load, so it reads as an
+    // invitation once the visitor has settled instead of competing with the
+    // hero for attention in the first second.
+    const [expanded, setExpanded] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setExpanded(true), 2500);
+        const collapse = setTimeout(() => setExpanded(false), 8000);
+
+        return () => {
+            clearTimeout(timer);
+            clearTimeout(collapse);
+        };
+    }, []);
+
+    return (
+        <a
+            href={buildWhatsAppLink(
+                'Hello Azmain BD, I would like to know more about your products.',
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Chat with us on WhatsApp — ${PHONE_DISPLAY}`}
+            className="group fixed right-4 bottom-5 z-40 flex items-center gap-0 overflow-hidden rounded-full bg-[#25D366] pl-4 text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:gap-2 hover:shadow-xl focus-visible:gap-2 sm:right-6 sm:bottom-6"
+        >
+            {/* The ping is a sibling, not a wrapper — animating the link itself
+                would move the click target under the pointer. */}
+            <span
+                aria-hidden="true"
+                className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-20 [animation-duration:2.5s]"
+            />
+
+            <span className="relative py-3.5">
+                <FaWhatsapp className="text-2xl" aria-hidden="true" />
+            </span>
+
+            {/* Width transition rather than display, so it animates. The label
+                is hidden from assistive tech because the link already has an
+                accessible name that says the same thing. */}
+            <span
+                aria-hidden="true"
+                className={`relative overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-300 group-hover:max-w-45 group-hover:pr-5 group-focus-visible:max-w-45 group-focus-visible:pr-5 ${
+                    expanded ? 'max-w-45 pr-5' : 'max-w-0 pr-0'
+                }`}
+            >
+                Order on WhatsApp
+            </span>
+        </a>
+    );
+};
+
+export default WhatsAppButton;

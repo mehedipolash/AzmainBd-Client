@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router';
-import { FaStar, FaArrowRight, FaTruckFast, FaShieldHalved } from 'react-icons/fa6';
+import { FaArrowRight, FaTruckFast, FaShieldHalved, FaWhatsapp } from 'react-icons/fa6';
 import { getHeroBanner } from '../../../data/banners';
-import {
-    getHeroProducts,
-    getStoreStats,
-    isLowStock,
-    getDeliveryEstimate,
-} from '../../../data/products';
-import { formatCurrency, calcDiscount } from '../../../utils/formatCurrency';
+import { getHeroProducts, getStoreStats, isLowStock, getDeliveryEstimate } from '../../../utils/catalogue';
+import { formatCurrency, calcDiscount, hasPrice } from '../../../utils/formatCurrency';
+import { resolveImageUrl } from '../../../utils/imageUrl';
+import { productEnquiryLink } from '../../../utils/business';
+import UseCatalogue from '../../../Hooks/UseCatalogue';
 import UseRotator from '../../../Hooks/UseRotator';
 
 const Banner = () => {
     const hero = getHeroBanner();
+    const { products, categories } = UseCatalogue();
+
     // Real catalogue items fill the right side, so the hero proves the shop
-    // works rather than showing a stock photograph. Becomes an API call later
-    // without changing this component.
-    const featured = getHeroProducts(3);
-    const stats = getStoreStats();
+    // works rather than showing a stock photograph.
+    const featured = getHeroProducts(products, 3);
+    const stats = getStoreStats(products, categories);
 
     // Pause the rotation while the pointer or keyboard focus is on the card,
     // so it never changes out from under someone reading it.
@@ -29,11 +28,12 @@ const Banner = () => {
     const product = featured[index] ?? null;
     const discount = product ? calcDiscount(product.price, product.oldPrice) : 0;
     const deliveryDate = product ? getDeliveryEstimate(product) : null;
+    const priced = product ? hasPrice(product) : false;
 
     return (
         <section className="relative overflow-hidden bg-ink">
             <img
-                src={hero.image}
+                src={resolveImageUrl(hero.image)}
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-cover opacity-45"
@@ -95,7 +95,7 @@ const Banner = () => {
                                 </dd>
                             </div>
                             <div>
-                                <dt className="sr-only">Authorised brands</dt>
+                                <dt className="sr-only">Global brands</dt>
                                 <dd>
                                     <span className="font-display text-2xl font-semibold text-white">
                                         {stats.brandCount}
@@ -105,18 +105,17 @@ const Banner = () => {
                                     </span>
                                 </dd>
                             </div>
+                            {/* Category count, not a star rating: this shop has
+                                no review system, so an average score would be
+                                a number the client cannot stand behind. */}
                             <div>
-                                <dt className="sr-only">Average customer rating</dt>
+                                <dt className="sr-only">Product categories</dt>
                                 <dd>
-                                    <span className="flex items-baseline gap-1 font-display text-2xl font-semibold text-white">
-                                        {stats.averageRating}
-                                        <FaStar
-                                            className="text-xs text-warning"
-                                            aria-hidden="true"
-                                        />
+                                    <span className="font-display text-2xl font-semibold text-white">
+                                        {stats.categoryCount}
                                     </span>
                                     <span className="mt-1 block text-[11px] tracking-wide text-white/50 uppercase">
-                                        {stats.totalReviews.toLocaleString('en-BD')} reviews
+                                        Categories
                                     </span>
                                 </dd>
                             </div>
@@ -144,7 +143,7 @@ const Banner = () => {
                                     className="group relative block overflow-hidden"
                                 >
                                     <img
-                                        src={product.image}
+                                        src={resolveImageUrl(product.image)}
                                         alt={product.name}
                                         className="aspect-4/3 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
@@ -176,33 +175,17 @@ const Banner = () => {
                                         </Link>
                                     </h2>
 
-                                    <div className="mt-2 flex items-center gap-1.5">
-                                        <span
-                                            className="flex items-center gap-0.5"
-                                            aria-label={`Rated ${product.rating} out of 5`}
-                                        >
-                                            {Array.from({ length: 5 }, (_, index) => (
-                                                <FaStar
-                                                    key={index}
-                                                    className={`text-[10px] ${
-                                                        index < Math.round(product.rating)
-                                                            ? 'text-warning'
-                                                            : 'text-base-content/20'
-                                                    }`}
-                                                    aria-hidden="true"
-                                                />
-                                            ))}
-                                        </span>
-                                        <span className="text-[12px] text-base-content/45">
-                                            {product.rating} ({product.reviews})
-                                        </span>
-                                    </div>
-
                                     <div className="mt-4 flex items-baseline gap-2.5">
-                                        <span className="font-display text-2xl font-semibold text-primary">
+                                        <span
+                                            className={
+                                                priced
+                                                    ? 'font-display text-2xl font-semibold text-primary'
+                                                    : 'text-base font-medium text-base-content/60 italic'
+                                            }
+                                        >
                                             {formatCurrency(product.price)}
                                         </span>
-                                        {product.oldPrice && (
+                                        {priced && product.oldPrice && (
                                             <span className="text-sm text-base-content/35 line-through">
                                                 {formatCurrency(product.oldPrice)}
                                             </span>
@@ -227,16 +210,30 @@ const Banner = () => {
                                                 className="text-[11px] text-primary"
                                                 aria-hidden="true"
                                             />
-                                            Official brand warranty included
+                                            Genuine branded product
                                         </li>
                                     </ul>
 
-                                    <Link
-                                        to={`/product/${product._id}`}
-                                        className="btn-shop mt-6 w-full"
-                                    >
-                                        View product
-                                    </Link>
+                                    <div className="mt-6 grid gap-2">
+                                        <Link
+                                            to={`/product/${product._id}`}
+                                            className="btn-shop w-full"
+                                        >
+                                            View product
+                                        </Link>
+                                        {/* Orders are placed on WhatsApp, so the
+                                            hero offers that route directly rather
+                                            than making the visitor find it. */}
+                                        <a
+                                            href={productEnquiryLink(product)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex w-full items-center justify-center gap-2 bg-[#25D366] py-3 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
+                                        >
+                                            <FaWhatsapp className="text-base" aria-hidden="true" />
+                                            Order on WhatsApp
+                                        </a>
+                                    </div>
                                 </div>
                             </article>
 

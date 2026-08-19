@@ -39,8 +39,9 @@ const Register = () => {
 
         try {
             await createUser(email.trim(), chosen, name.trim());
-            notify('Account created — check your inbox to verify your email');
-            navigate('/verify-email', { replace: true });
+            notify(`Welcome, ${name.trim()} — your account is ready`);
+            // Straight into the shop: there is no verification step to clear.
+            navigate('/', { replace: true });
         } catch (error) {
             setFormError(getAuthErrorMessage(error));
         }
@@ -121,7 +122,7 @@ const Register = () => {
                         </p>
                     ) : (
                         <p className="mt-2 text-[12px] text-base-content/45">
-                            We send a verification link here before your first order.
+                            Used for order updates and password resets.
                         </p>
                     )}
                 </div>

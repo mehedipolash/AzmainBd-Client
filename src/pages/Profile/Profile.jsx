@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router';
-import { FaCircleCheck, FaTriangleExclamation } from 'react-icons/fa6';
+import { FaKey } from 'react-icons/fa6';
 import PageHeader from '../../components/PageHeader';
 import UseAuth from '../../Hooks/UseAuth';
 import UseToast from '../../Hooks/UseToast';
 import { getAuthErrorMessage } from '../../utils/authErrors';
 
 const Profile = () => {
-    const { user, isVerified, updateUserProfile } = UseAuth();
+    const { user, updateUserProfile } = UseAuth();
     const { notify } = UseToast();
 
     const [busy, setBusy] = useState(false);
@@ -67,20 +67,13 @@ const Profile = () => {
                                 {user?.email}
                             </p>
 
-                            {isVerified ? (
-                                <span className="pill-stock mt-2">
-                                    <FaCircleCheck className="text-[9px]" aria-hidden="true" />
-                                    Verified
-                                </span>
-                            ) : (
-                                <Link to="/verify-email" className="pill-urgent mt-2">
-                                    <FaTriangleExclamation
-                                        className="text-[9px]"
-                                        aria-hidden="true"
-                                    />
-                                    Verify your email
-                                </Link>
-                            )}
+                            <Link
+                                to="/change-password"
+                                className="mt-3 inline-flex items-center gap-2 text-[12px] tracking-wide text-primary uppercase transition-opacity hover:opacity-70"
+                            >
+                                <FaKey className="text-[9px]" aria-hidden="true" />
+                                Change password
+                            </Link>
                         </div>
                     </div>
 

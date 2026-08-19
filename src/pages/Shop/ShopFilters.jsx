@@ -1,12 +1,16 @@
 import React from 'react';
-import { brands, technologies } from '../../data/products';
 import { formatCurrency } from '../../utils/formatCurrency';
 
+/* Filter options are passed in rather than imported: brands and categories now
+   come from the live catalogue, so a brand the owner adds in the admin panel
+   appears here without a code change. */
 const ShopFilters = ({
+    brands = [],
     selectedBrands,
     onToggleBrand,
-    selectedTech,
-    onToggleTech,
+    categories = [],
+    selectedCategory,
+    onCategoryChange,
     maxPrice,
     onMaxPriceChange,
     inStockOnly,
@@ -40,22 +44,60 @@ const ShopFilters = ({
                 </label>
             </div>
 
-            <fieldset className="border-t border-base-300 pt-6">
-                <legend className="eyebrow mb-4">Brand</legend>
-                <div className="space-y-2.5">
-                    {brands.map((brand) => (
-                        <label key={brand} className="flex cursor-pointer items-center gap-3">
+            {categories.length > 0 && (
+                <fieldset className="border-t border-base-300 pt-6">
+                    <legend className="eyebrow mb-4">Category</legend>
+                    <div className="space-y-2.5">
+                        <label className="flex cursor-pointer items-center gap-3">
                             <input
-                                type="checkbox"
-                                checked={selectedBrands.includes(brand)}
-                                onChange={() => onToggleBrand(brand)}
+                                type="radio"
+                                name="category"
+                                checked={!selectedCategory}
+                                onChange={() => onCategoryChange('')}
                                 className="size-4 accent-primary"
                             />
-                            <span className="text-sm text-base-content/75">{brand}</span>
+                            <span className="text-sm text-base-content/75">All categories</span>
                         </label>
-                    ))}
-                </div>
-            </fieldset>
+
+                        {categories.map((category) => (
+                            <label
+                                key={category.slug}
+                                className="flex cursor-pointer items-center gap-3"
+                            >
+                                <input
+                                    type="radio"
+                                    name="category"
+                                    checked={selectedCategory === category.slug}
+                                    onChange={() => onCategoryChange(category.slug)}
+                                    className="size-4 accent-primary"
+                                />
+                                <span className="text-sm text-base-content/75">
+                                    {category.name}
+                                </span>
+                            </label>
+                        ))}
+                    </div>
+                </fieldset>
+            )}
+
+            {brands.length > 0 && (
+                <fieldset className="border-t border-base-300 pt-6">
+                    <legend className="eyebrow mb-4">Brand</legend>
+                    <div className="space-y-2.5">
+                        {brands.map((brand) => (
+                            <label key={brand} className="flex cursor-pointer items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedBrands.includes(brand)}
+                                    onChange={() => onToggleBrand(brand)}
+                                    className="size-4 accent-primary"
+                                />
+                                <span className="text-sm text-base-content/75">{brand}</span>
+                            </label>
+                        ))}
+                    </div>
+                </fieldset>
+            )}
 
             <fieldset className="border-t border-base-300 pt-6">
                 <legend className="eyebrow mb-4">Max price</legend>
@@ -63,7 +105,7 @@ const ShopFilters = ({
                     type="range"
                     min={priceBounds.min}
                     max={priceBounds.max}
-                    step={1000}
+                    step={50}
                     value={maxPrice}
                     onChange={(e) => onMaxPriceChange(Number(e.target.value))}
                     className="w-full accent-primary"
@@ -75,31 +117,11 @@ const ShopFilters = ({
                         {formatCurrency(maxPrice)}
                     </span>
                 </div>
-            </fieldset>
-
-            <fieldset className="border-t border-base-300 pt-6">
-                <legend className="eyebrow mb-4">Technology</legend>
-                <div className="flex flex-wrap gap-2">
-                    {technologies.map((tech) => {
-                        const active = selectedTech.includes(tech);
-
-                        return (
-                            <button
-                                key={tech}
-                                type="button"
-                                onClick={() => onToggleTech(tech)}
-                                aria-pressed={active}
-                                className={`border px-3 py-1.5 text-[11px] tracking-wide transition-colors ${
-                                    active
-                                        ? 'border-primary bg-primary text-primary-content'
-                                        : 'border-base-300 text-base-content/65 hover:border-base-content/40'
-                                }`}
-                            >
-                                {tech}
-                            </button>
-                        );
-                    })}
-                </div>
+                {/* Unpriced items would otherwise vanish the moment the slider
+                    moves, which looks like stock disappearing. */}
+                <p className="mt-3 text-[11px] leading-relaxed text-base-content/45">
+                    Items marked “price on request” are always shown.
+                </p>
             </fieldset>
         </div>
     );

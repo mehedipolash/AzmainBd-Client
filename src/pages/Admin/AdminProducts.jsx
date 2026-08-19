@@ -6,6 +6,7 @@ import Loader from '../../components/Loader';
 import UseToast from '../../Hooks/UseToast';
 import { confirmAction, alertError } from '../../utils/alerts';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { resolveImageUrl } from '../../utils/imageUrl';
 
 const AdminProducts = () => {
     const { notify } = UseToast();
@@ -117,7 +118,7 @@ const AdminProducts = () => {
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
                                             <img
-                                                src={product.image}
+                                                src={resolveImageUrl(product.image)}
                                                 alt=""
                                                 loading="lazy"
                                                 className="size-10 shrink-0 border border-base-300 object-cover"

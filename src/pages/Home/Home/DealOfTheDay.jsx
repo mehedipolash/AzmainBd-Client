@@ -1,34 +1,40 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router';
-import UseCountdown from '../../../Hooks/UseCountdown';
-import { getDealOfTheDay, getSoldPercent } from '../../../data/products';
-import { formatCurrency, calcDiscount } from '../../../utils/formatCurrency';
+import { FaWhatsapp } from 'react-icons/fa6';
+import UseCatalogue from '../../../Hooks/UseCatalogue';
+import { getDealOfTheDay, LOW_STOCK_THRESHOLD } from '../../../utils/catalogue';
+import { formatCurrency, calcDiscount, hasPrice } from '../../../utils/formatCurrency';
+import { resolveImageUrl } from '../../../utils/imageUrl';
+import { productEnquiryLink } from '../../../utils/business';
 
-const DEAL_WINDOW_MS = 8 * 60 * 60 * 1000;
+/* ---------------------------------------------------------------------------
+   Featured product.
+
+   This used to run a countdown timer against a "deal window" invented in the
+   browser — a clock that reset on every page load and counted down to nothing.
+   On a real client's site that is a fabricated urgency signal, so it is gone.
+
+   What remains is honest: the item closest to selling out, with its real
+   remaining stock.
+--------------------------------------------------------------------------- */
 
 const DealOfTheDay = () => {
-    // Lazy initialiser runs once on mount, so the deal window is fixed for the
-    // life of the page instead of drifting on every render.
-    const [dealEndsAt] = useState(() => Date.now() + DEAL_WINDOW_MS);
-    const { hours, minutes, seconds, expired } = UseCountdown(dealEndsAt);
+    const { products, loading } = UseCatalogue();
 
-    // Picks the discounted, in-stock product closest to selling out, so the
-    // banner always promotes something with genuine scarcity.
-    const deal = getDealOfTheDay();
+    const deal = getDealOfTheDay(products);
 
-    if (!deal) return null;
+    if (loading || !deal) return null;
 
-    const soldPercent = getSoldPercent(deal);
-    const remaining = deal.stockTotal - deal.soldCount;
     const discount = calcDiscount(deal.price, deal.oldPrice);
-    const pad = (value) => String(value).padStart(2, '0');
+    const priced = hasPrice(deal);
+    const scarce = deal.stock <= LOW_STOCK_THRESHOLD;
 
     return (
         <section className="container-px section-y">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
                 <div className="relative overflow-hidden bg-base-200" data-aos="fade-right">
                     <img
-                        src={deal.image}
+                        src={resolveImageUrl(deal.image)}
                         alt={deal.name}
                         loading="lazy"
                         className="aspect-square w-full object-cover"
@@ -40,83 +46,78 @@ const DealOfTheDay = () => {
                     )}
                 </div>
 
-                <div>
-                    <p className="eyebrow mb-3">Deal of the day</p>
+                <div data-aos="fade-left">
+                    <p className="eyebrow mb-3">Featured product</p>
 
                     <h2 className="font-display text-3xl leading-tight font-semibold sm:text-4xl">
                         {deal.name}
                     </h2>
+
+                    {deal.brand && (
+                        <p className="mt-2 text-[12px] tracking-[0.12em] text-base-content/45 uppercase">
+                            {deal.brand}
+                        </p>
+                    )}
 
                     <p className="mt-5 text-[15px] leading-relaxed text-base-content/65">
                         {deal.description}
                     </p>
 
                     <div className="mt-6 flex items-baseline gap-3">
-                        <span className="text-3xl font-semibold text-primary">
+                        <span
+                            className={
+                                priced
+                                    ? 'text-3xl font-semibold text-primary'
+                                    : 'text-xl font-medium text-base-content/60 italic'
+                            }
+                        >
                             {formatCurrency(deal.price)}
                         </span>
-                        {deal.oldPrice && (
+                        {priced && deal.oldPrice && (
                             <span className="text-base text-base-content/35 line-through">
                                 {formatCurrency(deal.oldPrice)}
                             </span>
                         )}
                     </div>
 
-                    {/* Stock progress — the honest scarcity signal. */}
-                    <div className="mt-8">
-                        <div className="mb-2 flex items-baseline justify-between text-[13px]">
-                            <span className="text-base-content/60">
-                                Sold: <span className="font-medium text-base-content">{deal.soldCount}</span>
-                            </span>
-                            <span className="text-base-content/60">
-                                Available:{' '}
-                                <span className="font-medium text-base-content">{remaining}</span>
-                            </span>
-                        </div>
+                    {/* Real remaining stock, straight from the database. */}
+                    <p
+                        className={`mt-6 text-sm font-medium ${
+                            scarce ? 'text-warning' : 'text-base-content/60'
+                        }`}
+                    >
+                        {scarce
+                            ? `Only ${deal.stock} left in stock`
+                            : `${deal.stock} in stock, ready to dispatch`}
+                    </p>
 
-                        <div
-                            className="h-1.5 w-full overflow-hidden bg-base-300"
-                            role="progressbar"
-                            aria-valuenow={soldPercent}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                            aria-label={`${deal.soldCount} of ${deal.stockTotal} sold`}
-                        >
-                            <div
-                                className="h-full bg-warning transition-[width] duration-500"
-                                style={{ width: `${soldPercent}%` }}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="mt-8">
-                        <p className="eyebrow mb-3 text-warning">
-                            {expired ? 'Offer ended' : 'Offer ends in'}
-                        </p>
-                        <div className="flex gap-3">
-                            {[
-                                { value: hours, unit: 'Hrs' },
-                                { value: minutes, unit: 'Min' },
-                                { value: seconds, unit: 'Sec' },
-                            ].map((part) => (
-                                <div
-                                    key={part.unit}
-                                    className="flex w-17 flex-col items-center border border-warning/30 bg-warning/8 py-2.5"
+                    {deal.specs?.length > 0 && (
+                        <ul className="mt-6 flex flex-wrap gap-2">
+                            {deal.specs.map((spec) => (
+                                <li
+                                    key={spec}
+                                    className="border border-base-300 px-3 py-1.5 text-[11px] tracking-wide text-base-content/65"
                                 >
-                                    <span className="font-display text-2xl font-semibold text-warning tabular-nums">
-                                        {pad(part.value)}
-                                    </span>
-                                    <span className="text-[10px] tracking-[0.14em] text-base-content/45 uppercase">
-                                        {part.unit}
-                                    </span>
-                                </div>
+                                    {spec}
+                                </li>
                             ))}
-                        </div>
-                    </div>
+                        </ul>
+                    )}
 
-                    <Link to={`/product/${deal._id}`} className="btn-shop mt-9">
-                        Shop this deal
-                    </Link>
+                    <div className="mt-9 flex flex-wrap gap-3">
+                        <Link to={`/product/${deal._id}`} className="btn-shop">
+                            View details
+                        </Link>
+                        <a
+                            href={productEnquiryLink(deal)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 bg-[#25D366] px-7 py-3 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
+                        >
+                            <FaWhatsapp className="text-base" aria-hidden="true" />
+                            Order on WhatsApp
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>

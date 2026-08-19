@@ -4,7 +4,6 @@ import {
     FaUser,
     FaRightFromBracket,
     FaBagShopping,
-    FaTriangleExclamation,
     FaGaugeHigh,
 } from 'react-icons/fa6';
 import UseAuth from '../Hooks/UseAuth';
@@ -22,7 +21,7 @@ const getInitials = (user) => {
 };
 
 const UserMenu = () => {
-    const { user, isVerified, isAdmin, logOut } = UseAuth();
+    const { user, isAdmin, logOut } = UseAuth();
     const { notify } = UseToast();
     const navigate = useNavigate();
 
@@ -86,14 +85,6 @@ const UserMenu = () => {
                         </span>
                     )}
 
-                    {/* Quiet dot rather than a banner — a persistent warning in
-                        the header would nag on every page. */}
-                    {!isVerified && (
-                        <span
-                            className="absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-base-100 bg-warning"
-                            aria-hidden="true"
-                        />
-                    )}
                 </span>
             </button>
 
@@ -110,18 +101,7 @@ const UserMenu = () => {
                             {user?.email}
                         </p>
 
-                        {isVerified ? (
-                            <span className="pill-stock mt-2.5">Verified</span>
-                        ) : (
-                            <Link
-                                to="/verify-email"
-                                onClick={() => setOpen(false)}
-                                className="pill-urgent mt-2.5"
-                            >
-                                <FaTriangleExclamation className="text-[9px]" aria-hidden="true" />
-                                Verify email
-                            </Link>
-                        )}
+                        {isAdmin && <span className="pill-stock mt-2.5">Administrator</span>}
                     </div>
 
                     <ul className="py-1.5">

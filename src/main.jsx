@@ -6,6 +6,7 @@ import ThemeProvider from './Contexts/ThemeProvider.jsx'
 import AuthProvider from './Contexts/AuthProvider.jsx'
 import ToastProvider from './Contexts/ToastProvider.jsx'
 import CartProvider from './Contexts/CartProvider.jsx'
+import CatalogueProvider from './Contexts/CatalogueProvider.jsx'
 import router from './routers/router.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -13,9 +14,11 @@ createRoot(document.getElementById('root')).render(
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
-          <CartProvider>
-            <RouterProvider router={router}></RouterProvider>
-          </CartProvider>
+          <CatalogueProvider>
+            <CartProvider>
+              <RouterProvider router={router}></RouterProvider>
+            </CartProvider>
+          </CatalogueProvider>
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>

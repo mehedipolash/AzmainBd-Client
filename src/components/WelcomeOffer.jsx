@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import { FaXmark, FaTag } from 'react-icons/fa6';
-import UseToast from '../Hooks/UseToast';
+import { FaXmark, FaWhatsapp } from 'react-icons/fa6';
+import { buildWhatsAppLink, PHONE_DISPLAY } from '../utils/business';
 
 const STORAGE_KEY = 'azmainbd-welcome-seen';
 const OPEN_DELAY_MS = 1400;
-const PROMO_CODE = 'AZMAIN10';
 
 // Shown once per visitor. The flag is written the moment it opens — not on
 // close — so refreshing mid-modal does not re-trigger it.
@@ -13,7 +12,6 @@ const WelcomeOffer = () => {
     const [open, setOpen] = useState(false);
     const closeRef = useRef(null);
     const previouslyFocused = useRef(null);
-    const { notify } = UseToast();
 
     useEffect(() => {
         let seen;
@@ -65,15 +63,6 @@ const WelcomeOffer = () => {
 
     if (!open) return null;
 
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(PROMO_CODE);
-            notify(`Code ${PROMO_CODE} copied`);
-        } catch {
-            notify(`Your code is ${PROMO_CODE}`, 'info');
-        }
-    };
-
     return (
         <div className="fixed inset-0 z-90 flex items-center justify-center p-4">
             <button
@@ -102,7 +91,7 @@ const WelcomeOffer = () => {
 
                 <div className="relative hidden min-h-72 sm:block">
                     <img
-                        src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"
+                        src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80"
                         alt=""
                         aria-hidden="true"
                         className="absolute inset-0 h-full w-full object-cover"
@@ -111,37 +100,44 @@ const WelcomeOffer = () => {
                 </div>
 
                 <div className="flex flex-col justify-center p-8 text-center sm:p-10 sm:text-left">
-                    <span className="mx-auto flex w-fit items-center gap-2 bg-warning/15 px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-warning uppercase sm:mx-0">
-                        <FaTag className="text-[10px]" aria-hidden="true" />
-                        First order offer
+                    <span className="mx-auto flex w-fit items-center gap-2 bg-[#25D366]/15 px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-[#128C4A] uppercase sm:mx-0">
+                        <FaWhatsapp className="text-[11px]" aria-hidden="true" />
+                        How to order
                     </span>
 
                     <h2
                         id="welcome-title"
                         className="mt-5 font-display text-3xl leading-tight font-semibold sm:text-4xl"
                     >
-                        Get 10% off your first order
+                        We take orders on WhatsApp
                     </h2>
 
                     <p className="mt-4 text-sm leading-relaxed text-base-content/65">
-                        Authorised stock, official warranty and free delivery over ৳ 5,000. Use the
-                        code below at checkout.
+                        Browse the shop, then tap the WhatsApp button on any product. Your basket
+                        arrives with us as a message and we confirm stock, delivery and payment on
+                        chat — usually within minutes.
                     </p>
 
-                    <button
-                        type="button"
-                        onClick={handleCopy}
-                        className="mt-6 border border-dashed border-primary/45 bg-secondary px-5 py-3 font-display text-xl font-semibold tracking-[0.14em] text-primary transition-colors hover:bg-primary hover:text-primary-content"
-                    >
-                        {PROMO_CODE}
-                    </button>
-                    <p className="mt-2 text-[11px] tracking-wide text-base-content/40">
-                        Tap the code to copy
+                    <p className="mt-4 text-[13px] font-medium text-base-content/75">
+                        {PHONE_DISPLAY}
                     </p>
 
-                    <Link to="/shop" onClick={() => setOpen(false)} className="btn-shop mt-6">
-                        Start shopping
-                    </Link>
+                    <div className="mt-6 grid gap-2">
+                        <a
+                            href={buildWhatsAppLink('Hello Azmain BD, I would like to order.')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setOpen(false)}
+                            className="flex items-center justify-center gap-2 bg-[#25D366] py-3.5 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
+                        >
+                            <FaWhatsapp className="text-base" aria-hidden="true" />
+                            Message us now
+                        </a>
+
+                        <Link to="/shop" onClick={() => setOpen(false)} className="btn-shop-outline">
+                            Browse the shop
+                        </Link>
+                    </div>
 
                     <button
                         type="button"

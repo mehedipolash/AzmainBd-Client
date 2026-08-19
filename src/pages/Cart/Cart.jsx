@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { FaTrash, FaLock, FaTruckFast } from 'react-icons/fa6';
+import { FaTrash, FaWhatsapp, FaTruckFast } from 'react-icons/fa6';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import UseCart from '../../Hooks/UseCart';
 import UseToast from '../../Hooks/UseToast';
 import { formatCurrency } from '../../utils/formatCurrency';
-import { FREE_DELIVERY_THRESHOLD } from '../../data/products';
+import { FREE_DELIVERY_THRESHOLD } from '../../utils/catalogue';
+import { cartEnquiryLink } from '../../utils/business';
 
 const Cart = () => {
     const { items, removeItem, updateQuantity, subtotal, count } = UseCart();
@@ -182,19 +183,23 @@ const Cart = () => {
                                     </div>
                                 </dl>
 
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        notify('Checkout goes live once payments are connected', 'info')
-                                    }
-                                    className="btn-shop mt-7 w-full"
+                                {/* No online payment: the shop takes orders on
+                                    WhatsApp, so the cart hands the whole basket
+                                    over as a pre-written message rather than
+                                    pretending a checkout exists. */}
+                                <a
+                                    href={cartEnquiryLink(items)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-7 flex w-full items-center justify-center gap-2 bg-[#25D366] py-3.5 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
                                 >
-                                    Proceed to checkout
-                                </button>
+                                    <FaWhatsapp className="text-base" aria-hidden="true" />
+                                    Order on WhatsApp
+                                </a>
 
-                                <p className="mt-4 flex items-center justify-center gap-2 text-[12px] text-base-content/50">
-                                    <FaLock className="text-[10px]" aria-hidden="true" />
-                                    Secured by SSLCommerz
+                                <p className="mt-4 text-center text-[12px] leading-relaxed text-base-content/50">
+                                    Your basket is sent as a message. We confirm
+                                    stock, delivery and payment on chat.
                                 </p>
 
                                 <Link

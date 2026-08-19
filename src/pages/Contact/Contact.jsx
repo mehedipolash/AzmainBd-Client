@@ -3,27 +3,39 @@ import { useForm } from 'react-hook-form';
 import { FaPhone, FaEnvelope, FaLocationDot, FaClock, FaWhatsapp } from 'react-icons/fa6';
 import PageHeader from '../../components/PageHeader';
 import { alertSuccess } from '../../utils/alerts';
+import {
+    ADDRESS_LINES,
+    EMAIL,
+    EMAIL_HREF,
+    MAP_URL,
+    OPENING_HOURS,
+    PHONE_DISPLAY,
+    PHONE_HREF,
+    buildWhatsAppLink,
+} from '../../utils/business';
 
+// WhatsApp leads: it is how the shop actually takes orders, so it is the
+// channel a visitor should reach for first.
 const CHANNELS = [
-    {
-        icon: FaPhone,
-        label: 'Sales hotline',
-        value: '+880 1000-000000',
-        href: 'tel:+8801000000000',
-        note: 'Daily, 9am – 9pm',
-    },
     {
         icon: FaWhatsapp,
         label: 'WhatsApp',
-        value: '+880 1000-000000',
-        href: 'https://wa.me/8801000000000',
-        note: 'Fastest for order updates',
+        value: PHONE_DISPLAY,
+        href: buildWhatsAppLink('Hello Azmain BD, I have a question.'),
+        note: 'Fastest way to order — we reply here',
+    },
+    {
+        icon: FaPhone,
+        label: 'Call the shop',
+        value: PHONE_DISPLAY,
+        href: PHONE_HREF,
+        note: OPENING_HOURS,
     },
     {
         icon: FaEnvelope,
         label: 'Email',
-        value: 'support@azmainbd.com',
-        href: 'mailto:support@azmainbd.com',
+        value: EMAIL,
+        href: EMAIL_HREF,
         note: 'Replies within one working day',
     },
 ];
@@ -45,12 +57,29 @@ const Contact = () => {
         formState: { errors, isSubmitting },
     } = useForm({ mode: 'onTouched' });
 
-    // Posts to the backend once the endpoint exists; the form already collects
-    // and validates everything it will need.
-    const onSubmit = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 600));
+    /**
+     * There is no message endpoint on the server, so rather than pretending a
+     * message was sent, the form hands its contents to WhatsApp — the channel
+     * the shop actually reads. The fields are still validated here so the
+     * message that arrives is complete.
+     */
+    const onSubmit = async (values) => {
+        const message = [
+            `Hello Azmain BD,`,
+            ``,
+            `Name: ${values.name}`,
+            `Email: ${values.email}`,
+            values.phone ? `Phone: ${values.phone}` : null,
+            values.subject ? `Subject: ${values.subject}` : null,
+            ``,
+            values.message,
+        ]
+            .filter((line) => line !== null)
+            .join('\n');
+
+        window.open(buildWhatsAppLink(message), '_blank', 'noopener,noreferrer');
         reset();
-        alertSuccess('Message sent', 'We will reply within one working day.');
+        alertSuccess('Opening WhatsApp', 'Send the message and we will reply shortly.');
     };
 
     const fieldClass = (invalid) =>
@@ -125,11 +154,19 @@ const Contact = () => {
                                         className="mt-1 shrink-0 text-xs text-primary"
                                         aria-hidden="true"
                                     />
-                                    <span>
-                                        Showroom: Level 4, Gulshan Avenue
-                                        <br />
-                                        Dhaka 1212, Bangladesh
-                                    </span>
+                                    <a
+                                        href={MAP_URL}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="transition-colors hover:text-primary"
+                                    >
+                                        {ADDRESS_LINES.map((line) => (
+                                            <span key={line} className="block">
+                                                {line}
+                                            </span>
+                                        ))}
+                                        <span className="block">Bangladesh</span>
+                                    </a>
                                 </li>
                                 <li className="flex gap-3">
                                     <FaClock
@@ -258,7 +295,7 @@ const Contact = () => {
                             </div>
 
                             <button type="submit" disabled={isSubmitting} className="btn-shop w-full">
-                                {isSubmitting ? 'Sending…' : 'Send message'}
+                                {isSubmitting ? 'Opening…' : 'Send via WhatsApp'}
                             </button>
                         </form>
                     </div>

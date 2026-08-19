@@ -79,6 +79,22 @@ export const api = {
     post: (path, body, { withAuth = true } = {}) => axiosInstance.post(path, body, { withAuth }),
     patch: (path, body) => axiosInstance.patch(path, body, { withAuth: true }),
     delete: (path) => axiosInstance.delete(path, { withAuth: true }),
+
+    // Multipart upload. Content-Type is deleted rather than set: the browser
+    // has to generate it itself so it can append the multipart boundary, and
+    // the instance default of application/json would otherwise override it.
+    upload: (path, formData, { onProgress } = {}) =>
+        axiosInstance.post(path, formData, {
+            withAuth: true,
+            headers: { 'Content-Type': undefined },
+            timeout: 60000,
+            onUploadProgress: onProgress
+                ? (event) =>
+                      onProgress(
+                          event.total ? Math.round((event.loaded * 100) / event.total) : 0,
+                      )
+                : undefined,
+        }),
 };
 
 export default axiosInstance;

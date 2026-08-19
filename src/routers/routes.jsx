@@ -26,7 +26,7 @@ import {
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import ForgotPassword from "../pages/Auth/ForgotPassword";
-import VerifyEmail from "../pages/Auth/VerifyEmail";
+import ChangePassword from "../pages/Auth/ChangePassword";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
 
 // The route table lives apart from createBrowserRouter so tests can import it
@@ -110,8 +110,10 @@ export const routes = [
         element: <ForgotPassword></ForgotPassword>,
       },
       {
-        path: "/verify-email",
-        element: <VerifyEmail></VerifyEmail>,
+        // Signing up needs no verification, but changing a password does —
+        // the page asks for the current one before accepting a new one.
+        path: "/change-password",
+        element: <ChangePassword></ChangePassword>,
       },
     ],
   },

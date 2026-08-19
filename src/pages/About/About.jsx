@@ -3,13 +3,14 @@ import { Link } from 'react-router';
 import { FaShieldHalved, FaBoxOpen, FaHeadset, FaTruckFast } from 'react-icons/fa6';
 import PageHeader from '../../components/PageHeader';
 import SectionTitle from '../../components/SectionTitle';
-import { getStoreStats } from '../../data/products';
+import UseCatalogue from '../../Hooks/UseCatalogue';
+import { getStoreStats } from '../../utils/catalogue';
 
 const VALUES = [
     {
         icon: FaShieldHalved,
-        title: 'Authorised only',
-        body: 'We buy direct from brand distributors. No grey imports, no parallel stock, no refurbished units sold as new.',
+        title: 'Genuine only',
+        body: 'We import direct and buy through brand distributors. Every item is genuine, sealed and in date — never a counterfeit or a refill.',
     },
     {
         icon: FaBoxOpen,
@@ -29,14 +30,15 @@ const VALUES = [
 ];
 
 const About = () => {
-    const stats = getStoreStats();
+    const { products, categories } = UseCatalogue();
+    const stats = getStoreStats(products, categories);
 
     return (
         <div>
             <PageHeader
                 eyebrow="Our story"
                 title="Built on what the box actually contains"
-                subtitle="An authorised electronics retailer serving Bangladesh since 2019."
+                subtitle="House of global brands — imported personal care, sold from Gulshan-1, Dhaka."
                 image="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'About' }]}
             />
@@ -82,13 +84,10 @@ const About = () => {
                 <div className="container-px py-14 sm:py-16">
                     <dl className="grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
                         {[
-                            { value: `${stats.productCount}+`, label: 'Products in stock' },
-                            { value: stats.brandCount, label: 'Authorised brands' },
-                            {
-                                value: stats.totalReviews.toLocaleString('en-BD'),
-                                label: 'Customer reviews',
-                            },
-                            { value: `${stats.averageRating}★`, label: 'Average rating' },
+                            { value: `${stats.productCount}`, label: 'Products in stock' },
+                            { value: stats.brandCount, label: 'Global brands' },
+                            { value: stats.categoryCount, label: 'Categories' },
+                            { value: 'Gulshan-1', label: 'Dhaka showroom' },
                         ].map((stat) => (
                             <div key={stat.label}>
                                 <dt className="sr-only">{stat.label}</dt>
