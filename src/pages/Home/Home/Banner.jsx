@@ -65,7 +65,7 @@ const Banner = () => {
                 is what gives the section depth instead of flattening it. */}
             <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-linear-to-r from-[#071319]/96 via-[#0a2531]/78 to-transparent"
+                className="absolute inset-0 bg-linear-to-r from-[#061217]/88 via-[#0a2531]/58 to-transparent"
             />
 
             {/* Soft brand glows lift the card off the photo. */}
@@ -79,7 +79,7 @@ const Banner = () => {
             />
 
             <div className="container-px relative py-14 sm:py-16 lg:py-20">
-                <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
+                <div className="grid items-start gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
                     <div>
                         <Reveal direction="up" as="p" className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand-cyan/45 bg-brand-cyan/15 px-4 py-2 text-[12px] font-semibold tracking-[0.18em] text-white uppercase backdrop-blur-sm">
                             <span
@@ -166,7 +166,10 @@ const Banner = () => {
                         <Reveal
                             direction="left"
                             delay={0.18}
-                            className="w-full"
+                            // A small top offset rather than none: level with
+                            // the headline reads as deliberate, level with the
+                            // very top of the section reads as unanchored.
+                            className="w-full lg:mt-6"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
                             onFocusCapture={() => setPaused(true)}
