@@ -57,6 +57,24 @@
      buttons and links. */
   --color-brand-surface: #0a3f1c;
   --color-brand-surface-content: #ffffff;
+
+  /* The footer is its own surface, separate from --color-brand-surface, for a
+     measured reason: the logo's wordmark ink is very dark green — sampled at
+     (0,48,0) to (0,80,0). Against the brand green footer that scored 1.11:1,
+     which is not "hard to read" but the same luminance as the panel, and it is
+     why the client reported the logo disappearing there.
+
+     No dark background fixes this. Teal, slate and near-black were all tested
+     and every one leaves the darkest ink under 1.2:1, because the ink itself is
+     nearly black. The footer therefore uses a LIGHT teal gradient, which puts
+     the logo's own ink at 3.6:1 to 9.1:1 and lets the footer show the exact
+     same lockup as the navbar — no separate knockout artwork to drift out of
+     sync with the brand. Body text on it measures 15.6:1. */
+  --color-footer-from: #f0faf8;
+  --color-footer-to: #ddf0ec;
+  --color-footer-content: #12211f;
+  --color-footer-muted: #4a5f5c;
+  --color-footer-rule: #c2dcd7;
 }
 
 /* Light theme — the default. Near-monochrome, mint section tint. */
@@ -249,6 +267,16 @@
   [data-theme='azmaindark'] {
     --color-brand-surface: #0c1a11;
     --color-brand-surface-content: #e2ebe4;
+
+    /* The dark theme keeps a dark footer — a light panel at the foot of a dark
+       page is a glare block. The logo works here because the dark theme already
+       swaps to its own rendition, whose greens are lifted to clear 3:1. The
+       teal hue is carried through so both themes read as the same footer. */
+    --color-footer-from: #0e1f1e;
+    --color-footer-to: #0a1817;
+    --color-footer-content: #e6f0ee;
+    --color-footer-muted: #8fa8a4;
+    --color-footer-rule: #24403d;
   }
 }
 

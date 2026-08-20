@@ -146,11 +146,14 @@ const ProductDetails = () => {
 
             <div className="container-px py-10 lg:py-16">
                 <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-                    <div className="relative overflow-hidden bg-base-200">
+                    <div className="relative overflow-hidden rounded-xl border border-base-300 bg-base-200">
                         <img
                             src={resolveImageUrl(product.image)}
                             alt={product.name}
-                            className={`aspect-4/5 w-full bg-white object-contain ${
+                            // Square, matching the card and the client's own
+                            // photography — a portrait box left empty bands
+                            // above and below these square marketing panels.
+                            className={`aspect-square w-full bg-white object-contain p-6 ${
                                 soldOut ? 'opacity-50 grayscale' : ''
                             }`}
                         />
@@ -379,7 +382,7 @@ const ProductDetails = () => {
                     <div className="container-px section-y">
                         <SectionTitle eyebrow="You may also like" title="Related products" />
 
-                        <div className="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
                             {related.map((item) => (
                                 <ProductCard key={item._id} product={item} />
                             ))}

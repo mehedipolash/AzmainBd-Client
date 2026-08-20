@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FaWhatsapp } from 'react-icons/fa6';
 import { buildWhatsAppLink, PHONE_DISPLAY } from '../utils/business';
+import WhatsAppIcon from './WhatsAppIcon';
 
 /* ---------------------------------------------------------------------------
    Floating WhatsApp button.
@@ -52,7 +52,7 @@ const WhatsAppButton = () => {
             />
 
             <span className="relative py-3.5">
-                <FaWhatsapp className="text-2xl" aria-hidden="true" />
+                <WhatsAppIcon className="size-7" />
             </span>
 
             {/* Width transition rather than display, so it animates. The label

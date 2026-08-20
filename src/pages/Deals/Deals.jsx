@@ -118,7 +118,7 @@ const Deals = () => {
                         actionPath="/"
                     />
                 ) : featured.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
                         {featured.map((product) => (
                             <ProductCard key={product._id} product={product} />
                         ))}

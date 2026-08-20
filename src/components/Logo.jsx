@@ -36,8 +36,12 @@ import { SITE_NAME } from '../utils/constants';
    cannot fix it: brightness is multiplicative, so lifting that green enough to
    read would blow the red monogram out to pink. The dark rendition instead
    lifts only the green family, hue-preserved, until it clears 3:1 — the reds
-   and the tagline keep their exact brand colour. Same logo, rendered for a
-   different ground, the way print work carries a knockout version.
+   and the tagline keep their exact brand colour.
+
+   The footer used to sit on the brand green, where this same wordmark measured
+   1.11:1 and vanished. That was fixed by changing the PANEL to a light teal
+   rather than by shipping knockout artwork — so the footer now shows the very
+   same lockup as the navbar, with nothing extra to keep in sync.
 
    `size` controls height only; width follows the aspect ratio, since fixing
    both would distort the mark.
@@ -61,9 +65,11 @@ const Logo = ({ size = 'md', to = '/', className = '', variant = 'stacked' }) =>
     const key = SOURCES[variant] ? variant : 'stacked';
     const scale = SIZES[key];
 
+    const source = SOURCES[key][isDark ? 'dark' : 'light'];
+
     const image = (
         <img
-            src={SOURCES[key][isDark ? 'dark' : 'light']}
+            src={source}
             alt={SITE_NAME}
             // Eager and high priority: the logo is above the fold in the
             // navbar, and lazy-loading it produces a visible pop on first

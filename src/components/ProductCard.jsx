@@ -43,17 +43,24 @@ const ProductCard = ({ product }) => {
         // A bordered surface rather than a bare image: the client's photography
         // is shot on white, so without a frame the products bleed into the page
         // and the grid loses its rhythm.
-        <article className="group flex h-full flex-col overflow-hidden border border-base-300 bg-base-100 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl">
-            <div className="relative overflow-hidden bg-white">
+        <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-base-300 bg-base-100 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_12px_32px_-12px_rgba(0,0,0,0.18)]">
+            <div className="relative overflow-hidden rounded-t-xl bg-white">
                 <Link to={`/product/${_id}`} className="block">
                     <img
                         src={resolveCardImageUrl(image)}
                         alt={name}
                         loading="lazy"
-                        // Padded rather than bled to the edge — the photos are
+                        // Square, not 4:5. The client's photography is
+                        // square-ish marketing panels, so a portrait box left
+                        // empty bands above and below and the product floated
+                        // small inside a tall frame. A 1:1 box matches the
+                        // source and shows the product larger at the same card
+                        // width.
+                        //
+                        // Padded rather than bled to the edge: these are
                         // packshots, and a product touching the card border
-                        // reads as a crop rather than as a deliberate frame.
-                        className={`aspect-4/5 w-full bg-white object-contain p-4 transition-transform duration-700 group-hover:scale-[1.06] ${
+                        // reads as a crop rather than a deliberate frame.
+                        className={`aspect-square w-full bg-white object-contain p-5 transition-transform duration-500 group-hover:scale-[1.04] ${
                             soldOut ? 'opacity-45 grayscale' : ''
                         }`}
                     />
@@ -63,14 +70,14 @@ const ProductCard = ({ product }) => {
                     so a sold-out item can never also read "in stock". */}
                 {(soldOut || lowStock) && (
                     <span
-                        className={`absolute top-3 left-3 px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] uppercase ${TONE_CLASSES[badge.tone]}`}
+                        className={`absolute top-3 left-3 rounded-full px-3 py-1 text-[10px] font-semibold tracking-[0.12em] uppercase shadow-sm ${TONE_CLASSES[badge.tone]}`}
                     >
                         {badge.label}
                     </span>
                 )}
 
                 {discount > 0 && !soldOut && (
-                    <span className="absolute top-3 right-3 bg-primary px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] text-primary-content uppercase">
+                    <span className="absolute top-3 right-3 rounded-full bg-accent px-3 py-1 text-[10px] font-semibold tracking-[0.12em] text-accent-content uppercase shadow-sm">
                         -{discount}%
                     </span>
                 )}
@@ -85,7 +92,7 @@ const ProductCard = ({ product }) => {
                         <OrderButton
                             href={productEnquiryLink(product)}
                             signedOutLabel=""
-                            className="flex size-9 items-center justify-center bg-base-100 text-sm shadow-sm transition-colors hover:bg-[#25D366] hover:text-white"
+                            className="flex size-9 items-center justify-center rounded-full bg-base-100 text-sm shadow-md transition-colors hover:bg-[#25D366] hover:text-white"
                         >
                             <FaWhatsapp />
                         </OrderButton>
@@ -129,7 +136,7 @@ const ProductCard = ({ product }) => {
             {/* flex-1 with the price pushed to the bottom, so a one-line and a
                 three-line product name still produce cards whose prices sit on
                 the same line across a row. */}
-            <div className="flex flex-1 flex-col border-t border-base-300 p-4">
+            <div className="flex flex-1 flex-col border-t border-base-300 p-4 sm:p-5">
                 {/* Brand, not a star rating: this shop has no review system,
                     and printing an invented score on a real client's site is a
                     claim they cannot stand behind. */}
@@ -143,7 +150,7 @@ const ProductCard = ({ product }) => {
                     {/* Clamped to two lines: the client's product names run to
                         nine words, and letting them wrap freely made cards in
                         the same row different heights. */}
-                    <h3 className="font-display line-clamp-2 text-[15px] leading-snug font-semibold transition-colors hover:text-primary">
+                    <h3 className="font-display line-clamp-2 text-base leading-snug font-semibold transition-colors hover:text-primary">
                         {name}
                     </h3>
                 </Link>
@@ -152,7 +159,7 @@ const ProductCard = ({ product }) => {
                     <span
                         className={
                             priced
-                                ? 'text-[16px] font-semibold text-primary'
+                                ? 'font-display text-[19px] font-semibold text-primary'
                                 : 'text-[13px] font-medium text-base-content/55 italic'
                         }
                     >
