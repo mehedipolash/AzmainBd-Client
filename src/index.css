@@ -16,34 +16,48 @@
    Type pairing does the heavy lifting: a serif display face for headings
    against a clean grotesque for UI.
 
-   Colour discipline — two accents, each with exactly one job:
+   Colour discipline — three roles, each with exactly one job:
 
      green  brand. Buttons, links, active nav, focus rings, prices.
+     gold   celebration. Offers, featured flags, highlights.
      red    urgency only. Low stock and sale badges.
 
-   Both are taken from the client's logo, so the mark sits in the palette
-   rather than on top of it. Red is never decorative — if it appears,
-   something is scarce. Everything else is monochrome, letting the product
-   photography carry the page.
+   Green and red are taken from the client's logo, so the mark belongs to the
+   palette rather than sitting on top of it. Gold is the third — the logo
+   carries gold highlights and the shop sells gold and jewel-toned bangles, and
+   a palette whose only second colour meant "danger" had nothing to celebrate
+   with.
 
-   No gradients. Corners stay sharp (4px). Buttons are rectangular.
+   Red is never decorative: if it appears, something is scarce.
+
+   Surfaces are warm rather than grey, corners are soft (10px), and shadows are
+   real. A card with a radius and a soft shadow reads as an object; a square
+   hairline box reads as a table cell.
 --------------------------------------------------------------------------- */
 
 @theme {
   --font-display: "Crimson Text", ui-serif, Georgia, serif;
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #111111;
+  --color-ink: #0e1410;
   --color-ink-soft: #2d2d2d;
   --color-ink-muted: #616161;
-  --color-mint: #f2f8f3;
-  --color-line: #eaeaea;
+  --color-mint: #eef8f0;
+  --color-line: #e4ece5;
 
   /* Brand green, sampled from the client's logo. The deep shade carries white
      text; the tint backs pills and quiet section bands. */
-  --color-green-deep: #0a3f1c;
-  --color-green-mid: #0b7a2f;
-  --color-green-tint: #e6f4e8;
+  --color-green-deep: #0a4a20;
+  --color-green-mid: #118229;
+  --color-green-bright: #22a851;
+  --color-green-tint: #e4f6e8;
+
+  /* Gold — celebration. Offers, featured flags, the bangle collection. Taken
+     from the highlights in the logo's arc, so it is a third brand colour
+     rather than an imported one. */
+  --color-gold-deep: #8a5a00;
+  --color-gold-mid: #d99b00;
+  --color-gold-tint: #fdf3dc;
 
   /* The logo's red, reserved for urgency — low stock and sale badges. */
   --color-red-deep: #9e1815;
@@ -77,95 +91,101 @@
   --color-footer-rule: #c2dcd7;
 }
 
-/* Light theme — the default. Near-monochrome, mint section tint. */
+/* Light theme — the default. Warm mint bands, brand green, gold accents. */
 @plugin "daisyui/theme" {
   name: "azmainlight";
   default: true;
   color-scheme: light;
 
   --color-base-100: #ffffff;
-  --color-base-200: #f4f9f4;
-  --color-base-300: #dfe8df;
-  --color-base-content: #111511;
+  /* Warm mint rather than grey-white: section bands now read as a deliberate
+     tint of the brand hue instead of as "slightly dirty white". */
+  --color-base-200: #eef8f1;
+  --color-base-300: #d3e6d8;
+  --color-base-content: #0e1410;
 
-  /* Brand green, sampled from the logo and deepened until it carries white
-     text at AA (5.47:1). The logo's own lighter green then reads as a
-     highlight of the same hue rather than a clash. */
-  --color-primary: #0b7a2f;
+  /* Green that still carries white text at AA but actually reads as green.
+     The previous #0b7a2f was deepened so far it looked near-black at a
+     glance, which is what made the palette feel flat. */
+  --color-primary: #118229;
   --color-primary-content: #ffffff;
 
-  --color-secondary: #e6f4e8;
+  --color-secondary: #e4f6e8;
   --color-secondary-content: #08501f;
 
-  /* The logo's red is the urgency accent — low stock, sale badges. Used
-     sparingly so it keeps its force. */
-  --color-accent: #c9201d;
+  /* Gold is the celebration accent — offers, featured flags, highlights.
+     Deep enough to carry white text; the tint backs pills. */
+  --color-accent: #a06c00;
   --color-accent-content: #ffffff;
 
-  --color-neutral: #111511;
+  --color-neutral: #0e1410;
   --color-neutral-content: #ffffff;
 
   --color-info: #2d6a9f;
   --color-info-content: #ffffff;
-  --color-success: #0b7a2f;
+  --color-success: #118229;
   --color-success-content: #ffffff;
-  --color-warning: #a8610f;
+  --color-warning: #9a5800;
   --color-warning-content: #ffffff;
-  --color-error: #b3261e;
+  /* The logo's red, kept strictly for scarcity. */
+  --color-error: #c9201d;
   --color-error-content: #ffffff;
 
-  --radius-selector: 4px;
-  --radius-field: 4px;
-  --radius-box: 4px;
+  /* Soft corners and real depth. A card with a radius and a shadow reads as
+     an object worth touching; a square hairline box reads as a table cell. */
+  --radius-selector: 999px;
+  --radius-field: 8px;
+  --radius-box: 12px;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 0;
+  --depth: 1;
   --noise: 0;
 }
 
-/* Dark theme — same near-monochrome logic inverted. The mint becomes a
+/* Dark theme — the same palette inverted. The mint band becomes a
    desaturated slate so tinted sections still read as a distinct band. */
 @plugin "daisyui/theme" {
   name: "azmaindark";
   prefersdark: true;
   color-scheme: dark;
 
-  --color-base-100: #0d100d;
-  --color-base-200: #141a14;
-  --color-base-300: #253026;
-  --color-base-content: #f1f4f1;
+  --color-base-100: #0b0f0c;
+  --color-base-200: #131b15;
+  --color-base-300: #26332a;
+  --color-base-content: #f1f6f2;
 
   /* Same hues as the light theme, lifted in lightness for the dark ground —
      the light-theme values would fail contrast here. */
-  --color-primary: #43c46a;
-  --color-primary-content: #04220e;
+  --color-primary: #4ad46f;
+  --color-primary-content: #032410;
 
   --color-secondary: #16251a;
   --color-secondary-content: #cfe9d6;
 
-  --color-accent: #ff6b62;
-  --color-accent-content: #2a0806;
+  /* Gold, lifted for the dark ground. */
+  --color-accent: #f0b429;
+  --color-accent-content: #2a1c00;
 
   --color-neutral: #f2f4f3;
   --color-neutral-content: #111111;
 
   --color-info: #7aa4e0;
-  --color-info-content: #0d100d;
-  --color-success: #43c46a;
-  --color-success-content: #04220e;
+  --color-info-content: #0b0f0c;
+  --color-success: #4ad46f;
+  --color-success-content: #032410;
   --color-warning: #f0a23c;
   --color-warning-content: #21150a;
-  --color-error: #e8776d;
-  --color-error-content: #21100e;
+  --color-error: #ff6b62;
+  --color-error-content: #2a0806;
 
-  --radius-selector: 4px;
-  --radius-field: 4px;
-  --radius-box: 4px;
+  --radius-selector: 999px;
+  --radius-field: 8px;
+  --radius-box: 12px;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 0;
+  --depth: 1;
   --noise: 0;
 }
 
@@ -242,11 +262,41 @@
 
   /* Urgency pill — amber, reserved for scarcity and expiry. */
   .pill-urgent {
-    @apply inline-flex items-center gap-1.5 bg-warning/12 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] text-warning uppercase;
+    @apply inline-flex items-center gap-1.5 rounded-full bg-warning/12 px-3 py-1.5 text-[12px] font-semibold tracking-[0.08em] text-warning uppercase;
   }
 
   .pill-stock {
-    @apply inline-flex items-center gap-1.5 bg-success/12 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] text-success uppercase;
+    @apply inline-flex items-center gap-1.5 rounded-full bg-success/12 px-3 py-1.5 text-[12px] font-semibold tracking-[0.08em] text-success uppercase;
+  }
+
+  /* Admin row actions.
+
+     These were bare icons at text-xs on a transparent background — the owner
+     could not tell they were buttons, and on a touch screen the tap target was
+     smaller than a fingertip. They now carry a tinted surface, a border, and a
+     44px target, which is the minimum size a finger can hit reliably. Colour
+     states the consequence before the click: brand green edits, red deletes. */
+  .btn-icon {
+    @apply inline-flex size-10 items-center justify-center rounded-lg border text-[15px] transition-all duration-200;
+  }
+
+  .btn-icon-edit {
+    @apply border-primary/25 bg-primary/10 text-primary hover:border-primary hover:bg-primary hover:text-primary-content;
+  }
+
+  .btn-icon-delete {
+    @apply border-error/25 bg-error/10 text-error hover:border-error hover:bg-error hover:text-error-content;
+  }
+
+  /* Admin table typography — the tables are the owner's daily working surface,
+     so they use a real reading size rather than the 11px caption scale the
+     storefront uses for incidental labels. */
+  .admin-th {
+    @apply px-4 py-4 text-[12px] font-semibold tracking-[0.12em] whitespace-nowrap text-base-content/55 uppercase;
+  }
+
+  .admin-td {
+    @apply px-4 py-4 text-[15px];
   }
 
   /* Loading placeholder that matches the card grid. */

@@ -179,7 +179,7 @@ const AdminProducts = () => {
                                         (heading) => (
                                             <th
                                                 key={heading}
-                                                className="px-4 py-3 text-[11px] tracking-[0.14em] whitespace-nowrap text-base-content/50 uppercase"
+                                                className="admin-th"
                                             >
                                                 {heading}
                                             </th>
@@ -193,7 +193,7 @@ const AdminProducts = () => {
                                         key={product._id}
                                         className="border-b border-base-300 last:border-0"
                                     >
-                                        <td className="px-4 py-3">
+                                        <td className="admin-td">
                                             <div className="flex items-center gap-3">
                                                 <img
                                                     src={resolveImageUrl(product.image)}
@@ -211,17 +211,17 @@ const AdminProducts = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-base-content/55 capitalize">
+                                        <td className="admin-td whitespace-nowrap text-base-content/55 capitalize">
                                             {product.category}
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap tabular-nums">
+                                        <td className="admin-td whitespace-nowrap tabular-nums">
                                             {formatCurrency(product.price)}
                                         </td>
                                         {/* Click the pill to correct the count in
                                         place. Restocking touches many products
                                         at once, and opening the full form for
                                         each one is the slowest possible path. */}
-                                        <td className="px-4 py-3 whitespace-nowrap">
+                                        <td className="admin-td whitespace-nowrap">
                                             {editingStock === product._id ? (
                                                 <div className="flex items-center gap-1">
                                                     <input
@@ -266,11 +266,11 @@ const AdminProducts = () => {
                                                 </button>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center justify-end gap-1">
+                                        <td className="admin-td">
+                                            <div className="flex items-center justify-end gap-2">
                                                 <Link
                                                     to={`/admin/products/${product._id}`}
-                                                    className="p-2 text-xs text-base-content/50 transition-colors hover:text-primary"
+                                                    className="btn-icon btn-icon-edit"
                                                     aria-label={`Edit ${product.name}`}
                                                 >
                                                     <FaPen />
@@ -278,7 +278,7 @@ const AdminProducts = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDelete(product)}
-                                                    className="p-2 text-xs text-base-content/50 transition-colors hover:text-error"
+                                                    className="btn-icon btn-icon-delete"
                                                     aria-label={`Delete ${product.name}`}
                                                 >
                                                     <FaTrash />

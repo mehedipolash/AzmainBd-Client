@@ -60,7 +60,7 @@ const ProductCard = ({ product }) => {
                         // Padded rather than bled to the edge: these are
                         // packshots, and a product touching the card border
                         // reads as a crop rather than a deliberate frame.
-                        className={`aspect-square w-full bg-white object-contain p-5 transition-transform duration-500 group-hover:scale-[1.04] ${
+                        className={`aspect-square w-full bg-white object-contain p-2.5 transition-transform duration-500 group-hover:scale-[1.04] ${
                             soldOut ? 'opacity-45 grayscale' : ''
                         }`}
                     />
@@ -141,7 +141,7 @@ const ProductCard = ({ product }) => {
                     and printing an invented score on a real client's site is a
                     claim they cannot stand behind. */}
                 {product.brand && (
-                    <p className="text-[10px] font-semibold tracking-[0.16em] text-primary/80 uppercase">
+                    <p className="text-[11px] font-semibold tracking-[0.14em] text-primary uppercase">
                         {product.brand}
                     </p>
                 )}
@@ -150,7 +150,7 @@ const ProductCard = ({ product }) => {
                     {/* Clamped to two lines: the client's product names run to
                         nine words, and letting them wrap freely made cards in
                         the same row different heights. */}
-                    <h3 className="font-display line-clamp-2 text-base leading-snug font-semibold transition-colors hover:text-primary">
+                    <h3 className="font-display line-clamp-2 text-[17px] leading-snug font-semibold transition-colors hover:text-primary">
                         {name}
                     </h3>
                 </Link>
@@ -159,21 +159,21 @@ const ProductCard = ({ product }) => {
                     <span
                         className={
                             priced
-                                ? 'font-display text-[19px] font-semibold text-primary'
-                                : 'text-[13px] font-medium text-base-content/55 italic'
+                                ? 'font-display text-[22px] font-semibold text-primary'
+                                : 'text-[14px] font-medium text-base-content/55 italic'
                         }
                     >
                         {formatCurrency(price)}
                     </span>
                     {priced && oldPrice && (
-                        <span className="text-[13px] text-base-content/35 line-through">
+                        <span className="text-[14px] text-base-content/35 line-through">
                             {formatCurrency(oldPrice)}
                         </span>
                     )}
                 </div>
 
                 {lowStock && (
-                    <p className="mt-2 text-[11px] font-medium tracking-wide text-warning">
+                    <p className="mt-2 text-[12px] font-medium tracking-wide text-warning">
                         Only {product.stock} left — order soon
                     </p>
                 )}

@@ -2,13 +2,28 @@ import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { FaArrowRight, FaTruckFast, FaShieldHalved, FaWhatsapp } from 'react-icons/fa6';
 import { getHeroBanner } from '../../../data/banners';
-import { getHeroProducts, getStoreStats, isLowStock, getDeliveryEstimate } from '../../../utils/catalogue';
+import { getHeroProducts, getStoreStats, isLowStock } from '../../../utils/catalogue';
 import { formatCurrency, calcDiscount, hasPrice } from '../../../utils/formatCurrency';
-import { resolveImageUrl } from '../../../utils/imageUrl';
+import { resolveImageUrl, resolveCardImageUrl } from '../../../utils/imageUrl';
 import { productEnquiryLink } from '../../../utils/business';
 import OrderButton from '../../../components/OrderButton';
 import UseCatalogue from '../../../Hooks/UseCatalogue';
 import UseRotator from '../../../Hooks/UseRotator';
+
+/* ---------------------------------------------------------------------------
+   The hero.
+
+   The featured product used to sit in a tall VERTICAL card beside the copy.
+   That shape was the problem: a portrait card is far taller than a block of
+   headline text, so the two columns never balanced, and the card kept running
+   past the section's padding and getting clipped.
+
+   The card is now HORIZONTAL — photo on the left, details on the right, laid
+   out along the x axis. A wide card is naturally close in height to the copy
+   beside it, so the two columns balance without anything being stretched,
+   squeezed or cropped. It also suits the product photography, which is square,
+   and leaves room to show the next two products as a small strip beneath.
+--------------------------------------------------------------------------- */
 
 const Banner = () => {
     const hero = getHeroBanner();
@@ -22,13 +37,12 @@ const Banner = () => {
     // Pause the rotation while the pointer or keyboard focus is on the card,
     // so it never changes out from under someone reading it.
     const [paused, setPaused] = useState(false);
-    const { index, goTo, isStatic } = UseRotator(featured.length, { paused });
+    const { index, goTo } = UseRotator(featured.length, { paused });
 
     if (!hero) return null;
 
     const product = featured[index] ?? null;
     const discount = product ? calcDiscount(product.price, product.oldPrice) : 0;
-    const deliveryDate = product ? getDeliveryEstimate(product) : null;
     const priced = product ? hasPrice(product) : false;
 
     return (
@@ -37,47 +51,51 @@ const Banner = () => {
                 src={resolveImageUrl(hero.image)}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-cover opacity-45"
+                className="absolute inset-0 h-full w-full object-cover opacity-40"
             />
             {/* Directional scrim — heavier on the copy side so the headline
                 stays readable without flattening the whole photograph. */}
-            <div className="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/45" />
-            {/* A soft brand glow behind the product card lifts it off the photo. */}
+            <div className="absolute inset-0 bg-linear-to-r from-ink via-ink/88 to-ink/55" />
+            {/* Soft brand glows lift the card off the photo. */}
             <div
                 aria-hidden="true"
-                className="absolute -top-24 -right-24 hidden size-136 rounded-full bg-primary/25 blur-3xl lg:block"
+                className="absolute -top-32 -right-24 hidden size-136 rounded-full bg-primary/25 blur-3xl lg:block"
+            />
+            <div
+                aria-hidden="true"
+                className="absolute -bottom-32 right-1/4 hidden size-96 rounded-full bg-accent/15 blur-3xl lg:block"
             />
 
             <div className="container-px relative py-14 sm:py-16 lg:py-20">
-                {/* items-stretch, not items-center. The product card is taller
-                    than the copy, and centring a taller element against a
-                    shorter one pushes half its overflow past the section's
-                    padding — which is what clipped the card top and bottom.
-                    Stretching lets the row size to the taller column, then each
-                    column centres its own content within that shared height. */}
-                <div className="grid items-stretch gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-                    <div className="flex flex-col justify-center">
-                        <p className="mb-4 inline-flex items-center gap-2 border border-white/20 bg-white/8 px-3 py-1.5 text-[11px] font-semibold tracking-[0.2em] text-white/85 uppercase backdrop-blur-sm">
-                            <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
+                <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
+                    <div>
+                        <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-2 text-[11px] font-semibold tracking-[0.2em] text-white uppercase backdrop-blur-sm">
+                            <span
+                                className="size-2 animate-pulse rounded-full bg-primary"
+                                aria-hidden="true"
+                            />
                             {hero.eyebrow}
                         </p>
 
-                        <h1 className="font-display text-4xl leading-[1.1] font-semibold text-white sm:text-5xl lg:text-6xl">
+                        <h1 className="font-display text-4xl leading-[1.08] font-semibold text-white sm:text-5xl lg:text-6xl">
                             {hero.title}
                         </h1>
 
-                        <p className="mt-6 max-w-md text-[15px] leading-relaxed text-white/70">
+                        <p className="mt-6 max-w-md text-[15px] leading-relaxed text-white/75">
                             {hero.body}
                         </p>
 
                         <div className="mt-9 flex flex-wrap gap-3">
-                            <Link to={hero.ctaPath} className="btn-shop-light">
+                            <Link
+                                to={hero.ctaPath}
+                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-xs font-semibold tracking-[0.14em] text-primary-content uppercase shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40"
+                            >
                                 {hero.ctaLabel}
                                 <FaArrowRight className="text-[11px]" />
                             </Link>
                             <Link
                                 to="/deals"
-                                className="inline-flex items-center justify-center gap-2 border border-white/40 px-7 py-3 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-colors hover:border-white hover:bg-white/10"
+                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/40 px-8 py-3.5 text-xs font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm transition-colors hover:border-white hover:bg-white/10"
                             >
                                 View Deals
                             </Link>
@@ -86,50 +104,36 @@ const Banner = () => {
                         {/* Figures come from the catalogue, so they stay true as
                             stock changes rather than being decorative. */}
                         <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-7">
-                            <div>
-                                <dt className="sr-only">Products in stock</dt>
-                                <dd>
-                                    <span className="font-display text-2xl font-semibold text-white">
-                                        {stats.productCount}+
-                                    </span>
-                                    <span className="mt-1 block text-[11px] tracking-wide text-white/50 uppercase">
-                                        In stock
-                                    </span>
-                                </dd>
-                            </div>
-                            <div>
-                                <dt className="sr-only">Global brands</dt>
-                                <dd>
-                                    <span className="font-display text-2xl font-semibold text-white">
-                                        {stats.brandCount}
-                                    </span>
-                                    <span className="mt-1 block text-[11px] tracking-wide text-white/50 uppercase">
-                                        Brands
-                                    </span>
-                                </dd>
-                            </div>
-                            {/* Category count, not a star rating: this shop has
-                                no review system, so an average score would be
-                                a number the client cannot stand behind. */}
-                            <div>
-                                <dt className="sr-only">Product categories</dt>
-                                <dd>
-                                    <span className="font-display text-2xl font-semibold text-white">
-                                        {stats.categoryCount}
-                                    </span>
-                                    <span className="mt-1 block text-[11px] tracking-wide text-white/50 uppercase">
-                                        Categories
-                                    </span>
-                                </dd>
-                            </div>
+                            {[
+                                { label: 'In stock', value: `${stats.productCount}+` },
+                                { label: 'Brands', value: stats.brandCount },
+                                // Category count, not a star rating: this shop
+                                // has no review system, so an average score
+                                // would be a number the client cannot stand
+                                // behind.
+                                { label: 'Categories', value: stats.categoryCount },
+                            ].map((stat) => (
+                                <div key={stat.label}>
+                                    <dt className="sr-only">{stat.label}</dt>
+                                    <dd>
+                                        <span className="font-display text-3xl font-semibold text-primary">
+                                            {stat.value}
+                                        </span>
+                                        <span className="mt-1 block text-[11px] tracking-wide text-white/55 uppercase">
+                                            {stat.label}
+                                        </span>
+                                    </dd>
+                                </div>
+                            ))}
                         </dl>
                     </div>
 
                     {/* Live product card — the proof that this is a working shop.
-                        Rotates through the featured items on a timer. */}
+                        Horizontal, so its height sits close to the copy beside
+                        it and neither column has to stretch or crop. */}
                     {product && (
                         <div
-                            className="relative mx-auto flex w-full max-w-sm flex-col justify-center lg:max-w-[380px]"
+                            className="w-full"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
                             onFocusCapture={() => setPaused(true)}
@@ -139,145 +143,141 @@ const Banner = () => {
                                 active rather than the content swapping in place. */}
                             <article
                                 key={product._id}
-                                className="bg-base-100 shadow-2xl motion-safe:animate-[card-in_420ms_ease-out]"
+                                className="overflow-hidden rounded-2xl bg-base-100 shadow-2xl motion-safe:animate-[card-in_420ms_ease-out]"
                             >
-                                <Link
-                                    to={`/product/${product._id}`}
-                                    className="group relative block overflow-hidden"
-                                >
-                                    <img
-                                        src={resolveImageUrl(product.image)}
-                                        alt={product.name}
-                                        // Capped rather than given a fixed
-                                        // ratio: the client's photography is
-                                        // tall portrait, and a 4:5 box here
-                                        // pushes the card's button below the
-                                        // fold on a laptop.
-                                        className="h-52 w-full bg-white object-contain p-4 transition-transform duration-700 group-hover:scale-105 lg:h-56"
-                                    />
+                                <div className="flex flex-col sm:flex-row">
+                                    <Link
+                                        to={`/product/${product._id}`}
+                                        className="group relative block shrink-0 overflow-hidden bg-white sm:w-[46%]"
+                                    >
+                                        <img
+                                            src={resolveCardImageUrl(product.image)}
+                                            alt={product.name}
+                                            loading="eager"
+                                            fetchPriority="high"
+                                            className="h-52 w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105 sm:h-full sm:min-h-72.5"
+                                        />
 
-                                    {discount > 0 && (
-                                        <span className="absolute top-4 left-4 bg-warning px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] text-warning-content uppercase">
-                                            Save {discount}%
-                                        </span>
-                                    )}
-
-                                    {isLowStock(product) && (
-                                        <span className="absolute top-4 right-4 bg-base-100/95 px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] text-warning uppercase">
-                                            Only {product.stock} left
-                                        </span>
-                                    )}
-                                </Link>
-
-                                <div className="p-5 pt-4">
-                                    <p className="text-[11px] font-semibold tracking-[0.18em] text-base-content/45 uppercase">
-                                        {product.brand}
-                                    </p>
-
-                                    <h2 className="mt-2 font-display text-xl leading-snug font-semibold">
-                                        <Link
-                                            to={`/product/${product._id}`}
-                                            className="transition-opacity hover:opacity-70"
-                                        >
-                                            {product.name}
-                                        </Link>
-                                    </h2>
-
-                                    <div className="mt-4 flex items-baseline gap-2.5">
-                                        <span
-                                            className={
-                                                priced
-                                                    ? 'font-display text-2xl font-semibold text-primary'
-                                                    : 'text-base font-medium text-base-content/60 italic'
-                                            }
-                                        >
-                                            {formatCurrency(product.price)}
-                                        </span>
-                                        {priced && product.oldPrice && (
-                                            <span className="text-sm text-base-content/35 line-through">
-                                                {formatCurrency(product.oldPrice)}
+                                        {discount > 0 && (
+                                            <span className="absolute top-4 left-4 rounded-full bg-accent px-3 py-1 text-[10px] font-semibold tracking-[0.12em] text-accent-content uppercase shadow-sm">
+                                                Save {discount}%
                                             </span>
                                         )}
-                                    </div>
 
-                                    {/* One compact row rather than a stacked
-                                        list: the hero card is a teaser, and
-                                        every line here is height the card
-                                        cannot spare above the fold. */}
-                                    <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-base-300 pt-4 text-[11px] text-base-content/60">
-                                        <li className="flex items-center gap-1.5">
-                                            <FaShieldHalved
-                                                className="text-[10px] text-primary"
-                                                aria-hidden="true"
-                                            />
-                                            100% genuine
-                                        </li>
-                                        {deliveryDate && (
-                                            <li className="flex items-center gap-1.5">
-                                                <FaTruckFast
-                                                    className="text-[10px] text-primary"
+                                        {isLowStock(product) && (
+                                            <span className="absolute top-4 right-4 rounded-full bg-error px-3 py-1 text-[10px] font-semibold tracking-[0.12em] text-error-content uppercase shadow-sm">
+                                                Only {product.stock} left
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    <div className="flex min-w-0 flex-1 flex-col justify-center border-t border-base-300 p-6 sm:border-t-0 sm:border-l">
+                                        <p className="text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
+                                            {product.brand}
+                                        </p>
+
+                                        <h2 className="font-display mt-2 text-xl leading-snug font-semibold">
+                                            <Link
+                                                to={`/product/${product._id}`}
+                                                className="transition-colors hover:text-primary"
+                                            >
+                                                {product.name}
+                                            </Link>
+                                        </h2>
+
+                                        <div className="mt-4 flex items-baseline gap-2.5">
+                                            <span
+                                                className={
+                                                    priced
+                                                        ? 'font-display text-3xl font-semibold text-primary'
+                                                        : 'text-base font-medium text-base-content/60 italic'
+                                                }
+                                            >
+                                                {formatCurrency(product.price)}
+                                            </span>
+                                            {priced && product.oldPrice && (
+                                                <span className="text-sm text-base-content/35 line-through">
+                                                    {formatCurrency(product.oldPrice)}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <p className="mt-3 flex items-center gap-4 text-[11px] text-base-content/55">
+                                            <span className="flex items-center gap-1.5">
+                                                <FaShieldHalved
+                                                    className="text-[11px] text-primary"
                                                     aria-hidden="true"
                                                 />
-                                                By{' '}
-                                                <span className="font-medium text-base-content">
-                                                    {deliveryDate}
-                                                </span>
-                                            </li>
-                                        )}
-                                    </ul>
+                                                100% genuine
+                                            </span>
+                                            <span className="flex items-center gap-1.5">
+                                                <FaTruckFast
+                                                    className="text-[11px] text-primary"
+                                                    aria-hidden="true"
+                                                />
+                                                Nationwide
+                                            </span>
+                                        </p>
 
-                                    <div className="mt-5 grid gap-2">
-                                        <Link
-                                            to={`/product/${product._id}`}
-                                            className="btn-shop w-full"
-                                        >
-                                            View product
-                                        </Link>
-                                        {/* Orders are placed on WhatsApp, so the
-                                            hero offers that route directly rather
-                                            than making the visitor find it. */}
-                                        <OrderButton
-                                            href={productEnquiryLink(product)}
-                                            signedOutLabel="Sign in to order"
-                                            className="flex w-full items-center justify-center gap-2 bg-[#25D366] py-3 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
-                                        >
-                                            <FaWhatsapp className="text-base" aria-hidden="true" />
-                                            Order on WhatsApp
-                                        </OrderButton>
+                                        <div className="mt-5 flex flex-wrap gap-2">
+                                            <Link
+                                                to={`/product/${product._id}`}
+                                                className="flex-1 rounded-lg border border-base-300 px-4 py-3 text-center text-[11px] font-semibold tracking-[0.12em] uppercase transition-colors hover:border-primary hover:text-primary"
+                                            >
+                                                View
+                                            </Link>
+                                            {/* Orders are placed on WhatsApp, so
+                                                the hero offers that route directly
+                                                rather than making the visitor
+                                                find it. */}
+                                            <OrderButton
+                                                href={productEnquiryLink(product)}
+                                                signedOutLabel="Sign in to order"
+                                                className="flex flex-2 items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 text-[11px] font-semibold tracking-[0.12em] text-white uppercase shadow-md shadow-[#25D366]/25 transition-opacity hover:opacity-90"
+                                            >
+                                                <FaWhatsapp className="text-sm" aria-hidden="true" />
+                                                Order
+                                            </OrderButton>
+                                        </div>
                                     </div>
                                 </div>
                             </article>
 
-                            {/* Manual controls — the only way to change slides
-                                for anyone who has auto-rotation disabled. */}
+                            {/* The other featured products, as a horizontal strip.
+                                These double as the rotator's controls — a real
+                                thumbnail says what you are switching to, which a
+                                row of dots cannot. */}
                             {featured.length > 1 && (
-                                <div className="mt-5 flex items-center justify-center gap-4">
-                                    <span className="text-[11px] tracking-[0.16em] text-white/45 uppercase">
-                                        Featured
-                                    </span>
-
-                                    <div className="flex gap-2">
-                                        {featured.map((item, dot) => (
-                                            <button
-                                                key={item._id}
-                                                type="button"
-                                                onClick={() => goTo(dot)}
-                                                aria-label={`Show ${item.name}`}
-                                                aria-current={dot === index}
-                                                className={`h-1.5 rounded-full transition-all duration-300 ${
-                                                    dot === index
-                                                        ? 'w-7 bg-white'
-                                                        : 'w-1.5 bg-white/35 hover:bg-white/60'
-                                                }`}
+                                <div className="mt-4 flex gap-3">
+                                    {featured.map((item, dot) => (
+                                        <button
+                                            key={item._id}
+                                            type="button"
+                                            onClick={() => goTo(dot)}
+                                            aria-label={`Show ${item.name}`}
+                                            aria-current={dot === index}
+                                            className={`flex flex-1 items-center gap-3 rounded-xl border p-2 text-left backdrop-blur-sm transition-all ${
+                                                dot === index
+                                                    ? 'border-primary bg-primary/20'
+                                                    : 'border-white/20 bg-white/8 hover:border-white/45 hover:bg-white/15'
+                                            }`}
+                                        >
+                                            <img
+                                                src={resolveCardImageUrl(item.image)}
+                                                alt=""
+                                                loading="lazy"
+                                                className="size-11 shrink-0 rounded-lg bg-white object-contain p-1"
                                             />
-                                        ))}
-                                    </div>
-
-                                    {!isStatic && (
-                                        <span className="sr-only" aria-live="polite">
-                                            Showing {product.name}, {index + 1} of {featured.length}
-                                        </span>
-                                    )}
+                                            <span className="min-w-0 flex-1">
+                                                <span className="block truncate text-[11px] font-medium text-white">
+                                                    {item.brand}
+                                                </span>
+                                                <span className="block truncate text-[11px] text-white/55">
+                                                    {formatCurrency(item.price)}
+                                                </span>
+                                            </span>
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>

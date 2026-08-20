@@ -141,7 +141,7 @@ const AdminCategories = () => {
                                             {['Category', 'Slug', 'In stock', ''].map((heading) => (
                                                 <th
                                                     key={heading}
-                                                    className="px-4 py-3 text-[11px] tracking-[0.14em] whitespace-nowrap text-base-content/50 uppercase"
+                                                    className="admin-th"
                                                 >
                                                     {heading}
                                                 </th>
@@ -158,7 +158,7 @@ const AdminCategories = () => {
                                                         : ''
                                                 }`}
                                             >
-                                                <td className="px-4 py-3">
+                                                <td className="admin-td">
                                                     <div className="flex items-center gap-3">
                                                         <img
                                                             src={resolveImageUrl(category.image)}
@@ -171,18 +171,18 @@ const AdminCategories = () => {
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 font-mono text-[12px] text-base-content/50">
+                                                <td className="admin-td font-mono text-[12px] text-base-content/50">
                                                     {category.slug}
                                                 </td>
-                                                <td className="px-4 py-3 tabular-nums">
+                                                <td className="admin-td tabular-nums">
                                                     {category.inStockCount}
                                                 </td>
-                                                <td className="px-4 py-3">
-                                                    <div className="flex justify-end gap-1">
+                                                <td className="admin-td">
+                                                    <div className="flex justify-end gap-2">
                                                         <button
                                                             type="button"
                                                             onClick={() => startEdit(category)}
-                                                            className="p-2 text-xs text-base-content/50 transition-colors hover:text-primary"
+                                                            className="btn-icon btn-icon-edit"
                                                             aria-label={`Edit ${category.name}`}
                                                         >
                                                             <FaPen />
@@ -190,7 +190,7 @@ const AdminCategories = () => {
                                                         <button
                                                             type="button"
                                                             onClick={() => handleDelete(category)}
-                                                            className="p-2 text-xs text-base-content/50 transition-colors hover:text-error"
+                                                            className="btn-icon btn-icon-delete"
                                                             aria-label={`Delete ${category.name}`}
                                                         >
                                                             <FaTrash />
