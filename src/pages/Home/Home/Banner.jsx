@@ -12,20 +12,7 @@ import CountUp from '../../../components/motion/CountUp';
 import UseCatalogue from '../../../Hooks/UseCatalogue';
 import UseRotator from '../../../Hooks/UseRotator';
 
-/* ---------------------------------------------------------------------------
-   The hero.
 
-   The featured product used to sit in a tall VERTICAL card beside the copy.
-   That shape was the problem: a portrait card is far taller than a block of
-   headline text, so the two columns never balanced, and the card kept running
-   past the section's padding and getting clipped.
-
-   The card is now HORIZONTAL — photo on the left, details on the right, laid
-   out along the x axis. A wide card is naturally close in height to the copy
-   beside it, so the two columns balance without anything being stretched,
-   squeezed or cropped. It also suits the product photography, which is square,
-   and leaves room to show the next two products as a small strip beneath.
---------------------------------------------------------------------------- */
 
 const Banner = () => {
     const hero = getHeroBanner();
@@ -78,15 +65,31 @@ const Banner = () => {
                 className="absolute -bottom-32 right-1/4 hidden size-96 rounded-full bg-brand-gold/12 blur-3xl lg:block"
             />
 
-            <div className="container-px relative py-14 sm:py-16 lg:py-20">
-                <div className="grid items-start gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
+            <div className="container-px relative py-12 sm:py-14 lg:py-16">
+                {/* items-stretch, then each column centres its own content. The copy
+                    column is taller — a four-line headline plus stats — so
+                    items-start left a block of dead space under the card, while
+                    items-center dropped the card below the fold. Stretching and
+                    centring inside gives the card the middle of the taller
+                    column without either failure. */}
+                <div className="grid items-stretch gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
                     <div>
-                        <Reveal direction="up" as="p" className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand-cyan/45 bg-brand-cyan/15 px-4 py-2 text-[12px] font-semibold tracking-[0.18em] text-white uppercase backdrop-blur-sm">
+                        {/* The client's own tagline, set in the display serif
+                            rather than as a pill of uppercase micro-type. A
+                            rounded pill with a pulsing dot is the default hero
+                            eyebrow on every template on the web; this is the
+                            phrase printed under their logo, so it belongs in
+                            the brand's voice. The gold rule brings the
+                            palette's third colour into the hero, where it
+                            otherwise never appeared. */}
+                        <Reveal direction="up" className="mb-6 flex items-center gap-3.5">
                             <span
-                                className="size-2 animate-pulse rounded-full bg-brand-cyan"
                                 aria-hidden="true"
+                                className="h-px w-10 bg-linear-to-r from-brand-gold to-brand-gold/20"
                             />
-                            {hero.eyebrow}
+                            <p className="font-display text-[20px] leading-none font-semibold text-brand-gold italic sm:text-[22px]">
+                                {hero.eyebrow}
+                            </p>
                         </Reveal>
 
                         <Reveal direction="up" delay={0.08}>
@@ -96,12 +99,12 @@ const Banner = () => {
                         </Reveal>
 
                         <Reveal direction="up" delay={0.16}>
-                            <p className="mt-6 max-w-lg text-[17px] leading-relaxed text-white/80">
+                            <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-white/80">
                                 {hero.body}
                             </p>
                         </Reveal>
 
-                        <Reveal direction="up" delay={0.24} className="mt-9 flex flex-wrap gap-3">
+                        <Reveal direction="up" delay={0.24} className="mt-8 flex flex-wrap gap-3">
                             {/* The palette's own teal->cyan gradient, which is
                                 what makes the primary action look like part of
                                 this brand rather than a default button. */}
@@ -126,7 +129,7 @@ const Banner = () => {
                             direction="up"
                             delay={0.32}
                             as="dl"
-                            className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-7"
+                            className="mt-9 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-6"
                         >
                             {[
                                 { label: 'In stock', count: stats.productCount, suffix: '+' },
@@ -169,7 +172,7 @@ const Banner = () => {
                             // A small top offset rather than none: level with
                             // the headline reads as deliberate, level with the
                             // very top of the section reads as unanchored.
-                            className="w-full lg:mt-6"
+                            className="flex w-full flex-col justify-center"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
                             onFocusCapture={() => setPaused(true)}
