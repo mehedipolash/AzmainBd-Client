@@ -66,13 +66,16 @@ const Banner = () => {
             />
 
             <div className="container-px relative py-12 sm:py-14 lg:py-16">
-                {/* items-stretch, then each column centres its own content. The copy
-                    column is taller — a four-line headline plus stats — so
-                    items-start left a block of dead space under the card, while
-                    items-center dropped the card below the fold. Stretching and
-                    centring inside gives the card the middle of the taller
-                    column without either failure. */}
-                <div className="grid items-stretch gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
+                {/* items-start. The card must line up with the TOP of the copy,
+                    not with its middle: the copy column is a four-line headline
+                    plus a paragraph, buttons and stats, so centring the shorter
+                    card against it pushes the card 150px down the page and
+                    leaves the space beside the headline empty.
+
+                    The leftover height under the card is not a defect — it is
+                    where the background photograph shows through, which is the
+                    point of having one. */}
+                <div className="grid items-start gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
                     <div>
                         {/* The client's own tagline, set in the display serif
                             rather than as a pill of uppercase micro-type. A
@@ -172,7 +175,7 @@ const Banner = () => {
                             // A small top offset rather than none: level with
                             // the headline reads as deliberate, level with the
                             // very top of the section reads as unanchored.
-                            className="flex w-full flex-col justify-center"
+                            className="w-full"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
                             onFocusCapture={() => setPaused(true)}

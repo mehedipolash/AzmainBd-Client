@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
 import {
-    FaFacebookF,
-    FaInstagram,
     FaWhatsapp,
     FaLocationDot,
     FaPhone,
@@ -10,6 +8,7 @@ import {
     FaArrowRight,
 } from 'react-icons/fa6';
 import Logo from '../components/Logo';
+import { FacebookIcon, InstagramIcon, WhatsAppBrandIcon } from '../components/BrandIcons';
 import OrderButton from '../components/OrderButton';
 import { FOOTER_LINKS, SITE_NAME, SITE_TAGLINE } from '../utils/constants';
 import {
@@ -25,10 +24,14 @@ import {
 
 // Only the accounts the client actually runs. An icon linking to a profile
 // that does not exist is worse than no icon at all.
+// Each platform's real mark, in its own brand colours. react-icons renders in
+// currentColor, so these took the footer's text colour and flipped with the
+// theme — and a mark that changes colour is not that brand's mark. Facebook is
+// #1877F2 everywhere in the world; that blue is how it is recognised.
 const SOCIALS = [
-    { icon: FaFacebookF, label: 'Facebook', href: SOCIAL_LINKS.facebook },
-    { icon: FaInstagram, label: 'Instagram', href: SOCIAL_LINKS.instagram },
-    { icon: FaWhatsapp, label: 'WhatsApp', href: buildWhatsAppLink() },
+    { icon: FacebookIcon, label: 'Facebook', href: SOCIAL_LINKS.facebook },
+    { icon: InstagramIcon, label: 'Instagram', href: SOCIAL_LINKS.instagram },
+    { icon: WhatsAppBrandIcon, label: 'WhatsApp', href: buildWhatsAppLink() },
 ];
 
 const Footer = () => {
@@ -113,9 +116,13 @@ const Footer = () => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         aria-label={social.label}
-                                        className="flex size-9 items-center justify-center border border-footer-rule text-xs transition-colors hover:border-primary hover:bg-primary hover:text-primary-content"
+                                        // A white tile in both themes, so the
+                                        // brand colours sit on the ground they
+                                        // were designed for. Hover lifts the
+                                        // tile rather than recolouring the mark.
+                                        className="flex size-11 items-center justify-center rounded-xl border border-footer-rule bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
                                     >
-                                        <Icon />
+                                        <Icon className="size-5" />
                                     </a>
                                 );
                             })}
