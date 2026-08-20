@@ -57,12 +57,15 @@ const Banner = () => {
             />
 
             {/* A TEAL scrim, not a neutral black wash — that is what ties the
-                photograph to the palette instead of just darkening it. Heaviest
-                on the left where the headline sits, lightest on the right where
-                the product card brings its own white surface. */}
+                photograph to the palette instead of just darkening it.
+
+                It fades to TRANSPARENT on the right rather than to a tinted
+                value: the product card there brings its own white surface and
+                needs no help, so letting the background through on that side
+                is what gives the section depth instead of flattening it. */}
             <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-linear-to-r from-[#071319] via-[#0c2b36]/94 to-[#12414f]/70"
+                className="absolute inset-0 bg-linear-to-r from-[#071319]/96 via-[#0a2531]/78 to-transparent"
             />
 
             {/* Soft brand glows lift the card off the photo. */}
