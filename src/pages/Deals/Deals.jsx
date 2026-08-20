@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import SectionTitle from '../../components/SectionTitle';
 import ProductCard from '../../components/ProductCard';
+import Reveal from '../../components/motion/Reveal';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import PromoBanner from '../../components/PromoBanner';
@@ -119,9 +120,14 @@ const Deals = () => {
                     />
                 ) : featured.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-                        {featured.map((product) => (
-                            <ProductCard key={product._id} product={product} />
-                        ))}
+                        {featured.map((product, i) => (
+                        // Staggered, but capped: on a 23-product
+                        // page an uncapped stagger would make the
+                        // last card wait two seconds to appear.
+                        <Reveal key={product._id} delay={Math.min(i, 5) * 0.06} className="h-full">
+                            <ProductCard product={product} />
+                        </Reveal>
+                    ))}
                     </div>
                 ) : (
                     <EmptyState

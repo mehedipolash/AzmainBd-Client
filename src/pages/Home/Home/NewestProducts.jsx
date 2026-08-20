@@ -1,6 +1,7 @@
 import React from 'react';
 import SectionTitle from '../../../components/SectionTitle';
 import ProductCard from '../../../components/ProductCard';
+import Reveal from '../../../components/motion/Reveal';
 import UseCatalogue from '../../../Hooks/UseCatalogue';
 import { getNewest } from '../../../utils/catalogue';
 
@@ -26,9 +27,14 @@ const NewestProducts = () => {
                 className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
                 data-aos="fade-up"
             >
-                {newest.map((product) => (
-                    <ProductCard key={product._id} product={product} />
-                ))}
+                {newest.map((product, i) => (
+                        // Staggered, but capped: on a 23-product
+                        // page an uncapped stagger would make the
+                        // last card wait two seconds to appear.
+                        <Reveal key={product._id} delay={Math.min(i, 5) * 0.06} className="h-full">
+                            <ProductCard product={product} />
+                        </Reveal>
+                    ))}
             </div>
         </section>
     );

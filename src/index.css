@@ -16,45 +16,61 @@
    Type pairing does the heavy lifting: a serif display face for headings
    against a clean grotesque for UI.
 
-   Colour discipline — three roles, each with exactly one job:
+   Colour comes from the client's own palette: teal, cyan, cream and gold.
 
-     green  brand. Buttons, links, active nav, focus rings, prices.
+     teal   brand. Buttons, links, active nav, focus rings, prices.
+     cyan   the same hue at full brightness — gradients, and the dark theme's
+            primary, where it is 8.46:1 against only 2.28:1 on white.
      gold   celebration. Offers, featured flags, highlights.
-     red    urgency only. Low stock and sale badges.
+     red    urgency only. Low stock and sale badges. Never decorative.
 
-   Green and red are taken from the client's logo, so the mark belongs to the
-   palette rather than sitting on top of it. Gold is the third — the logo
-   carries gold highlights and the shop sells gold and jewel-toned bangles, and
-   a palette whose only second colour meant "danger" had nothing to celebrate
-   with.
+   Each swatch is used where it is actually strong, and deepened only where
+   type has to sit on it — #1e88a8 measures 4.08:1 on white, so the primary is
+   #1f819a, the brightest teal that clears AA.
 
-   Red is never decorative: if it appears, something is scarce.
+   Gradients pair ADJACENT swatches (teal->cyan, cream->gold). Jumping across
+   the palette puts a muddy midpoint where the two hues cancel.
 
-   Surfaces are warm rather than grey, corners are soft (10px), and shadows are
-   real. A card with a radius and a soft shadow reads as an object; a square
-   hairline box reads as a table cell.
+   Dark mode is not black: every dark surface carries the teal hue, so it reads
+   as this brand with the lights off rather than as a different site.
+
+   Corners are soft (12px) and shadows are real. A card with a radius and a
+   soft shadow reads as an object; a square hairline box reads as a table cell.
 --------------------------------------------------------------------------- */
 
 @theme {
   --font-display: "Crimson Text", ui-serif, Georgia, serif;
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #0e1410;
-  --color-ink-soft: #2d2d2d;
-  --color-ink-muted: #616161;
-  --color-mint: #eef8f0;
-  --color-line: #e4ece5;
+  --color-ink: #0c1c22;
+  --color-ink-soft: #16323c;
+  --color-ink-muted: #5b7480;
+  --color-mint: #eaf6f9;
+  --color-line: #d9e9ee;
 
-  /* Brand green, sampled from the client's logo. The deep shade carries white
-     text; the tint backs pills and quiet section bands. */
+  /* ---- the client's palette, exactly as handed over -------------------
+     Kept at these values for gradients and large fills. Text colours are
+     derived from them separately below, because a swatch chosen to look
+     good beside another swatch is not automatically one that carries type. */
+  --color-brand-teal: #1e88a8;
+  --color-brand-cyan: #2bbbd8;
+  --color-brand-cream: #fbe29a;
+  --color-brand-gold: #ffd65c;
+
+  /* Deepened variants, for anything that has to carry text. */
+  --color-teal-ink: #167a92;
+  --color-teal-deep: #125a6e;
+  --color-gold-ink: #8a6410;
+
+  /* The LOGO's own green. Retained because the mark contains it, but the site
+     palette is teal — do not reach for these as general brand colours. */
   --color-green-deep: #0a4a20;
   --color-green-mid: #118229;
   --color-green-bright: #22a851;
   --color-green-tint: #e4f6e8;
 
-  /* Gold — celebration. Offers, featured flags, the bangle collection. Taken
-     from the highlights in the logo's arc, so it is a third brand colour
-     rather than an imported one. */
+  /* Legacy gold ramp, kept for the utilities that already reference it. New
+     work should use --color-brand-gold / --color-gold-ink from the palette. */
   --color-gold-deep: #8a5a00;
   --color-gold-mid: #d99b00;
   --color-gold-tint: #fdf3dc;
@@ -69,7 +85,7 @@
      a dark ground is overwhelming across a full-width block, so the dark theme
      redefines this to a near-black green while primary stays vivid for text,
      buttons and links. */
-  --color-brand-surface: #0a3f1c;
+  --color-brand-surface: #0f4d5e;
   --color-brand-surface-content: #ffffff;
 
   /* The footer is its own surface, separate from --color-brand-surface, for a
@@ -84,48 +100,54 @@
      the logo's own ink at 3.6:1 to 9.1:1 and lets the footer show the exact
      same lockup as the navbar — no separate knockout artwork to drift out of
      sync with the brand. Body text on it measures 15.6:1. */
-  --color-footer-from: #f0faf8;
-  --color-footer-to: #ddf0ec;
-  --color-footer-content: #12211f;
-  --color-footer-muted: #4a5f5c;
-  --color-footer-rule: #c2dcd7;
+  /* Gradients use ADJACENT swatches only. Jumping across the palette puts a
+     muddy grey-green at the midpoint where the two hues cancel. */
+  --gradient-brand: linear-gradient(135deg, #1e88a8 0%, #2bbbd8 100%);
+  --gradient-warm: linear-gradient(135deg, #fbe29a 0%, #ffd65c 100%);
+  --gradient-deep: linear-gradient(135deg, #0c1c22 0%, #12414f 55%, #1e88a8 100%);
+
+  --color-footer-from: #f2fafc;
+  --color-footer-to: #dcf0f6;
+  --color-footer-content: #0c1c22;
+  --color-footer-muted: #4a6a76;
+  --color-footer-rule: #bfdfe9;
 }
 
-/* Light theme — the default. Warm mint bands, brand green, gold accents. */
+/* Light theme — the default. Teal-tinted bands, teal brand, gold accents. */
 @plugin "daisyui/theme" {
   name: "azmainlight";
   default: true;
   color-scheme: light;
 
   --color-base-100: #ffffff;
-  /* Warm mint rather than grey-white: section bands now read as a deliberate
-     tint of the brand hue instead of as "slightly dirty white". */
-  --color-base-200: #eef8f1;
-  --color-base-300: #d3e6d8;
-  --color-base-content: #0e1410;
+  /* A tint of the palette's own teal, so section bands read as part of the
+     brand rather than as "slightly dirty white". */
+  --color-base-200: #eaf6f9;
+  --color-base-300: #cde4ec;
+  --color-base-content: #0c1c22;
 
-  /* Green that still carries white text at AA but actually reads as green.
-     The previous #0b7a2f was deepened so far it looked near-black at a
-     glance, which is what made the palette feel flat. */
-  --color-primary: #118229;
+  /* The palette's teal, deepened from #1e88a8 to the brightest shade that
+     still carries white text at AA on BOTH white and the tinted band. The raw
+     swatch measures 4.08:1 on white, so links and buttons would have failed. */
+  --color-primary: #167a92;
   --color-primary-content: #ffffff;
 
-  --color-secondary: #e4f6e8;
-  --color-secondary-content: #08501f;
+  --color-secondary: #daeff5;
+  --color-secondary-content: #0f4d5e;
 
-  /* Gold is the celebration accent — offers, featured flags, highlights.
-     Deep enough to carry white text; the tint backs pills. */
-  --color-accent: #a06c00;
+  /* Gold, deepened for text. The raw #ffd65c is 1.40:1 on white, so it is a
+     fill and a highlight here — never a label colour on a light surface. */
+  --color-accent: #8a6410;
   --color-accent-content: #ffffff;
 
-  --color-neutral: #0e1410;
+  --color-neutral: #0c1c22;
   --color-neutral-content: #ffffff;
 
-  --color-info: #2d6a9f;
+  --color-info: #167a92;
   --color-info-content: #ffffff;
-  --color-success: #118229;
+  --color-success: #0f7a4a;
   --color-success-content: #ffffff;
-  --color-warning: #9a5800;
+  --color-warning: #8a6410;
   --color-warning-content: #ffffff;
   /* The logo's red, kept strictly for scarcity. */
   --color-error: #c9201d;
@@ -143,40 +165,46 @@
   --noise: 0;
 }
 
-/* Dark theme — the same palette inverted. The mint band becomes a
-   desaturated slate so tinted sections still read as a distinct band. */
+/* Dark theme — the same palette on a deep teal ground rather than on black,
+   so tinted sections still read as a distinct band of the same family. */
 @plugin "daisyui/theme" {
   name: "azmaindark";
   prefersdark: true;
   color-scheme: dark;
 
-  --color-base-100: #0b0f0c;
-  --color-base-200: #131b15;
-  --color-base-300: #26332a;
-  --color-base-content: #f1f6f2;
+  /* Not flat black. #0b0f0c was a neutral near-black with no relationship to
+     the palette, which is exactly why dark mode read as a different site
+     instead of this one with the lights off. These carry the teal hue, so
+     surfaces are a deep brand blue-green and the logo sits in the same
+     family it does on light. */
+  --color-base-100: #071319;
+  --color-base-200: #0e2029;
+  --color-base-300: #1d3d49;
+  --color-base-content: #e8f4f7;
 
-  /* Same hues as the light theme, lifted in lightness for the dark ground —
-     the light-theme values would fail contrast here. */
-  --color-primary: #4ad46f;
-  --color-primary-content: #032410;
+  /* On dark the palette's bright cyan finally gets to be the primary: it
+     measures 8.46:1 here against 2.28:1 on white, so each swatch is used
+     where it is genuinely strong rather than forced everywhere. */
+  --color-primary: #2bbbd8;
+  --color-primary-content: #04222b;
 
-  --color-secondary: #16251a;
-  --color-secondary-content: #cfe9d6;
+  --color-secondary: #12303c;
+  --color-secondary-content: #a9dfec;
 
-  /* Gold, lifted for the dark ground. */
-  --color-accent: #f0b429;
+  /* The palette's gold, unmodified — 13.8:1 on this ground. */
+  --color-accent: #ffd65c;
   --color-accent-content: #2a1c00;
 
-  --color-neutral: #f2f4f3;
-  --color-neutral-content: #111111;
+  --color-neutral: #e8f4f7;
+  --color-neutral-content: #071319;
 
-  --color-info: #7aa4e0;
-  --color-info-content: #0b0f0c;
-  --color-success: #4ad46f;
-  --color-success-content: #032410;
-  --color-warning: #f0a23c;
-  --color-warning-content: #21150a;
-  --color-error: #ff6b62;
+  --color-info: #2bbbd8;
+  --color-info-content: #04222b;
+  --color-success: #3fd4a0;
+  --color-success-content: #032418;
+  --color-warning: #ffd65c;
+  --color-warning-content: #2a1c00;
+  --color-error: #ff7b73;
   --color-error-content: #2a0806;
 
   --radius-selector: 999px;
@@ -315,18 +343,18 @@
   /* Dark theme mutes the large filled surfaces to a near-black green. The
      bright primary stays as-is for text, buttons and links. */
   [data-theme='azmaindark'] {
-    --color-brand-surface: #0c1a11;
-    --color-brand-surface-content: #e2ebe4;
+    --color-brand-surface: #0a1c24;
+    --color-brand-surface-content: #e8f4f7;
 
     /* The dark theme keeps a dark footer — a light panel at the foot of a dark
        page is a glare block. The logo works here because the dark theme already
        swaps to its own rendition, whose greens are lifted to clear 3:1. The
        teal hue is carried through so both themes read as the same footer. */
-    --color-footer-from: #0e1f1e;
-    --color-footer-to: #0a1817;
-    --color-footer-content: #e6f0ee;
-    --color-footer-muted: #8fa8a4;
-    --color-footer-rule: #24403d;
+    --color-footer-from: #0e2029;
+    --color-footer-to: #071319;
+    --color-footer-content: #e8f4f7;
+    --color-footer-muted: #90b3bf;
+    --color-footer-rule: #1d3d49;
   }
 }
 

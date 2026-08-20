@@ -7,6 +7,8 @@ import { formatCurrency, calcDiscount, hasPrice } from '../../../utils/formatCur
 import { resolveImageUrl, resolveCardImageUrl } from '../../../utils/imageUrl';
 import { productEnquiryLink } from '../../../utils/business';
 import OrderButton from '../../../components/OrderButton';
+import Reveal from '../../../components/motion/Reveal';
+import CountUp from '../../../components/motion/CountUp';
 import UseCatalogue from '../../../Hooks/UseCatalogue';
 import UseRotator from '../../../Hooks/UseRotator';
 
@@ -51,88 +53,116 @@ const Banner = () => {
                 src={resolveImageUrl(hero.image)}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-cover opacity-40"
+                className="absolute inset-0 h-full w-full object-cover"
             />
-            {/* Directional scrim — heavier on the copy side so the headline
-                stays readable without flattening the whole photograph. */}
-            <div className="absolute inset-0 bg-linear-to-r from-ink via-ink/88 to-ink/55" />
+
+            {/* A TEAL scrim, not a neutral black wash — that is what ties the
+                photograph to the palette instead of just darkening it. Heaviest
+                on the left where the headline sits, lightest on the right where
+                the product card brings its own white surface. */}
+            <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-linear-to-r from-[#071319] via-[#0c2b36]/94 to-[#12414f]/70"
+            />
+
             {/* Soft brand glows lift the card off the photo. */}
             <div
                 aria-hidden="true"
-                className="absolute -top-32 -right-24 hidden size-136 rounded-full bg-primary/25 blur-3xl lg:block"
+                className="absolute -top-32 -right-24 hidden size-136 rounded-full bg-brand-cyan/20 blur-3xl lg:block"
             />
             <div
                 aria-hidden="true"
-                className="absolute -bottom-32 right-1/4 hidden size-96 rounded-full bg-accent/15 blur-3xl lg:block"
+                className="absolute -bottom-32 right-1/4 hidden size-96 rounded-full bg-brand-gold/12 blur-3xl lg:block"
             />
 
             <div className="container-px relative py-14 sm:py-16 lg:py-20">
                 <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
                     <div>
-                        <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-2 text-[11px] font-semibold tracking-[0.2em] text-white uppercase backdrop-blur-sm">
+                        <Reveal direction="up" as="p" className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand-cyan/45 bg-brand-cyan/15 px-4 py-2 text-[12px] font-semibold tracking-[0.18em] text-white uppercase backdrop-blur-sm">
                             <span
-                                className="size-2 animate-pulse rounded-full bg-primary"
+                                className="size-2 animate-pulse rounded-full bg-brand-cyan"
                                 aria-hidden="true"
                             />
                             {hero.eyebrow}
-                        </p>
+                        </Reveal>
 
-                        <h1 className="font-display text-4xl leading-[1.08] font-semibold text-white sm:text-5xl lg:text-6xl">
-                            {hero.title}
-                        </h1>
+                        <Reveal direction="up" delay={0.08}>
+                            <h1 className="font-display text-[2.6rem] leading-[1.06] font-semibold text-white sm:text-6xl lg:text-[4.25rem]">
+                                {hero.title}
+                            </h1>
+                        </Reveal>
 
-                        <p className="mt-6 max-w-md text-[15px] leading-relaxed text-white/75">
-                            {hero.body}
-                        </p>
+                        <Reveal direction="up" delay={0.16}>
+                            <p className="mt-6 max-w-lg text-[17px] leading-relaxed text-white/80">
+                                {hero.body}
+                            </p>
+                        </Reveal>
 
-                        <div className="mt-9 flex flex-wrap gap-3">
+                        <Reveal direction="up" delay={0.24} className="mt-9 flex flex-wrap gap-3">
+                            {/* The palette's own teal->cyan gradient, which is
+                                what makes the primary action look like part of
+                                this brand rather than a default button. */}
                             <Link
                                 to={hero.ctaPath}
-                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-xs font-semibold tracking-[0.14em] text-primary-content uppercase shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40"
+                                className="group inline-flex items-center justify-center gap-2 rounded-lg bg-linear-to-r from-brand-teal to-brand-cyan px-9 py-4 text-[13px] font-semibold tracking-[0.14em] text-white uppercase shadow-lg shadow-brand-cyan/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-cyan/40"
                             >
                                 {hero.ctaLabel}
-                                <FaArrowRight className="text-[11px]" />
+                                <FaArrowRight className="text-[11px] transition-transform group-hover:translate-x-1" />
                             </Link>
                             <Link
                                 to="/deals"
-                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/40 px-8 py-3.5 text-xs font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm transition-colors hover:border-white hover:bg-white/10"
+                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/40 px-9 py-4 text-[13px] font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm transition-colors hover:border-brand-gold hover:bg-white/10 hover:text-brand-gold"
                             >
                                 View Deals
                             </Link>
-                        </div>
+                        </Reveal>
 
                         {/* Figures come from the catalogue, so they stay true as
                             stock changes rather than being decorative. */}
-                        <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-7">
+                        <Reveal
+                            direction="up"
+                            delay={0.32}
+                            as="dl"
+                            className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-7"
+                        >
                             {[
-                                { label: 'In stock', value: `${stats.productCount}+` },
-                                { label: 'Brands', value: stats.brandCount },
+                                { label: 'In stock', count: stats.productCount, suffix: '+' },
+                                { label: 'Brands', count: stats.brandCount },
                                 // Category count, not a star rating: this shop
                                 // has no review system, so an average score
                                 // would be a number the client cannot stand
                                 // behind.
-                                { label: 'Categories', value: stats.categoryCount },
+                                { label: 'Categories', count: stats.categoryCount },
                             ].map((stat) => (
                                 <div key={stat.label}>
                                     <dt className="sr-only">{stat.label}</dt>
                                     <dd>
-                                        <span className="font-display text-3xl font-semibold text-primary">
-                                            {stat.value}
-                                        </span>
-                                        <span className="mt-1 block text-[11px] tracking-wide text-white/55 uppercase">
+                                        {/* Counted up rather than printed: these
+                                            are the site's proof that it is a
+                                            working shop, so they are worth the
+                                            eye. The value is the live catalogue
+                                            figure, not a hardcoded target. */}
+                                        <CountUp
+                                            value={stat.count}
+                                            suffix={stat.suffix ?? ''}
+                                            className="font-display text-4xl font-semibold text-brand-cyan"
+                                        />
+                                        <span className="mt-1 block text-[12px] tracking-wide text-white/60 uppercase">
                                             {stat.label}
                                         </span>
                                     </dd>
                                 </div>
                             ))}
-                        </dl>
+                        </Reveal>
                     </div>
 
                     {/* Live product card — the proof that this is a working shop.
                         Horizontal, so its height sits close to the copy beside
                         it and neither column has to stretch or crop. */}
                     {product && (
-                        <div
+                        <Reveal
+                            direction="left"
+                            delay={0.18}
                             className="w-full"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
@@ -280,7 +310,7 @@ const Banner = () => {
                                     ))}
                                 </div>
                             )}
-                        </div>
+                        </Reveal>
                     )}
                 </div>
             </div>

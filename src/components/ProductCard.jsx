@@ -44,7 +44,10 @@ const ProductCard = ({ product }) => {
         // is shot on white, so without a frame the products bleed into the page
         // and the grid loses its rhythm.
         <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-base-300 bg-base-100 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_12px_32px_-12px_rgba(0,0,0,0.18)]">
-            <div className="relative overflow-hidden rounded-t-xl bg-white">
+            {/* A faint tinted ground rather than pure white: the packshots are
+                themselves shot on white, so a white card behind them made the
+                product look like it was floating in a void. */}
+            <div className="relative overflow-hidden rounded-t-xl bg-linear-to-b from-white to-base-200/70">
                 <Link to={`/product/${_id}`} className="block">
                     <img
                         src={resolveCardImageUrl(image)}
@@ -60,7 +63,7 @@ const ProductCard = ({ product }) => {
                         // Padded rather than bled to the edge: these are
                         // packshots, and a product touching the card border
                         // reads as a crop rather than a deliberate frame.
-                        className={`aspect-square w-full bg-white object-contain p-2.5 transition-transform duration-500 group-hover:scale-[1.04] ${
+                        className={`aspect-square w-full object-contain p-1 transition-transform duration-500 group-hover:scale-[1.05] ${
                             soldOut ? 'opacity-45 grayscale' : ''
                         }`}
                     />
@@ -141,26 +144,32 @@ const ProductCard = ({ product }) => {
                     and printing an invented score on a real client's site is a
                     claim they cannot stand behind. */}
                 {product.brand && (
-                    <p className="text-[11px] font-semibold tracking-[0.14em] text-primary uppercase">
+                    <p className="text-[12px] font-semibold tracking-[0.12em] text-primary uppercase">
                         {product.brand}
                     </p>
                 )}
 
                 <Link to={`/product/${_id}`} className="mt-1.5">
-                    {/* Clamped to two lines: the client's product names run to
-                        nine words, and letting them wrap freely made cards in
-                        the same row different heights. */}
-                    <h3 className="font-display line-clamp-2 text-[17px] leading-snug font-semibold transition-colors hover:text-primary">
+                    {/* Clamped to two lines and given a two-line min-height.
+                        The clamp stops a nine-word name from making one card
+                        taller; the min-height stops a SHORT name from pulling
+                        its price up above its neighbours'. Both are needed, and
+                        together they are what lets every element in a row line
+                        up rather than only the card outlines matching. */}
+                    <h3 className="font-display line-clamp-2 min-h-[2.5em] text-[17px] leading-snug font-semibold transition-colors hover:text-primary">
                         {name}
                     </h3>
                 </Link>
 
-                <div className="mt-auto flex items-baseline gap-2 pt-3">
+                {/* Fixed-height price row. "Price on request" is shorter and
+                    italic, so without a reserved slot the cards that use it
+                    left a visible gap where their neighbours showed a price. */}
+                <div className="mt-3 flex min-h-8 items-baseline gap-2">
                     <span
                         className={
                             priced
-                                ? 'font-display text-[22px] font-semibold text-primary'
-                                : 'text-[14px] font-medium text-base-content/55 italic'
+                                ? 'font-display text-[24px] leading-none font-semibold text-primary'
+                                : 'text-[15px] font-medium text-base-content/55 italic'
                         }
                     >
                         {formatCurrency(price)}
@@ -172,11 +181,11 @@ const ProductCard = ({ product }) => {
                     )}
                 </div>
 
-                {lowStock && (
-                    <p className="mt-2 text-[12px] font-medium tracking-wide text-warning">
-                        Only {product.stock} left — order soon
-                    </p>
-                )}
+                {/* Reserved slot, so a card WITH a stock warning and one
+                    without still end at the same point. */}
+                <p className="mt-0.5 min-h-4 text-[12px] font-medium tracking-wide text-warning">
+                    {lowStock ? `Only ${product.stock} left — order soon` : ''}
+                </p>
             </div>
         </article>
     );
