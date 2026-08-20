@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaWhatsapp, FaCartShopping } from 'react-icons/fa6';
 import { formatCurrency, calcDiscount, hasPrice } from '../utils/formatCurrency';
 import { getStockBadge, isSoldOut, isLowStock } from '../utils/catalogue';
-import { resolveImageUrl } from '../utils/imageUrl';
+import { resolveCardImageUrl } from '../utils/imageUrl';
 import { productEnquiryLink } from '../utils/business';
 import OrderButton from './OrderButton';
 import UseCart from '../Hooks/UseCart';
@@ -40,14 +40,20 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        <article className="group">
-            <div className="relative overflow-hidden bg-base-200">
+        // A bordered surface rather than a bare image: the client's photography
+        // is shot on white, so without a frame the products bleed into the page
+        // and the grid loses its rhythm.
+        <article className="group flex h-full flex-col overflow-hidden border border-base-300 bg-base-100 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl">
+            <div className="relative overflow-hidden bg-white">
                 <Link to={`/product/${_id}`} className="block">
                     <img
-                        src={resolveImageUrl(image)}
+                        src={resolveCardImageUrl(image)}
                         alt={name}
                         loading="lazy"
-                        className={`aspect-4/5 w-full bg-white object-contain transition-transform duration-700 group-hover:scale-105 ${
+                        // Padded rather than bled to the edge — the photos are
+                        // packshots, and a product touching the card border
+                        // reads as a crop rather than as a deliberate frame.
+                        className={`aspect-4/5 w-full bg-white object-contain p-4 transition-transform duration-700 group-hover:scale-[1.06] ${
                             soldOut ? 'opacity-45 grayscale' : ''
                         }`}
                     />
@@ -120,23 +126,29 @@ const ProductCard = ({ product }) => {
                 </div>
             </div>
 
-            <div className="pt-4 text-center">
-                <Link to={`/product/${_id}`}>
-                    <h3 className="font-display text-[17px] leading-snug font-semibold transition-opacity hover:opacity-60">
-                        {name}
-                    </h3>
-                </Link>
-
+            {/* flex-1 with the price pushed to the bottom, so a one-line and a
+                three-line product name still produce cards whose prices sit on
+                the same line across a row. */}
+            <div className="flex flex-1 flex-col border-t border-base-300 p-4">
                 {/* Brand, not a star rating: this shop has no review system,
                     and printing an invented score on a real client's site is a
                     claim they cannot stand behind. */}
                 {product.brand && (
-                    <p className="mt-1.5 text-[11px] tracking-[0.1em] text-base-content/45 uppercase">
+                    <p className="text-[10px] font-semibold tracking-[0.16em] text-primary/80 uppercase">
                         {product.brand}
                     </p>
                 )}
 
-                <div className="mt-2 flex items-baseline justify-center gap-2">
+                <Link to={`/product/${_id}`} className="mt-1.5">
+                    {/* Clamped to two lines: the client's product names run to
+                        nine words, and letting them wrap freely made cards in
+                        the same row different heights. */}
+                    <h3 className="font-display line-clamp-2 text-[15px] leading-snug font-semibold transition-colors hover:text-primary">
+                        {name}
+                    </h3>
+                </Link>
+
+                <div className="mt-auto flex items-baseline gap-2 pt-3">
                     <span
                         className={
                             priced

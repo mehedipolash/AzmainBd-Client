@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet } from 'react-router';
 import { FaGaugeHigh, FaBoxOpen, FaLayerGroup, FaArrowLeft } from 'react-icons/fa6';
 import UseAuth from '../Hooks/UseAuth';
 import ScrollToTop from '../components/ScrollToTop';
+import Logo from '../components/Logo';
 
 const NAV = [
     { label: 'Dashboard', path: '/admin', icon: FaGaugeHigh, end: true },
@@ -26,9 +27,9 @@ const AdminLayout = () => {
 
             <aside className="shrink-0 border-b border-base-300 bg-base-100 lg:w-64 lg:border-r lg:border-b-0">
                 <div className="flex items-center justify-between border-b border-base-300 px-5 py-4 lg:block">
-                    <Link to="/" className="font-display text-xl font-semibold">
-                        Azmain <span className="text-primary">BD</span>
-                    </Link>
+                    {/* The client's real mark, not a text stand-in — the admin
+                        panel is the screen the owner sees most. */}
+                    <Logo variant="wide" size="sm" />
                     <p className="mt-0.5 hidden text-[11px] tracking-[0.16em] text-base-content/45 uppercase lg:block">
                         Admin panel
                     </p>

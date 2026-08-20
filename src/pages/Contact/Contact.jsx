@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { FaPhone, FaEnvelope, FaLocationDot, FaClock, FaWhatsapp } from 'react-icons/fa6';
 import PageHeader from '../../components/PageHeader';
+import ShopMap from '../../components/ShopMap';
 import { alertSuccess } from '../../utils/alerts';
 import {
     ADDRESS_LINES,
@@ -93,7 +94,7 @@ const Contact = () => {
             <PageHeader
                 eyebrow="Contact"
                 title="Talk to a human"
-                subtitle="Questions about a product, an order, or a warranty claim — we answer all three."
+                subtitle="Questions about a product, an order, or a delivery — message us and the shop answers."
                 image="/banners/contact.jpg"
                 crumbs={[{ label: 'Home', path: '/' }, { label: 'Contact' }]}
             />
@@ -298,6 +299,21 @@ const Contact = () => {
                                 {isSubmitting ? 'Opening…' : 'Send via WhatsApp'}
                             </button>
                         </form>
+                    </div>
+                </div>
+
+                {/* The showroom is a real place customers visit, so the address
+                    is shown on a map rather than only as text they would have
+                    to retype into their phone. */}
+                <div className="mt-14">
+                    <h2 className="font-display text-2xl font-semibold">Visit the showroom</h2>
+                    <p className="mt-2 max-w-lg text-sm text-base-content/55">
+                        We are on the Gulshan-1 circle. Come in to see any product before you buy,
+                        or tap Directions to navigate straight there.
+                    </p>
+
+                    <div className="mt-6">
+                        <ShopMap />
                     </div>
                 </div>
             </section>

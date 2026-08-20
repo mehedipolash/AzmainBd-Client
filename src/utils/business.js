@@ -25,6 +25,14 @@ export const MAP_URL = `https://www.google.com/maps/search/?api=1&query=${encode
     '42 Jabbar Tower, Gulshan-1, Dhaka-1212, Bangladesh',
 )}`;
 
+// Jabbar Tower, Gulshan-1 circle, Dhaka. Used by the embedded map on the
+// contact page, which needs a point rather than a search string.
+export const SHOP_COORDS = { lat: 23.7806, lng: 90.4152 };
+
+// Turn-by-turn directions from wherever the visitor is, rather than only
+// showing them where the shop sits.
+export const DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${SHOP_COORDS.lat},${SHOP_COORDS.lng}`;
+
 export const SOCIAL_LINKS = {
     facebook: 'https://www.facebook.com/azmain.con.bd',
     instagram: 'https://www.instagram.com/azmain_com_bd',

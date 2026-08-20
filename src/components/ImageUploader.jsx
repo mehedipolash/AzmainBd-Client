@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { FaCloudArrowUp, FaXmark, FaLink } from 'react-icons/fa6';
-import { uploadImage } from '../api/products.api';
+import { FaCloudArrowUp, FaTrash, FaLink } from 'react-icons/fa6';
+import { uploadImage, deleteImage } from '../api/products.api';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { confirmAction } from '../utils/alerts';
 
 /* ---------------------------------------------------------------------------
    Product photo picker.
@@ -17,11 +18,16 @@ import { resolveImageUrl } from '../utils/imageUrl';
 const MAX_BYTES = 5 * 1024 * 1024;
 const ACCEPTED = 'image/jpeg,image/png,image/webp,image/gif';
 
+// Uploads we own look like /api/images/<24-hex-id>. Anything else — a pasted
+// link, or one of the shop's own static photos — is not ours to delete.
+const UPLOADED = /^\/api\/images\/([a-f0-9]{24})$/i;
+
 const ImageUploader = ({ value, onChange, error }) => {
     const inputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [localError, setLocalError] = useState('');
+    const [deleting, setDeleting] = useState(false);
     const [mode, setMode] = useState('upload');
 
     const handleFile = async (file) => {
@@ -57,6 +63,45 @@ const ImageUploader = ({ value, onChange, error }) => {
             // Clearing the input means picking the same file again still fires
             // a change event, which it otherwise would not.
             if (inputRef.current) inputRef.current.value = '';
+        }
+    };
+
+    // Clearing the field and deleting the stored bytes are two different
+    // actions, and the difference matters: one is free to undo, the other is
+    // permanent. Which one happens depends on who owns the file.
+    const handleRemove = async () => {
+        const owned = UPLOADED.exec(value ?? '');
+
+        if (!owned) {
+            // A pasted URL points at someone else's server. Unlink only.
+            onChange('');
+            return;
+        }
+
+        const confirmed = await confirmAction({
+            title: 'Delete this photo?',
+            text: 'The image file will be permanently removed from storage.',
+            confirmLabel: 'Delete',
+            danger: true,
+        });
+
+        if (!confirmed) return;
+
+        setDeleting(true);
+
+        // Cleared first: if the request fails the form must not still be
+        // pointing at a photo the owner has just been told is going away.
+        onChange('');
+
+        try {
+            await deleteImage(owned[1]);
+        } catch (deleteError) {
+            // The field is already clear and the product will save correctly.
+            // The only consequence is an orphaned file, so this is reported
+            // rather than treated as a failure the owner must resolve.
+            setLocalError(`Photo removed from the product, but the stored file could not be deleted: ${deleteError.message}`);
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -169,11 +214,18 @@ const ImageUploader = ({ value, onChange, error }) => {
                     />
                     <button
                         type="button"
-                        onClick={() => onChange('')}
-                        className="flex items-center gap-1.5 text-[11px] tracking-wide text-base-content/50 uppercase transition-colors hover:text-error"
+                        onClick={handleRemove}
+                        disabled={deleting}
+                        className="flex items-center gap-1.5 text-[11px] tracking-wide text-base-content/50 uppercase transition-colors hover:text-error disabled:opacity-40"
                     >
-                        <FaXmark className="text-[10px]" aria-hidden="true" />
-                        Remove
+                        {deleting ? (
+                            'Deleting…'
+                        ) : (
+                            <>
+                                <FaTrash className="text-[10px]" aria-hidden="true" />
+                                {UPLOADED.test(value ?? '') ? 'Delete photo' : 'Remove'}
+                            </>
+                        )}
                     </button>
                 </div>
             )}

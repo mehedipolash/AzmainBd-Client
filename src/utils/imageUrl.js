@@ -31,3 +31,24 @@ export const resolveImageUrl = (image) => {
 
     return image;
 };
+
+/* ---------------------------------------------------------------------------
+   The client's own photography ships in two renditions: a 1200x1500 original
+   for the product page, and an 800x1000 "-card" file for the grid. A shop page
+   showing seventeen products should not download seventeen full-size
+   photographs to display each one at a third of that size.
+
+   Only the static /products/ set has a card rendition — an owner upload is one
+   file in GridFS and a remote URL is not ours to rewrite, so both fall through
+   to the original. That keeps this safe to call from any card without the
+   caller needing to know where the image came from.
+--------------------------------------------------------------------------- */
+export const resolveCardImageUrl = (image) => {
+    if (!image) return '';
+
+    if (/^\/products\/[^/]+\.jpg$/i.test(image)) {
+        return resolveImageUrl(image.replace(/\.jpg$/i, '-card.jpg'));
+    }
+
+    return resolveImageUrl(image);
+};

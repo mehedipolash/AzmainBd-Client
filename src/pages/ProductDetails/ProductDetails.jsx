@@ -265,7 +265,7 @@ const ProductDetails = () => {
                                             <span className="font-medium text-base-content">
                                                 {deliveryDate}
                                             </span>{' '}
-                                            in Dhaka
+                                            in Dhaka, 2–4 days nationwide
                                         </p>
                                     )}
                                 </div>

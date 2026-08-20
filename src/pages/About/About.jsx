@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { FaShieldHalved, FaBoxOpen, FaHeadset, FaTruckFast } from 'react-icons/fa6';
 import PageHeader from '../../components/PageHeader';
 import SectionTitle from '../../components/SectionTitle';
+import ShopMap from '../../components/ShopMap';
 import UseCatalogue from '../../Hooks/UseCatalogue';
 import { getStoreStats } from '../../utils/catalogue';
 
@@ -14,18 +15,18 @@ const VALUES = [
     },
     {
         icon: FaBoxOpen,
-        title: '500-point inspection',
-        body: 'Every unit is checked and re-sealed before dispatch, with warranty paperwork already in the box.',
+        title: 'Sealed and in date',
+        body: 'Every bottle leaves us factory-sealed, with its batch code and expiry date intact so you can check it yourself.',
     },
     {
         icon: FaTruckFast,
-        title: 'Next-day in Dhaka',
-        body: 'Orders placed before 6pm ship the same evening, with nationwide courier coverage beyond the city.',
+        title: 'Delivered nationwide',
+        body: 'Next-day inside Dhaka, two to four days anywhere else in Bangladesh. Free over ৳ 5,000.',
     },
     {
         icon: FaHeadset,
-        title: 'Support that answers',
-        body: 'A real technical team on the phone, not a script — before you buy and long after.',
+        title: 'A person, not a script',
+        body: 'Message us on WhatsApp and the shop answers — before you order and after it arrives.',
     },
 ];
 
@@ -48,7 +49,7 @@ const About = () => {
                     <div className="overflow-hidden bg-base-200">
                         <img
                             src="/products/vica-premium-herbal-soap-natural-gulab-soap.jpg"
-                            alt="Our Dhaka showroom"
+                            alt="VICA Premium Herbal Soap, one of the brands we import"
                             loading="lazy"
                             className="aspect-4/3 w-full object-cover"
                         />
@@ -57,20 +58,22 @@ const About = () => {
                     <div>
                         <p className="eyebrow mb-3">Why we started</p>
                         <h2 className="font-display text-3xl leading-tight font-semibold sm:text-4xl">
-                            Buying electronics here should not be a gamble
+                            Buying skincare here should not be a gamble
                         </h2>
 
                         <p className="mt-6 text-[15px] leading-relaxed text-base-content/65">
-                            Anyone who has shopped for a phone or a fridge in Dhaka knows the
-                            problem: two shops quote wildly different prices for the same model, and
-                            only one of them will honour the warranty. Grey imports carry no local
-                            service cover. Refurbished units get sold as sealed.
+                            Anyone who has bought shampoo or a body lotion in Dhaka knows the
+                            problem: the same NIVEA bottle sits on two shelves at two different
+                            prices, and only one of them is the real thing. Counterfeit personal
+                            care is common, and a fake product does not just disappoint — it goes
+                            on your skin.
                         </p>
 
                         <p className="mt-4 text-[15px] leading-relaxed text-base-content/65">
-                            We built this store to remove that uncertainty. Every product we list
-                            comes through an authorised distributor, arrives sealed, and ships with
-                            warranty paperwork that a service centre will actually accept.
+                            We import directly and sell from our own showroom, so there is one
+                            link between the brand and you. Every bottle arrives sealed, with its
+                            batch code and expiry intact — and you are welcome to come in and
+                            check any of it before you buy.
                         </p>
 
                         <Link to="/shop" className="btn-shop mt-8">
@@ -136,6 +139,16 @@ const About = () => {
                         );
                     })}
                 </div>
+            </section>
+
+            <section className="container-px pb-16 lg:pb-24">
+                <SectionTitle
+                    eyebrow="Find us"
+                    title="The Gulshan-1 showroom"
+                    subtitle="Every product on this site is on the shelf here. Come and see it before you buy."
+                />
+
+                <ShopMap />
             </section>
         </div>
     );

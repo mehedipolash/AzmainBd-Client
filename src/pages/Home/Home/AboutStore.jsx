@@ -8,7 +8,7 @@ const AboutStore = () => {
                 <div className="overflow-hidden bg-base-200" data-aos="fade-right">
                     <img
                         src="/products/ogx-renewing-argan-oil-of-morocco-shampoo.jpg"
-                        alt="Our showroom"
+                        alt="OGX Renewing+ Argan Oil of Morocco Shampoo"
                         loading="lazy"
                         className="aspect-4/3 w-full object-cover"
                     />
@@ -22,14 +22,16 @@ const AboutStore = () => {
                     </h2>
 
                     <p className="mt-6 text-[15px] leading-relaxed text-base-content/65">
-                        We import the brands we carry and buy the rest through their distributors. Each item
-                        arrives sealed, passes a 500-point inspection before dispatch and ships with
-                        arrives sealed, genuine and in date.
+                        We import the brands we carry and buy the rest through their
+                        distributors. Every item reaches you factory-sealed, genuine and
+                        well inside its expiry date — with the batch code still on the
+                        bottle so you can check it yourself.
                     </p>
 
                     <p className="mt-4 text-[15px] leading-relaxed text-base-content/65">
-                        No counterfeits, no refills sold as new, and a real person on WhatsApp
-                        by people who can actually answer a technical question.
+                        No counterfeits, no refills sold as new. Message us on WhatsApp
+                        and you reach the shop itself, not a call centre — before you
+                        order and after it arrives.
                     </p>
 
                     <Link to="/about" className="btn-shop-outline mt-8">

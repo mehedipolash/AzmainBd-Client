@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { FaPlus, FaPen, FaTrash, FaMagnifyingGlass } from 'react-icons/fa6';
-import { fetchProducts, deleteProduct } from '../../api/products.api';
+import { FaPlus, FaPen, FaTrash, FaMagnifyingGlass, FaCheck } from 'react-icons/fa6';
+import { fetchProducts, deleteProduct, updateProduct } from '../../api/products.api';
 import Loader from '../../components/Loader';
 import UseToast from '../../Hooks/UseToast';
 import UseCatalogue from '../../Hooks/UseCatalogue';
@@ -16,6 +16,12 @@ const AdminProducts = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
+
+    // Which row's stock is being edited, and the value being typed. Held as a
+    // string so the field can be empty mid-edit without becoming NaN.
+    const [editingStock, setEditingStock] = useState(null);
+    const [stockDraft, setStockDraft] = useState('');
+    const [savingStock, setSavingStock] = useState(false);
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -65,6 +71,57 @@ const AdminProducts = () => {
         return <span className="pill-stock">{stock} in stock</span>;
     };
 
+    const beginStockEdit = (product) => {
+        setEditingStock(product._id);
+        setStockDraft(String(product.stock ?? 0));
+    };
+
+    const cancelStockEdit = () => {
+        setEditingStock(null);
+        setStockDraft('');
+    };
+
+    // Saves a corrected stock count. This is a CORRECTION — a delivery, a
+    // recount — not a sale. Sales go through Record a sale on the dashboard,
+    // which also writes the revenue record; routing a sale through here would
+    // move the stock without ever recording that the money came in.
+    const saveStock = async (product) => {
+        const next = Number(stockDraft);
+
+        if (stockDraft === '' || !Number.isInteger(next) || next < 0) {
+            alertError('Invalid stock', 'Enter a whole number of units, 0 or more.');
+            return;
+        }
+
+        if (next === product.stock) {
+            cancelStockEdit();
+            return;
+        }
+
+        setSavingStock(true);
+
+        try {
+            await updateProduct(product._id, { stock: next });
+
+            // Patch the row in place rather than refetching the whole list —
+            // a full reload would scroll the owner back to the top after every
+            // single count they correct.
+            setItems((current) =>
+                current.map((item) =>
+                    item._id === product._id ? { ...item, stock: next } : item,
+                ),
+            );
+
+            notify(`${product.name} — stock set to ${next}`);
+            reloadCatalogue();
+            cancelStockEdit();
+        } catch (err) {
+            alertError('Could not update stock', err.message);
+        } finally {
+            setSavingStock(false);
+        }
+    };
+
     return (
         <div className="p-5 sm:p-8 lg:p-10">
             <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
@@ -84,7 +141,16 @@ const AdminProducts = () => {
                 <input
                     type="search"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        // Searching reloads the list, which can replace or
+                        // remove the row being edited. Dropping the edit here —
+                        // in the event that causes it — is both simpler than
+                        // reacting to it in an effect and safer: keeping the
+                        // input open over a different product would save a
+                        // count against the wrong item.
+                        cancelStockEdit();
+                    }}
                     placeholder="Search products…"
                     aria-label="Search products"
                     className="w-full bg-transparent text-sm outline-none placeholder:text-base-content/35"
@@ -143,8 +209,51 @@ const AdminProducts = () => {
                                     <td className="px-4 py-3 whitespace-nowrap tabular-nums">
                                         {formatCurrency(product.price)}
                                     </td>
+                                    {/* Click the pill to correct the count in
+                                        place. Restocking touches many products
+                                        at once, and opening the full form for
+                                        each one is the slowest possible path. */}
                                     <td className="px-4 py-3 whitespace-nowrap">
-                                        {stockPill(product.stock)}
+                                        {editingStock === product._id ? (
+                                            <div className="flex items-center gap-1">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    step="1"
+                                                    autoFocus
+                                                    value={stockDraft}
+                                                    disabled={savingStock}
+                                                    onChange={(e) => setStockDraft(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            saveStock(product);
+                                                        }
+                                                        if (e.key === 'Escape') cancelStockEdit();
+                                                    }}
+                                                    aria-label={`Stock for ${product.name}`}
+                                                    className="w-20 border border-primary bg-base-100 px-2 py-1.5 text-sm tabular-nums outline-none"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => saveStock(product)}
+                                                    disabled={savingStock}
+                                                    aria-label="Save stock"
+                                                    className="p-2 text-xs text-primary transition-opacity hover:opacity-70 disabled:opacity-40"
+                                                >
+                                                    <FaCheck />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={() => beginStockEdit(product)}
+                                                title="Click to correct the stock count"
+                                                className="transition-opacity hover:opacity-70"
+                                            >
+                                                {stockPill(product.stock)}
+                                            </button>
+                                        )}
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-1">

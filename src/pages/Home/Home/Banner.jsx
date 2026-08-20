@@ -49,12 +49,14 @@ const Banner = () => {
             />
 
             <div className="container-px relative py-14 sm:py-16 lg:py-20">
-                {/* Columns align to the top, not the centre. The product card is
-                    considerably taller than the copy, so centring the copy
-                    against it pushed the headline down and left a gap under the
-                    navbar. */}
-                <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14">
-                    <div>
+                {/* items-stretch, not items-center. The product card is taller
+                    than the copy, and centring a taller element against a
+                    shorter one pushes half its overflow past the section's
+                    padding — which is what clipped the card top and bottom.
+                    Stretching lets the row size to the taller column, then each
+                    column centres its own content within that shared height. */}
+                <div className="grid items-stretch gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+                    <div className="flex flex-col justify-center">
                         <p className="mb-4 inline-flex items-center gap-2 border border-white/20 bg-white/8 px-3 py-1.5 text-[11px] font-semibold tracking-[0.2em] text-white/85 uppercase backdrop-blur-sm">
                             <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
                             {hero.eyebrow}
@@ -127,7 +129,7 @@ const Banner = () => {
                         Rotates through the featured items on a timer. */}
                     {product && (
                         <div
-                            className="relative mx-auto w-full max-w-sm lg:max-w-md"
+                            className="relative mx-auto flex w-full max-w-sm flex-col justify-center lg:max-w-[380px]"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
                             onFocusCapture={() => setPaused(true)}
@@ -151,7 +153,7 @@ const Banner = () => {
                                         // tall portrait, and a 4:5 box here
                                         // pushes the card's button below the
                                         // fold on a laptop.
-                                        className="h-56 w-full bg-white object-contain transition-transform duration-700 group-hover:scale-105 lg:h-64"
+                                        className="h-52 w-full bg-white object-contain p-4 transition-transform duration-700 group-hover:scale-105 lg:h-56"
                                     />
 
                                     {discount > 0 && (
@@ -167,7 +169,7 @@ const Banner = () => {
                                     )}
                                 </Link>
 
-                                <div className="p-5">
+                                <div className="p-5 pt-4">
                                     <p className="text-[11px] font-semibold tracking-[0.18em] text-base-content/45 uppercase">
                                         {product.brand}
                                     </p>
@@ -198,29 +200,33 @@ const Banner = () => {
                                         )}
                                     </div>
 
-                                    <ul className="mt-5 space-y-2 border-t border-base-300 pt-5 text-[12px] text-base-content/60">
+                                    {/* One compact row rather than a stacked
+                                        list: the hero card is a teaser, and
+                                        every line here is height the card
+                                        cannot spare above the fold. */}
+                                    <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-base-300 pt-4 text-[11px] text-base-content/60">
+                                        <li className="flex items-center gap-1.5">
+                                            <FaShieldHalved
+                                                className="text-[10px] text-primary"
+                                                aria-hidden="true"
+                                            />
+                                            100% genuine
+                                        </li>
                                         {deliveryDate && (
-                                            <li className="flex items-center gap-2.5">
+                                            <li className="flex items-center gap-1.5">
                                                 <FaTruckFast
-                                                    className="text-[11px] text-primary"
+                                                    className="text-[10px] text-primary"
                                                     aria-hidden="true"
                                                 />
-                                                Delivered by{' '}
+                                                By{' '}
                                                 <span className="font-medium text-base-content">
                                                     {deliveryDate}
                                                 </span>
                                             </li>
                                         )}
-                                        <li className="flex items-center gap-2.5">
-                                            <FaShieldHalved
-                                                className="text-[11px] text-primary"
-                                                aria-hidden="true"
-                                            />
-                                            Genuine branded product
-                                        </li>
                                     </ul>
 
-                                    <div className="mt-6 grid gap-2">
+                                    <div className="mt-5 grid gap-2">
                                         <Link
                                             to={`/product/${product._id}`}
                                             className="btn-shop w-full"

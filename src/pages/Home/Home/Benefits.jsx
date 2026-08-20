@@ -1,15 +1,19 @@
 import React from 'react';
-import { FaLock, FaTruckFast, FaLocationDot, FaRotateLeft } from 'react-icons/fa6';
+import { FaWhatsapp, FaTruckFast, FaShieldHalved, FaStore } from 'react-icons/fa6';
 import UseInView from '../../../Hooks/UseInView';
 
-// Ordered as the customer actually experiences them: pay, ship, track, return.
-// The connecting line encodes that sequence, so the animation is describing
-// something true rather than decorating four unrelated tiles.
+// Ordered as the customer actually experiences them: message, confirm, receive,
+// and the showroom behind it all. The connecting line encodes that sequence, so
+// the animation describes something true rather than decorating four tiles.
+//
+// Every claim here has to be one the shop can keep. There is no checkout and no
+// courier tracking integration, so the earlier "SSLCommerz" and "live order
+// tracking" tiles described a system that does not exist.
 const BENEFITS = [
-    { icon: FaLock, title: 'Secure Payments', body: 'SSLCommerz protected checkout.' },
-    { icon: FaTruckFast, title: 'Free Shipping', body: 'On all orders over ৳ 5,000.' },
-    { icon: FaLocationDot, title: 'Order Tracking', body: 'Live updates until delivery.' },
-    { icon: FaRotateLeft, title: 'Easy Returns', body: '7-day no-questions returns.' },
+    { icon: FaWhatsapp, title: 'Order on WhatsApp', body: 'Message us — we reply the same day.' },
+    { icon: FaShieldHalved, title: '100% Genuine', body: 'Imported direct, never a copy.' },
+    { icon: FaTruckFast, title: 'Nationwide Delivery', body: 'Free on orders over ৳ 5,000.' },
+    { icon: FaStore, title: 'Visit the Showroom', body: 'Jabbar Tower, Gulshan-1, Dhaka.' },
 ];
 
 // One step every 260ms, after a short beat for the line to start drawing.
