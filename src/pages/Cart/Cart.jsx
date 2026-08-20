@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { FaTrash, FaWhatsapp, FaTruckFast } from 'react-icons/fa6';
+import { FaTrash, FaWhatsapp, FaTruckFast, FaMinus, FaPlus } from 'react-icons/fa6';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import OrderButton from '../../components/OrderButton';
@@ -97,7 +97,15 @@ const Cart = () => {
                                             </p>
 
                                             <div className="mt-auto flex flex-wrap items-center gap-4 pt-3">
-                                                <div className="flex items-stretch border border-base-300">
+                                                {/* Real 40px targets on a tinted
+                                                    surface. These were two text
+                                                    glyphs with horizontal
+                                                    padding and no height, so the
+                                                    tap area was whatever the
+                                                    character happened to be —
+                                                    far under what a fingertip
+                                                    needs. */}
+                                                <div className="flex items-center gap-1 rounded-lg border border-base-300 bg-base-200/60 p-1">
                                                     <button
                                                         type="button"
                                                         onClick={() =>
@@ -107,17 +115,22 @@ const Cart = () => {
                                                             )
                                                         }
                                                         disabled={item.quantity <= 1}
-                                                        className="px-3 text-base disabled:opacity-30"
+                                                        className="flex size-9 items-center justify-center rounded-md bg-base-100 text-primary shadow-sm transition-all hover:bg-primary hover:text-primary-content disabled:bg-transparent disabled:text-base-content/25 disabled:shadow-none"
                                                         aria-label={`Decrease quantity of ${item.name}`}
                                                     >
-                                                        −
+                                                        <FaMinus className="text-[12px]" />
                                                     </button>
+
+                                                    {/* Tabular figures so the
+                                                        stepper does not jitter
+                                                        in width going 9 -> 10. */}
                                                     <span
-                                                        className="flex w-10 items-center justify-center text-sm font-medium"
+                                                        className="flex w-9 items-center justify-center text-[15px] font-semibold tabular-nums"
                                                         aria-live="polite"
                                                     >
                                                         {item.quantity}
                                                     </span>
+
                                                     <button
                                                         type="button"
                                                         onClick={() =>
@@ -127,19 +140,26 @@ const Cart = () => {
                                                             )
                                                         }
                                                         disabled={item.quantity >= item.stock}
-                                                        className="px-3 text-base disabled:opacity-30"
+                                                        className="flex size-9 items-center justify-center rounded-md bg-base-100 text-primary shadow-sm transition-all hover:bg-primary hover:text-primary-content disabled:bg-transparent disabled:text-base-content/25 disabled:shadow-none"
                                                         aria-label={`Increase quantity of ${item.name}`}
                                                     >
-                                                        +
+                                                        <FaPlus className="text-[12px]" />
                                                     </button>
                                                 </div>
 
+                                                {/* A control, not a caption. A
+                                                    10px icon beside grey
+                                                    uppercase text reads as a
+                                                    label; the tinted surface and
+                                                    red say "this deletes
+                                                    something" before it is
+                                                    clicked. */}
                                                 <button
                                                     type="button"
                                                     onClick={() => handleRemove(item)}
-                                                    className="flex items-center gap-2 text-[12px] tracking-wide text-base-content/45 uppercase transition-colors hover:text-error"
+                                                    className="flex h-11 items-center gap-2 rounded-lg border border-error/20 bg-error/8 px-4 text-[12px] font-semibold tracking-wide text-error uppercase transition-all hover:border-error hover:bg-error hover:text-error-content"
                                                 >
-                                                    <FaTrash className="text-[10px]" />
+                                                    <FaTrash className="text-[12px]" />
                                                     Remove
                                                 </button>
                                             </div>

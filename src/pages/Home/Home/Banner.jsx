@@ -172,10 +172,12 @@ const Banner = () => {
                         <Reveal
                             direction="left"
                             delay={0.18}
-                            // A small top offset rather than none: level with
-                            // the headline reads as deliberate, level with the
-                            // very top of the section reads as unanchored.
-                            className="w-full"
+                            // Dropped 46px to sit level with the HEADLINE
+                            // rather than with the tagline above it — that is
+                            // the tagline's height plus its margin. Only from
+                            // lg: below that the columns stack and there is
+                            // nothing beside the card to align to.
+                            className="w-full lg:mt-[46px]"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
                             onFocusCapture={() => setPaused(true)}
