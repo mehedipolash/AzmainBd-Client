@@ -42,7 +42,7 @@ const WhatsAppButton = () => {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Chat with us on WhatsApp — ${PHONE_DISPLAY}`}
-            className="group fixed right-4 bottom-5 z-40 flex items-center gap-0 overflow-hidden rounded-full bg-[#25D366] pl-4 text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:gap-2 hover:shadow-xl focus-visible:gap-2 sm:right-6 sm:bottom-6"
+            className="group fixed right-4 bottom-5 z-40 flex h-14 items-center overflow-hidden rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:shadow-xl sm:right-6 sm:bottom-6"
         >
             {/* The ping is a sibling, not a wrapper — animating the link itself
                 would move the click target under the pointer. */}
@@ -51,7 +51,12 @@ const WhatsAppButton = () => {
                 className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-20 [animation-duration:2.5s]"
             />
 
-            <span className="relative py-3.5">
+            {/* A fixed 56px square, so the glyph is centred on the circle
+                whatever the label is doing. Previously the anchor used pl-4
+                with a collapsing label, which meant the icon sat off to one
+                side of an oval — it looked tilted because it was off-centre,
+                not because the artwork was crooked. */}
+            <span className="relative flex size-14 shrink-0 items-center justify-center">
                 <WhatsAppIcon className="size-7" />
             </span>
 
@@ -60,8 +65,8 @@ const WhatsAppButton = () => {
                 accessible name that says the same thing. */}
             <span
                 aria-hidden="true"
-                className={`relative overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-300 group-hover:max-w-45 group-hover:pr-5 group-focus-visible:max-w-45 group-focus-visible:pr-5 ${
-                    expanded ? 'max-w-45 pr-5' : 'max-w-0 pr-0'
+                className={`relative overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-300 group-hover:max-w-45 group-hover:pr-6 group-focus-visible:max-w-45 group-focus-visible:pr-6 ${
+                    expanded ? 'max-w-45 pr-6' : 'max-w-0 pr-0'
                 }`}
             >
                 Chat with us
