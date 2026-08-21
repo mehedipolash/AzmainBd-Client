@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { FaWhatsapp, FaCartShopping } from 'react-icons/fa6';
-import { formatCurrency, calcDiscount, hasPrice } from '../utils/formatCurrency';
+import { FaWhatsapp, FaCartShopping, FaArrowRight } from 'react-icons/fa6';
+import { hasPrice } from '../utils/formatCurrency';
 import { getStockBadge, isSoldOut, isLowStock } from '../utils/catalogue';
 import { resolveCardImageUrl } from '../utils/imageUrl';
 import { productEnquiryLink } from '../utils/business';
@@ -20,14 +20,16 @@ const TONE_CLASSES = {
 // shows: sold-out items dim their image, lose the cart button and surface a
 // "notify me" affordance instead.
 const ProductCard = ({ product }) => {
-    const { _id, name, image, price, oldPrice } = product;
+    const { _id, name, image } = product;
     const { addItem } = UseCart();
     const { notify } = UseToast();
 
     const soldOut = isSoldOut(product);
     const lowStock = isLowStock(product);
     const badge = getStockBadge(product);
-    const discount = calcDiscount(price, oldPrice);
+    // Still needed even though no amount is shown: it decides whether the card
+    // offers "Add to Cart" or a WhatsApp enquiry, since an unpriced item has no
+    // total for a cart to compute.
     const priced = hasPrice(product);
 
     const handleAddToCart = () => {
@@ -79,11 +81,10 @@ const ProductCard = ({ product }) => {
                     </span>
                 )}
 
-                {discount > 0 && !soldOut && (
-                    <span className="absolute top-3 right-3 rounded-full bg-accent px-3 py-1 text-[10px] font-semibold tracking-[0.12em] text-accent-content uppercase shadow-sm">
-                        -{discount}%
-                    </span>
-                )}
+                {/* The discount badge went with the price. "-15%" beside no
+                    amount tells a visitor nothing they can act on, and the
+                    saving is shown properly on the product page where both
+                    prices appear together. */}
 
                 {/* Direct WhatsApp enquiry, appearing on hover and always
                     reachable by keyboard because focus-within keeps it shown.
@@ -91,7 +92,6 @@ const ProductCard = ({ product }) => {
                     the cart rather than a decorative extra. */}
                 {!soldOut && (
                     <div className="pointer-events-none absolute top-3 right-3 flex translate-x-3 flex-col gap-2 opacity-0 transition-all duration-300 group-hover:pointer-events-auto group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-x-0 group-focus-within:opacity-100">
-                        {discount > 0 && <span className="h-6" aria-hidden="true" />}
                         <OrderButton
                             href={productEnquiryLink(product)}
                             signedOutLabel=""
@@ -161,25 +161,22 @@ const ProductCard = ({ product }) => {
                     </h3>
                 </Link>
 
-                {/* Fixed-height price row. "Price on request" is shorter and
-                    italic, so without a reserved slot the cards that use it
-                    left a visible gap where their neighbours showed a price. */}
-                <div className="mt-3 flex min-h-8 items-baseline gap-2">
-                    <span
-                        className={
-                            priced
-                                ? 'font-display text-[24px] leading-none font-semibold text-primary'
-                                : 'text-[15px] font-medium text-base-content/55 italic'
-                        }
-                    >
-                        {formatCurrency(price)}
-                    </span>
-                    {priced && oldPrice && (
-                        <span className="text-[14px] text-base-content/35 line-through">
-                            {formatCurrency(oldPrice)}
-                        </span>
-                    )}
-                </div>
+                {/* No price on the card, by the client's instruction: the
+                    amount lives on the product page, so a visitor who wants it
+                    opens the product and sees the full description, size,
+                    stock and delivery alongside it rather than a bare number
+                    in a grid.
+
+                    The row is kept — a prompt to open the product, not an
+                    empty gap — so cards still end at a common baseline and the
+                    grid keeps its rhythm. */}
+                <p className="mt-3 flex min-h-8 items-center gap-1.5 text-[13px] font-semibold tracking-wide text-primary">
+                    View details
+                    <FaArrowRight
+                        className="text-[10px] transition-transform group-hover:translate-x-1"
+                        aria-hidden="true"
+                    />
+                </p>
 
                 {/* Reserved slot, so a card WITH a stock warning and one
                     without still end at the same point. */}

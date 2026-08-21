@@ -4,7 +4,6 @@ import { FaWhatsapp } from 'react-icons/fa6';
 import OrderButton from '../../../components/OrderButton';
 import UseCatalogue from '../../../Hooks/UseCatalogue';
 import { getDealOfTheDay, LOW_STOCK_THRESHOLD } from '../../../utils/catalogue';
-import { formatCurrency, calcDiscount, hasPrice } from '../../../utils/formatCurrency';
 import { resolveImageUrl } from '../../../utils/imageUrl';
 import { productEnquiryLink } from '../../../utils/business';
 
@@ -26,8 +25,6 @@ const DealOfTheDay = () => {
 
     if (loading || !deal) return null;
 
-    const discount = calcDiscount(deal.price, deal.oldPrice);
-    const priced = hasPrice(deal);
     const scarce = deal.stock <= LOW_STOCK_THRESHOLD;
 
     return (
@@ -40,11 +37,8 @@ const DealOfTheDay = () => {
                         loading="lazy"
                         className="aspect-4/5 w-full bg-white object-contain"
                     />
-                    {discount > 0 && (
-                        <span className="absolute top-5 left-5 bg-warning px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-warning-content uppercase">
-                            Save {discount}%
-                        </span>
-                    )}
+                    {/* "Save N%" removed along with the price — a percentage
+                        with nothing to apply it to is not information. */}
                 </div>
 
                 <div data-aos="fade-left">
@@ -64,22 +58,10 @@ const DealOfTheDay = () => {
                         {deal.description}
                     </p>
 
-                    <div className="mt-6 flex items-baseline gap-3">
-                        <span
-                            className={
-                                priced
-                                    ? 'text-3xl font-semibold text-primary'
-                                    : 'text-xl font-medium text-base-content/60 italic'
-                            }
-                        >
-                            {formatCurrency(deal.price)}
-                        </span>
-                        {priced && deal.oldPrice && (
-                            <span className="text-base text-base-content/35 line-through">
-                                {formatCurrency(deal.oldPrice)}
-                            </span>
-                        )}
-                    </div>
+                    {/* Price omitted here as everywhere outside the product
+                        page, by the client's instruction. This is a homepage
+                        section, so the same rule applies: the amount is on the
+                        product page, one click away through the button below. */}
 
                     {/* Real remaining stock, straight from the database. */}
                     <p

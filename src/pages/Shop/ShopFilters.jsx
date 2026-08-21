@@ -1,5 +1,4 @@
 import React from 'react';
-import { formatCurrency } from '../../utils/formatCurrency';
 
 /* Filter options are passed in rather than imported: brands and categories now
    come from the live catalogue, so a brand the owner adds in the admin panel
@@ -11,11 +10,8 @@ const ShopFilters = ({
     categories = [],
     selectedCategory,
     onCategoryChange,
-    maxPrice,
-    onMaxPriceChange,
     inStockOnly,
     onInStockOnlyChange,
-    priceBounds,
     onClearAll,
 }) => {
     return (
@@ -99,30 +95,12 @@ const ShopFilters = ({
                 </fieldset>
             )}
 
-            <fieldset className="border-t border-base-300 pt-6">
-                <legend className="eyebrow mb-4">Max price</legend>
-                <input
-                    type="range"
-                    min={priceBounds.min}
-                    max={priceBounds.max}
-                    step={50}
-                    value={maxPrice}
-                    onChange={(e) => onMaxPriceChange(Number(e.target.value))}
-                    className="w-full accent-primary"
-                    aria-label="Maximum price"
-                />
-                <div className="mt-2 flex justify-between text-[12px] text-base-content/55">
-                    <span>{formatCurrency(priceBounds.min)}</span>
-                    <span className="font-medium text-base-content">
-                        {formatCurrency(maxPrice)}
-                    </span>
-                </div>
-                {/* Unpriced items would otherwise vanish the moment the slider
-                    moves, which looks like stock disappearing. */}
-                <p className="mt-3 text-[11px] leading-relaxed text-base-content/45">
-                    Items marked “price on request” are always shown.
-                </p>
-            </fieldset>
+            {/* The max-price slider was removed with the rest of the price
+                display. A filter that prints "৳ 450" at one end and "৳ 3,400"
+                at the other is a price display, and one whose handle can be
+                dragged to read off any individual product's price — which is
+                exactly what the client asked to keep on the product page only.
+                Brand, category and availability all still filter. */}
         </div>
     );
 };

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { FaArrowRight, FaTruckFast, FaShieldHalved, FaWhatsapp } from 'react-icons/fa6';
 import { getHeroBanner } from '../../../data/banners';
-import { getHeroProducts, getStoreStats, isLowStock } from '../../../utils/catalogue';
-import { formatCurrency, calcDiscount, hasPrice } from '../../../utils/formatCurrency';
+import { getHeroProducts, getStoreStats, isLowStock, HERO_LIMIT } from '../../../utils/catalogue';
 import { resolveImageUrl, resolveCardImageUrl } from '../../../utils/imageUrl';
 import { productEnquiryLink } from '../../../utils/business';
 import OrderButton from '../../../components/OrderButton';
@@ -18,9 +17,11 @@ const Banner = () => {
     const hero = getHeroBanner();
     const { products, categories } = UseCatalogue();
 
-    // Real catalogue items fill the right side, so the hero proves the shop
-    // works rather than showing a stock photograph.
-    const featured = getHeroProducts(products, 3);
+    // Whichever products the shop owner flagged as featured in the admin
+    // panel. Real catalogue items, so the hero proves the shop works rather
+    // than showing a stock photograph — and the client chooses which ones,
+    // rather than the code ranking them.
+    const featured = getHeroProducts(products, HERO_LIMIT);
     const stats = getStoreStats(products, categories);
 
     // Pause the rotation while the pointer or keyboard focus is on the card,
@@ -31,8 +32,6 @@ const Banner = () => {
     if (!hero) return null;
 
     const product = featured[index] ?? null;
-    const discount = product ? calcDiscount(product.price, product.oldPrice) : 0;
-    const priced = product ? hasPrice(product) : false;
 
     return (
         <section className="relative overflow-hidden bg-ink">
@@ -202,12 +201,12 @@ const Banner = () => {
                                             className="h-52 w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105 sm:h-full sm:min-h-72.5"
                                         />
 
-                                        {discount > 0 && (
-                                            <span className="absolute top-4 left-4 rounded-full bg-accent px-3 py-1 text-[10px] font-semibold tracking-[0.12em] text-accent-content uppercase shadow-sm">
-                                                Save {discount}%
-                                            </span>
-                                        )}
-
+                                        {/* The "Save N%" badge went with the
+                                            price: a percentage with no amount
+                                            beside it is not something a
+                                            visitor can act on. Stock urgency
+                                            below is unrelated to price, so it
+                                            stays. */}
                                         {isLowStock(product) && (
                                             <span className="absolute top-4 right-4 rounded-full bg-error px-3 py-1 text-[10px] font-semibold tracking-[0.12em] text-error-content uppercase shadow-sm">
                                                 Only {product.stock} left
@@ -229,24 +228,20 @@ const Banner = () => {
                                             </Link>
                                         </h2>
 
-                                        <div className="mt-4 flex items-baseline gap-2.5">
-                                            <span
-                                                className={
-                                                    priced
-                                                        ? 'font-display text-3xl font-semibold text-primary'
-                                                        : 'text-base font-medium text-base-content/60 italic'
-                                                }
-                                            >
-                                                {formatCurrency(product.price)}
-                                            </span>
-                                            {priced && product.oldPrice && (
-                                                <span className="text-sm text-base-content/35 line-through">
-                                                    {formatCurrency(product.oldPrice)}
-                                                </span>
-                                            )}
-                                        </div>
+                                        {/* No price here either — the client
+                                            wants amounts on the product page
+                                            only. The description takes the
+                                            space instead, which sells the item
+                                            better than a number did and gives
+                                            the horizontal card a reason to be
+                                            as wide as it is. */}
+                                        {product.description && (
+                                            <p className="mt-3 line-clamp-3 text-[13px] leading-relaxed text-base-content/60">
+                                                {product.description}
+                                            </p>
+                                        )}
 
-                                        <p className="mt-3 flex items-center gap-4 text-[11px] text-base-content/55">
+                                        <p className="mt-4 flex items-center gap-4 text-[11px] text-base-content/55">
                                             <span className="flex items-center gap-1.5">
                                                 <FaShieldHalved
                                                     className="text-[11px] text-primary"
@@ -290,9 +285,17 @@ const Banner = () => {
                             {/* The other featured products, as a horizontal strip.
                                 These double as the rotator's controls — a real
                                 thumbnail says what you are switching to, which a
-                                row of dots cannot. */}
+                                row of dots cannot.
+
+                                Thumbnails only, no captions. The strip holds up
+                                to five items now that the client picks them, and
+                                five columns of brand-plus-price text at this
+                                width truncates to nothing useful. The active
+                                item's name is already spelled out on the card
+                                directly above, so repeating it here bought
+                                nothing and cost the room the images needed. */}
                             {featured.length > 1 && (
-                                <div className="mt-4 flex gap-3">
+                                <div className="mt-4 flex gap-2.5">
                                     {featured.map((item, dot) => (
                                         <button
                                             key={item._id}
@@ -300,9 +303,10 @@ const Banner = () => {
                                             onClick={() => goTo(dot)}
                                             aria-label={`Show ${item.name}`}
                                             aria-current={dot === index}
-                                            className={`flex flex-1 items-center gap-3 rounded-xl border p-2 text-left backdrop-blur-sm transition-all ${
+                                            title={item.name}
+                                            className={`flex flex-1 items-center justify-center rounded-xl border p-1.5 backdrop-blur-sm transition-all ${
                                                 dot === index
-                                                    ? 'border-primary bg-primary/20'
+                                                    ? 'border-brand-gold bg-white/25 shadow-lg'
                                                     : 'border-white/20 bg-white/8 hover:border-white/45 hover:bg-white/15'
                                             }`}
                                         >
@@ -310,16 +314,8 @@ const Banner = () => {
                                                 src={resolveCardImageUrl(item.image)}
                                                 alt=""
                                                 loading="lazy"
-                                                className="size-11 shrink-0 rounded-lg bg-white object-contain p-1"
+                                                className="aspect-square w-full rounded-lg bg-white object-contain p-1"
                                             />
-                                            <span className="min-w-0 flex-1">
-                                                <span className="block truncate text-[11px] font-medium text-white">
-                                                    {item.brand}
-                                                </span>
-                                                <span className="block truncate text-[11px] text-white/55">
-                                                    {formatCurrency(item.price)}
-                                                </span>
-                                            </span>
                                         </button>
                                     ))}
                                 </div>

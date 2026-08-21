@@ -10,6 +10,15 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* `dark:` follows OUR theme, not the operating system's.
+
+   Without this it compiles to a prefers-color-scheme query, which is the OS
+   setting — so a visitor who used the site's own toggle to pick light on a
+   dark machine would get dark-mode styling on a light page. The themes are
+   switched by writing data-theme on <html>, so the variant has to read the
+   same attribute the toggle writes. */
+@custom-variant dark (&:where([data-theme="azmaindark"], [data-theme="azmaindark"] *));
+
 /* ---------------------------------------------------------------------------
    Design system — editorial commerce.
 
@@ -88,29 +97,41 @@
   --color-brand-surface: #0f4d5e;
   --color-brand-surface-content: #ffffff;
 
-  /* The footer is its own surface, separate from --color-brand-surface, for a
-     measured reason: the logo's wordmark ink is very dark green — sampled at
-     (0,48,0) to (0,80,0). Against the brand green footer that scored 1.11:1,
-     which is not "hard to read" but the same luminance as the panel, and it is
-     why the client reported the logo disappearing there.
+  /* The footer is its own surface, separate from --color-brand-surface.
 
-     No dark background fixes this. Teal, slate and near-black were all tested
-     and every one leaves the darkest ink under 1.2:1, because the ink itself is
-     nearly black. The footer therefore uses a LIGHT teal gradient, which puts
-     the logo's own ink at 3.6:1 to 9.1:1 and lets the footer show the exact
-     same lockup as the navbar — no separate knockout artwork to drift out of
-     sync with the brand. Body text on it measures 15.6:1. */
+     It has to stay LIGHT. logo.png is a mid-tone mark (measured luminance
+     0.145), so on a deep teal panel it falls to 1.7:1–2.4:1 — the same
+     disappearing-logo problem the client reported originally. Every dark
+     candidate from #0b3642 to #134f5c was measured and all of them fail it,
+     even though they separate from the page beautifully at 9:1–13:1.
+
+     But the previous light values were too pale: #f2fafc scored 1.06:1 against
+     the white page, which is why the client could not tell where the footer
+     began. Deepening the tint fixes that at the cost of the logo, so the two
+     are traded off directly — this gradient is the point where both hold:
+
+       top edge vs the white page  1.26:1   (was 1.058:1)
+       foot     vs the white page  1.50:1   (was 1.177:1)
+       logo on it                  4.26:1 -> 3.57:1 median
+       muted text on it            5.24:1 -> 4.40:1  (AA)
+       body ink on it              13.8:1 -> 11.6:1
+
+     The separation is finished by a solid brand rule along the top edge, so
+     the boundary is stated outright rather than left to a tint difference the
+     eye has to hunt for. */
   /* Gradients use ADJACENT swatches only. Jumping across the palette puts a
      muddy grey-green at the midpoint where the two hues cancel. */
   --gradient-brand: linear-gradient(135deg, #1e88a8 0%, #2bbbd8 100%);
   --gradient-warm: linear-gradient(135deg, #fbe29a 0%, #ffd65c 100%);
   --gradient-deep: linear-gradient(135deg, #0c1c22 0%, #12414f 55%, #1e88a8 100%);
 
-  --color-footer-from: #f2fafc;
-  --color-footer-to: #dcf0f6;
+  --color-footer-from: #cdeaf2;
+  --color-footer-to: #a8dbe8;
   --color-footer-content: #0c1c22;
-  --color-footer-muted: #4a6a76;
-  --color-footer-rule: #bfdfe9;
+  /* Deepened alongside the panel — the old #4a6a76 was chosen against a near
+     white ground and drops to 3.4:1 on this one, under AA. */
+  --color-footer-muted: #3d626f;
+  --color-footer-rule: #7fc2d4;
 }
 
 /* Light theme — the default. Teal-tinted bands, teal brand, gold accents. */
@@ -347,14 +368,25 @@
     --color-brand-surface-content: #e8f4f7;
 
     /* The dark theme keeps a dark footer — a light panel at the foot of a dark
-       page is a glare block. The logo works here because the dark theme already
-       swaps to its own rendition, whose greens are lifted to clear 3:1. The
-       teal hue is carried through so both themes read as the same footer. */
-    --color-footer-from: #0e2029;
-    --color-footer-to: #071319;
-    --color-footer-content: #e8f4f7;
-    --color-footer-muted: #90b3bf;
-    --color-footer-rule: #1d3d49;
+       page is a glare block — but it is now a RAISED one.
+
+       The old values had the same defect the client reported in light mode,
+       further along: --color-footer-to was #071319, which is the dark theme's
+       --color-base-100 exactly. The foot of the footer measured 1.00:1 against
+       the page, meaning it was not merely hard to find, it was the same colour.
+       Lifting the panel above the page instead of sinking it into it gives
+       1.38:1 at the top edge and 1.72:1 at the foot.
+
+       There is no longer a separate dark logo rendition to lean on — the client
+       asked for one logo.png everywhere — and that mark is mid-tone, so it
+       cannot carry on any dark ground (measured 1.85:1 to 2.54:1 here). It gets
+       a white tile in the footer instead, the same treatment the social brand
+       marks already use, which puts it at 5.38:1. */
+    --color-footer-from: #14313d;
+    --color-footer-to: #1b414f;
+    --color-footer-content: #eaf6f9;
+    --color-footer-muted: #a9ccd6;
+    --color-footer-rule: #2c5b6c;
   }
 }
 

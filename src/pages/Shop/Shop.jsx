@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { FaSliders, FaXmark } from 'react-icons/fa6';
 import ProductCard from '../../components/ProductCard';
@@ -20,23 +20,14 @@ const Shop = () => {
     const { products, categories, loading, error } = UseCatalogue();
 
     const [selectedBrands, setSelectedBrands] = useState([]);
-    const [maxPrice, setMaxPrice] = useState(null);
     const [inStockOnly, setInStockOnly] = useState(false);
     const [sortBy, setSortBy] = useState('newest');
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    // Bounds follow the live catalogue. Unpriced items are excluded from the
-    // max calculation — they have no price to be the ceiling.
-    const priceBounds = useMemo(() => {
-        const prices = products.map((product) => product.price).filter(Boolean);
-        return { min: 0, max: prices.length ? Math.max(...prices) : 10000 };
-    }, [products]);
-
-    // maxPrice starts as null and adopts the real ceiling once products land,
-    // so the slider is never pinned to a stale bound from the first render.
-    useEffect(() => {
-        setMaxPrice((current) => (current === null ? priceBounds.max : current));
-    }, [priceBounds.max]);
+    // The max-price slider and its bounds went with the price display: prices
+    // now live on the product page only, and a filter labelled with amounts is
+    // a price display like any other. Brand, category, search and availability
+    // are all unaffected.
 
     const brands = useMemo(() => getBrands(products), [products]);
 
@@ -57,21 +48,16 @@ const Shop = () => {
 
     const handleClearAll = () => {
         setSelectedBrands([]);
-        setMaxPrice(priceBounds.max);
         setInStockOnly(false);
     };
 
     const visibleProducts = useMemo(() => {
         const term = search.trim().toLowerCase();
-        const ceiling = maxPrice ?? priceBounds.max;
 
         const filtered = products.filter((product) => {
             if (category && product.category !== category) return false;
             if (term && !product.name.toLowerCase().includes(term)) return false;
             if (selectedBrands.length && !selectedBrands.includes(product.brand)) return false;
-            // An unpriced item has nothing to compare against the slider, so it
-            // stays visible rather than silently disappearing.
-            if (product.price && product.price > ceiling) return false;
             if (inStockOnly && isSoldOut(product)) return false;
             return true;
         });
@@ -97,16 +83,7 @@ const Shop = () => {
                     (a, b) => byAvailability(a, b) || new Date(b.createdAt) - new Date(a.createdAt),
                 );
         }
-    }, [
-        products,
-        category,
-        search,
-        selectedBrands,
-        maxPrice,
-        priceBounds.max,
-        inStockOnly,
-        sortBy,
-    ]);
+    }, [products, category, search, selectedBrands, inStockOnly, sortBy]);
 
     const soldOutCount = visibleProducts.filter(isSoldOut).length;
 
@@ -117,11 +94,8 @@ const Shop = () => {
         categories,
         selectedCategory: category,
         onCategoryChange: handleCategoryChange,
-        maxPrice: maxPrice ?? priceBounds.max,
-        onMaxPriceChange: setMaxPrice,
         inStockOnly,
         onInStockOnlyChange: setInStockOnly,
-        priceBounds,
         onClearAll: handleClearAll,
     };
 

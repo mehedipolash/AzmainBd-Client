@@ -78,22 +78,38 @@ export const getDealOfTheDay = (products = []) => {
     return available.sort((a, b) => a.stock - b.stock)[0];
 };
 
+// How many products the hero carousel will show at most. The card rotates, so
+// this is a limit on the strip of thumbnails under it rather than on what fits
+// across the page.
+export const HERO_LIMIT = 5;
+
 /**
- * The products the hero rotates through. In-stock only, so the homepage never
- * showcases something a customer cannot buy. Ordering prefers items that are
- * actually priced — a hero slide reading "Price on request" is a weaker first
- * impression than one showing a number.
+ * The products the hero rotates through.
+ *
+ * Driven by the `featured` flag the shop owner sets in the admin panel, so the
+ * homepage advertises what they chose to advertise. This used to rank by price
+ * and sold count, which meant the hero silently re-ordered itself as stock
+ * moved and the owner had no way to put a specific product in front.
+ *
+ * In-stock only regardless of the flag: featuring something nobody can buy is
+ * a worse first impression than featuring nothing. When no product is flagged
+ * yet — a fresh database, or the client clearing every checkbox — it falls
+ * back to the newest in-stock items so the hero is never empty.
  */
-export const getHeroProducts = (products = [], limit = 3) =>
-    products
-        .filter(isInStock)
-        .sort(
-            (a, b) =>
-                Number(Boolean(b.price)) - Number(Boolean(a.price)) ||
-                (b.soldCount ?? 0) - (a.soldCount ?? 0) ||
-                new Date(b.createdAt) - new Date(a.createdAt),
-        )
+export const getHeroProducts = (products = [], limit = HERO_LIMIT) => {
+    const available = products.filter(isInStock);
+
+    const flagged = available
+        .filter((product) => product.featured)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    if (flagged.length > 0) return flagged.slice(0, limit);
+
+    return available
+        .slice()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, limit);
+};
 
 export const getHeroProduct = (products = []) => getHeroProducts(products, 1)[0] ?? null;
 

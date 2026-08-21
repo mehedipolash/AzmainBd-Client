@@ -90,7 +90,7 @@ const Navbar = () => {
                         <FaBars />
                     </button>
 
-                    <Logo variant="wide" size="md" />
+                    <Logo size="md" />
 
                     {/* Links grouped inside their own pill, one list so adding a
                         nav item never unbalances the header. */}
@@ -222,7 +222,7 @@ const Navbar = () => {
                     />
                     <div className="absolute inset-y-0 left-0 flex w-75 max-w-[85%] flex-col bg-base-100">
                         <div className="flex items-center justify-between border-b border-base-300 px-5 py-4">
-                            <Logo variant="wide" size="sm" to={null} />
+                            <Logo size="sm" to={null} />
                             <button
                                 type="button"
                                 onClick={() => setMenuOpen(false)}

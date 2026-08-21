@@ -51,10 +51,23 @@ const Footer = () => {
                     preserveAspectRatio="none"
                     className="block h-16 w-full sm:h-20 lg:h-24"
                 >
+                    {/* The crest is stroked as well as filled. The fill alone
+                        differs from the white page by only 1.26:1, so the
+                        boundary was there but the eye had to look for it — a
+                        drawn edge states it outright, which is what the client
+                        was missing. */}
                     <path
                         d="M0,64 C240,120 480,8 720,32 C960,56 1200,120 1440,72 L1440,120 L0,120 Z"
                         fill="currentColor"
                         className="text-footer-from"
+                    />
+                    <path
+                        d="M0,64 C240,120 480,8 720,32 C960,56 1200,120 1440,72"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        vectorEffect="non-scaling-stroke"
+                        className="text-primary"
                     />
                 </svg>
             </div>
@@ -94,7 +107,16 @@ const Footer = () => {
 
                 <div className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
-                        <Logo variant="wide" size="lg" />
+                        {/* A white tile behind the mark, in dark mode only.
+                            logo.png is mid-tone, so on the dark panel it
+                            measures 2.0:1–2.5:1 — the disappearing logo the
+                            client reported. On the tile it is 5.4:1. The light
+                            theme needs none of this: its own panel already
+                            carries the mark at 3.6:1–4.3:1, and a white box
+                            there would just be a visible rectangle. */}
+                        <span className="inline-flex rounded-xl dark:bg-white dark:px-4 dark:py-3 dark:shadow-sm">
+                            <Logo size="lg" />
+                        </span>
 
                         <p className="mt-2 text-[11px] font-medium tracking-[0.18em] text-footer-muted uppercase">
                             {SITE_TAGLINE}

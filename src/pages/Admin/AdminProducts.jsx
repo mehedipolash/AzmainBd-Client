@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { FaPen, FaTrash, FaMagnifyingGlass, FaCheck } from 'react-icons/fa6';
+import { FaPen, FaTrash, FaMagnifyingGlass, FaCheck, FaStar } from 'react-icons/fa6';
 import { fetchProducts, deleteProduct, updateProduct } from '../../api/products.api';
 import Loader from '../../components/Loader';
 import AdminBanner from '../../components/AdminBanner';
@@ -205,8 +205,18 @@ const AdminProducts = () => {
                                                     <p className="truncate font-medium">
                                                         {product.name}
                                                     </p>
-                                                    <p className="truncate text-[12px] text-base-content/45">
+                                                    <p className="flex items-center gap-2 truncate text-[12px] text-base-content/45">
                                                         {product.brand}
+                                                        {/* Which products are on
+                                                            the homepage, visible
+                                                            without opening each
+                                                            one to check. */}
+                                                        {product.featured && (
+                                                            <span className="inline-flex items-center gap-1 rounded-full bg-accent/12 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-accent uppercase">
+                                                                <FaStar className="text-[9px]" />
+                                                                Hero
+                                                            </span>
+                                                        )}
                                                     </p>
                                                 </div>
                                             </div>

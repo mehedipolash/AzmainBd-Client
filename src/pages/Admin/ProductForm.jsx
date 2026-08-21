@@ -13,6 +13,7 @@ import ImageUploader from '../../components/ImageUploader';
 import UseToast from '../../Hooks/UseToast';
 import UseCatalogue from '../../Hooks/UseCatalogue';
 import { alertError } from '../../utils/alerts';
+import { HERO_LIMIT } from '../../utils/catalogue';
 
 // Defined at module scope — a component created inside render is a new type on
 // every pass, which remounts it and loses focus.
@@ -54,6 +55,7 @@ const ProductForm = () => {
             description: '',
             specs: '',
             variants: '',
+            featured: false,
             customFields: [],
         },
     });
@@ -88,6 +90,7 @@ const ProductForm = () => {
                         description: product.description ?? '',
                         specs: (product.specs ?? []).join(', '),
                         variants: (product.variants ?? []).join(', '),
+                        featured: Boolean(product.featured),
                         customFields: product.customFields ?? [],
                     });
                 }
@@ -128,6 +131,7 @@ const ProductForm = () => {
             stock: Number(values.stock),
             specs: toList(values.specs),
             variants: toList(values.variants),
+            featured: Boolean(values.featured),
             customFields: (values.customFields ?? []).filter(
                 (field) => field.label?.trim() && field.value?.trim(),
             ),
@@ -329,6 +333,35 @@ const ProductForm = () => {
                         )}
                     />
                 </div>
+
+                {/* Hero placement. Sits directly under the photo because that
+                    photo is what a visitor sees in the hero — the decision and
+                    the thing being decided about are next to each other.
+
+                    Worded as what it does ("show on the homepage hero") rather
+                    than as a field name ("featured"), because the person using
+                    this screen is the shop owner, not a developer. */}
+                <label
+                    htmlFor="featured"
+                    className="flex cursor-pointer items-start gap-3 rounded-xl border border-base-300 bg-base-200/50 p-4 transition-colors hover:border-primary/50"
+                >
+                    <input
+                        id="featured"
+                        type="checkbox"
+                        className="mt-0.5 size-5 shrink-0 accent-primary"
+                        {...register('featured')}
+                    />
+                    <span>
+                        <span className="block text-sm font-semibold">
+                            Show in the homepage hero
+                        </span>
+                        <span className="mt-1 block text-[13px] leading-relaxed text-base-content/60">
+                            Featured products rotate in the large card at the top of the
+                            homepage, up to {HERO_LIMIT} at a time. Tick this for the
+                            products you want to advertise.
+                        </span>
+                    </span>
+                </label>
 
                 <div className="grid gap-5 sm:grid-cols-2">
                     <div>

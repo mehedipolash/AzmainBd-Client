@@ -31,7 +31,7 @@ const AdminLayout = () => {
                     <div className="min-w-0">
                         {/* The client's real mark, not a text stand-in — the
                             admin panel is the screen the owner sees most. */}
-                        <Logo variant="wide" size="sm" />
+                        <Logo size="sm" />
                         <p className="mt-1 hidden text-[11px] tracking-[0.16em] text-base-content/45 uppercase lg:block">
                             Admin panel
                         </p>
