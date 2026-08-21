@@ -35,16 +35,6 @@ const SIZES = {
     lg: 'h-20 sm:h-26',
 };
 
-// The artwork is dark green on transparent. Measured against the dark theme's
-// surface it lands at 2.39:1 — under AA, and the exact "logo disappears"
-// problem the client reported. On white it is 7.44:1.
-//
-// So in the dark theme the mark gets its own white tile to sit on. That is a
-// deliberate brand decision, not a hack: the client's logo is drawn for light
-// grounds, and giving it the ground it was drawn for keeps the colours the
-// ones they signed off on instead of recolouring their artwork.
-const DARK_PLATE = 'rounded-xl dark:bg-white dark:p-2 dark:shadow-sm';
-
 const Logo = ({ size = 'md', to = '/', className = '' }) => {
     const image = (
         <img
@@ -59,16 +49,14 @@ const Logo = ({ size = 'md', to = '/', className = '' }) => {
     );
 
     if (!to) {
-        return (
-            <span className={`inline-flex items-center ${DARK_PLATE} ${className}`}>{image}</span>
-        );
+        return <span className={`inline-flex items-center ${className}`}>{image}</span>;
     }
 
     return (
         <Link
             to={to}
             aria-label={`${SITE_NAME} — home`}
-            className={`inline-flex items-center transition-opacity hover:opacity-85 ${DARK_PLATE} ${className}`}
+            className={`inline-flex items-center transition-opacity hover:opacity-85 ${className}`}
         >
             {image}
         </Link>

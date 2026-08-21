@@ -86,7 +86,7 @@ const Banner = () => {
                     advertised — so the copy column was cut back to pay for it
                     rather than the card being stretched into the page margin.
                     Its height is unchanged; only the width grew. */}
-                <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12">
+                <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.6fr)_minmax(0,1.4fr)] lg:gap-10">
                     <div>
                         {/* The client's own tagline, set in the display serif
                             rather than as a pill of uppercase micro-type. A
@@ -106,13 +106,14 @@ const Banner = () => {
                             </p>
                         </Reveal>
 
-                        {/* Stepped down from 4.25rem so the card beside it can
-                            be wider. The headline is still the largest thing
-                            on the page and still breaks over its own lines —
-                            it simply no longer claims width the products need
-                            more than it does. */}
+                        {/* Deliberately narrow — max-w-sm holds the headline to
+                            about two words a line, which is what frees the
+                            width for the card. Capping the TEXT rather than
+                            shrinking the type again keeps the headline big and
+                            confident; it just occupies a tall narrow column
+                            instead of a wide short one. */}
                         <Reveal direction="up" delay={0.08}>
-                            <h1 className="font-display text-[2.1rem] leading-[1.08] font-semibold text-white sm:text-[2.9rem] lg:text-[3.15rem]">
+                            <h1 className="font-display max-w-sm text-[2.1rem] leading-[1.08] font-semibold text-white sm:text-[2.9rem] lg:text-[3.15rem]">
                                 {hero.title}
                             </h1>
                         </Reveal>
@@ -130,14 +131,14 @@ const Banner = () => {
                                 this brand rather than a default button. */}
                             <Link
                                 to={hero.ctaPath}
-                                className="group inline-flex items-center justify-center gap-2 rounded-lg bg-linear-to-r from-brand-teal to-brand-cyan px-9 py-4 text-[13px] font-semibold tracking-[0.14em] text-white uppercase shadow-lg shadow-brand-cyan/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-cyan/40"
+                                className="group inline-flex items-center justify-center gap-2 rounded-lg bg-linear-to-r from-brand-teal to-brand-cyan px-5 py-3.5 text-[12px] font-semibold tracking-[0.14em] text-white uppercase shadow-lg shadow-brand-cyan/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-cyan/40"
                             >
                                 {hero.ctaLabel}
                                 <FaArrowRight className="text-[11px] transition-transform group-hover:translate-x-1" />
                             </Link>
                             <Link
                                 to="/deals"
-                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/40 px-9 py-4 text-[13px] font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm transition-colors hover:border-brand-gold hover:bg-white/10 hover:text-brand-gold"
+                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/40 px-5 py-3.5 text-[12px] font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm transition-colors hover:border-brand-gold hover:bg-white/10 hover:text-brand-gold"
                             >
                                 View Deals
                             </Link>
@@ -149,7 +150,12 @@ const Banner = () => {
                             direction="up"
                             delay={0.24}
                             as="dl"
-                            className="mt-8 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-6"
+                            // Tightened with the column: the copy side is much
+                            // narrower now, so max-w-md and gap-6 would wrap
+                            // "Categories" onto two lines. These three figures
+                            // are the shop's proof it is real and have to stay
+                            // readable at this width.
+                            className="mt-7 grid max-w-xs grid-cols-3 gap-3 border-t border-white/15 pt-5"
                         >
                             {[
                                 { label: 'In stock', count: stats.productCount, suffix: '+' },
@@ -171,9 +177,9 @@ const Banner = () => {
                                         <CountUp
                                             value={stat.count}
                                             suffix={stat.suffix ?? ''}
-                                            className="font-display text-4xl font-semibold text-brand-cyan"
+                                            className="font-display text-3xl font-semibold text-brand-cyan"
                                         />
-                                        <span className="mt-1 block text-[12px] tracking-wide text-white/60 uppercase">
+                                        <span className="mt-1 block text-[10px] tracking-wide text-white/65 uppercase">
                                             {stat.label}
                                         </span>
                                     </dd>
@@ -189,12 +195,13 @@ const Banner = () => {
                         <Reveal
                             direction="left"
                             delay={0.18}
-                            // Dropped 46px to sit level with the HEADLINE
-                            // rather than with the tagline above it — that is
-                            // the tagline's height plus its margin. Only from
-                            // lg: below that the columns stack and there is
-                            // nothing beside the card to align to.
-                            className="w-full lg:mt-[46px]"
+                            // Top-aligned with the TAGLINE, at the client's
+                            // request: the card now starts on the same line as
+                            // "House of global brands" rather than 46px below
+                            // it. With the card this tall, hanging it off the
+                            // headline instead left the tagline floating
+                            // beside empty space.
+                            className="w-full"
                             onMouseEnter={() => setPaused(true)}
                             onMouseLeave={() => setPaused(false)}
                             onFocusCapture={() => setPaused(true)}
@@ -211,16 +218,26 @@ const Banner = () => {
                                 className="overflow-hidden rounded-2xl bg-base-100 shadow-2xl motion-safe:animate-[card-in_420ms_ease-out]"
                             >
                                 <div className="flex flex-col sm:flex-row">
+                                    {/* Half the card, not 46%, and taller. The
+                                        card got wider but the photo did not
+                                        visibly grow, because object-contain
+                                        fits a TALL packshot to the row height —
+                                        extra width alone does nothing for a
+                                        portrait image. Raising the minimum
+                                        height is what actually enlarges these
+                                        shots, and the padding came down from
+                                        p-4 to p-2 so the product uses the box
+                                        it is given. */}
                                     <Link
                                         to={`/product/${product._id}`}
-                                        className="group relative block shrink-0 overflow-hidden bg-white sm:w-[46%]"
+                                        className="group relative block shrink-0 overflow-hidden bg-white sm:w-1/2"
                                     >
                                         <img
                                             src={resolveCardImageUrl(product.image)}
                                             alt={product.name}
                                             loading="eager"
                                             fetchPriority="high"
-                                            className="h-52 w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105 sm:h-full sm:min-h-72.5"
+                                            className="h-60 w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105 sm:h-full sm:min-h-88"
                                         />
 
                                         {/* The "Save N%" badge went with the
@@ -355,8 +372,13 @@ const Banner = () => {
                                 item's name is already spelled out on the card
                                 directly above, so repeating it here bought
                                 nothing and cost the room the images needed. */}
+                            {/* Held to a sensible width rather than stretched
+                                across the whole card. The card is wide now, so
+                                five equal tiles across it made each one far
+                                wider than it is tall and the products sat lost
+                                in the middle of them. */}
                             {featured.length > 1 && (
-                                <div className="mt-4 flex gap-2.5">
+                                <div className="mt-4 flex max-w-lg gap-2.5">
                                     {featured.map((item, dot) => (
                                         <button
                                             key={item._id}
@@ -371,11 +393,20 @@ const Banner = () => {
                                                     : 'border-white/20 bg-white/8 hover:border-white/45 hover:bg-white/15'
                                             }`}
                                         >
+                                            {/* A short fixed height, not a
+                                                square. A square tile is as tall
+                                                as it is wide, so a portrait
+                                                bottle had to shrink to fit and
+                                                read as half a product. A wide
+                                                short tile matches the strip's
+                                                real proportions, and
+                                                object-contain then shows the
+                                                WHOLE product inside it. */}
                                             <img
                                                 src={resolveCardImageUrl(item.image)}
                                                 alt=""
                                                 loading="lazy"
-                                                className="aspect-square w-full rounded-lg bg-white object-contain p-1"
+                                                className="h-20 w-full rounded-lg bg-white object-contain p-1.5"
                                             />
                                         </button>
                                     ))}
