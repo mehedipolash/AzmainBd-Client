@@ -27,8 +27,15 @@ const DealOfTheDay = () => {
 
     const scarce = deal.stock <= LOW_STOCK_THRESHOLD;
 
+    // overflow-hidden on the section because the copy below animates in with
+    // data-aos="fade-left", which parks it at translateX(100px) until it
+    // scrolls into view. On a phone this section sits below the fold, so AOS
+    // never clears the transform and the offset element was making the whole
+    // PAGE 84px wider than the screen — the site could be dragged sideways.
+    // The image beside it already clipped its own animation; this does the
+    // same for the text.
     return (
-        <section className="container-px section-y">
+        <section className="container-px section-y overflow-hidden">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
                 <div className="relative overflow-hidden bg-base-200" data-aos="fade-right">
                     <img

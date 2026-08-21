@@ -86,15 +86,10 @@ const Navbar = () => {
                     The bar grew with it so the mark keeps its breathing room
                     instead of crowding the border. */}
                 <nav className="container-px flex h-18 items-center justify-between gap-4 rounded-2xl border border-base-300 bg-base-100 px-4 shadow-sm sm:px-6 lg:h-24">
-                    <button
-                        type="button"
-                        onClick={() => setMenuOpen(true)}
-                        className="-ml-1 p-2 text-lg lg:hidden"
-                        aria-label="Open menu"
-                    >
-                        <FaBars />
-                    </button>
-
+                    {/* Logo first in the DOM, so on a phone it sits on the LEFT
+                        and the hamburger on the right — the arrangement the
+                        client asked for. On desktop nothing moves: the burger
+                        is hidden there and the logo has always led the row. */}
                     <Logo size="md" />
 
                     {/* Links grouped inside their own pill, one list so adding a
@@ -114,7 +109,11 @@ const Navbar = () => {
                         </li>
                     </ul>
 
-                    <div className="flex items-center gap-1 sm:gap-2">
+                    {/* Everything except the burger is lg:-only now. On a phone
+                        these five controls plus the logo did not fit 390px —
+                        the page scrolled sideways — and the client wants them
+                        gathered in the drawer rather than crowding the bar. */}
+                    <div className="hidden items-center gap-1 sm:gap-2 lg:flex">
                         <button
                             type="button"
                             onClick={() => setSearchOpen((open) => !open)}
@@ -183,6 +182,18 @@ const Navbar = () => {
                             </>
                         )}
                     </div>
+
+                    {/* The phone's only control. Last in the row, so it sits at
+                        the right edge opposite the logo. */}
+                    <button
+                        type="button"
+                        onClick={() => setMenuOpen(true)}
+                        className="-mr-1 p-2 text-xl lg:hidden"
+                        aria-label="Open menu"
+                        aria-expanded={menuOpen}
+                    >
+                        <FaBars />
+                    </button>
                 </nav>
             </div>
 
@@ -238,26 +249,80 @@ const Navbar = () => {
                             </button>
                         </div>
 
-                        <ul className="flex-1 overflow-y-auto py-2">
-                            {NAV_LINKS.map((link) => (
-                                <li key={link.path}>
-                                    <NavLink
-                                        to={link.path}
-                                        end={link.path === '/'}
-                                        onClick={() => setMenuOpen(false)}
-                                        className={({ isActive }) =>
-                                            `block border-b border-base-300 px-5 py-4 text-[15px] tracking-wide transition-colors ${
-                                                isActive
-                                                    ? 'font-semibold text-base-content'
-                                                    : 'text-base-content/65'
-                                            }`
-                                        }
-                                    >
-                                        {link.label}
-                                    </NavLink>
-                                </li>
-                            ))}
-                        </ul>
+                        <div className="flex-1 overflow-y-auto">
+                            {/* Search moved in here with the rest. On a phone
+                                it is the first thing a shopper reaches for, so
+                                it opens the drawer as a real field rather than
+                                a magnifier that toggles yet another panel. */}
+                            <form onSubmit={handleSearch} className="border-b border-base-300 p-5">
+                                <div className="flex items-center gap-2.5 rounded-full border border-base-300 bg-base-200/60 px-4 py-2.5">
+                                    <FaMagnifyingGlass
+                                        className="text-sm text-base-content/40"
+                                        aria-hidden="true"
+                                    />
+                                    <input
+                                        type="search"
+                                        value={term}
+                                        onChange={(e) => setTerm(e.target.value)}
+                                        placeholder="Search products..."
+                                        aria-label="Search products"
+                                        className="w-full bg-transparent text-[15px] outline-none placeholder:text-base-content/35"
+                                    />
+                                </div>
+                            </form>
+
+                            <ul className="py-2">
+                                {NAV_LINKS.map((link) => (
+                                    <li key={link.path}>
+                                        <NavLink
+                                            to={link.path}
+                                            end={link.path === '/'}
+                                            onClick={() => setMenuOpen(false)}
+                                            className={({ isActive }) =>
+                                                `block border-b border-base-300 px-5 py-4 text-[15px] tracking-wide transition-colors ${
+                                                    isActive
+                                                        ? 'font-semibold text-base-content'
+                                                        : 'text-base-content/65'
+                                                }`
+                                            }
+                                        >
+                                            {link.label}
+                                        </NavLink>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            {/* Cart keeps its count and running subtotal here —
+                                the two things the header badge was carrying,
+                                which would otherwise be lost on a phone. */}
+                            <Link
+                                to="/cart"
+                                onClick={() => setMenuOpen(false)}
+                                className="flex items-center justify-between border-b border-base-300 px-5 py-4 text-[15px] tracking-wide text-base-content/65"
+                            >
+                                <span className="flex items-center gap-3">
+                                    <FaBagShopping className="text-base" aria-hidden="true" />
+                                    Cart
+                                    {cartCount > 0 && (
+                                        <span className="flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[11px] font-semibold text-primary-content">
+                                            {cartCount}
+                                        </span>
+                                    )}
+                                </span>
+                                {cartCount > 0 && (
+                                    <span className="text-[13px] font-medium text-primary">
+                                        {formatCurrency(subtotal)}
+                                    </span>
+                                )}
+                            </Link>
+
+                            <div className="flex items-center justify-between px-5 py-4">
+                                <span className="text-[15px] tracking-wide text-base-content/65">
+                                    Theme
+                                </span>
+                                <ThemeToggle />
+                            </div>
+                        </div>
 
                         <div className="space-y-3 border-t border-base-300 p-5">
                             {isLoggedIn ? (

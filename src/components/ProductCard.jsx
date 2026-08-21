@@ -55,17 +55,21 @@ const ProductCard = ({ product }) => {
                         src={resolveCardImageUrl(image)}
                         alt={name}
                         loading="lazy"
-                        // Square, not 4:5. The client's photography is
-                        // square-ish marketing panels, so a portrait box left
-                        // empty bands above and below and the product floated
-                        // small inside a tall frame. A 1:1 box matches the
-                        // source and shows the product larger at the same card
-                        // width.
+                        // 4:5, and the SAME box on every card. The catalogue
+                        // mixes shapes badly — measured from 0.67 (a tall
+                        // bottle) to 1.25 (a wide panel) — and in a square box
+                        // the tall ones had to shrink to fit, so they read as
+                        // small products beside the wide ones.
+                        //
+                        // A slightly portrait box is the shape that suits the
+                        // worst case without starving the best: the tall
+                        // bottles now fill it, and object-contain still shows
+                        // every product WHOLE, never cropped.
                         //
                         // Padded rather than bled to the edge: these are
                         // packshots, and a product touching the card border
                         // reads as a crop rather than a deliberate frame.
-                        className={`aspect-square w-full object-contain p-1 transition-transform duration-500 group-hover:scale-[1.05] ${
+                        className={`aspect-4/5 w-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.05] ${
                             soldOut ? 'opacity-45 grayscale' : ''
                         }`}
                     />
@@ -150,13 +154,18 @@ const ProductCard = ({ product }) => {
                 )}
 
                 <Link to={`/product/${_id}`} className="mt-1.5">
-                    {/* Clamped to two lines and given a two-line min-height.
-                        The clamp stops a nine-word name from making one card
-                        taller; the min-height stops a SHORT name from pulling
-                        its price up above its neighbours'. Both are needed, and
-                        together they are what lets every element in a row line
-                        up rather than only the card outlines matching. */}
-                    <h3 className="font-display line-clamp-2 min-h-[2.5em] text-[17px] leading-snug font-semibold transition-colors hover:text-primary">
+                    {/* Clamped to two lines and given an exact two-line
+                        height. The clamp stops a nine-word name from making
+                        one card taller; the fixed height stops a SHORT name
+                        from pulling everything below it up.
+
+                        h-11.5 (46px), not min-h-[2.5em]. An em-based floor is a
+                        fraction of the font size, so it resolved to a
+                        fractional pixel that rounded differently for one- and
+                        two-line names — which is how a row of cards ended up
+                        4px shorter than the rest. 46px is exactly two lines of
+                        17px at leading-snug. */}
+                    <h3 className="font-display line-clamp-2 h-11.5 text-[17px] leading-snug font-semibold transition-colors hover:text-primary">
                         {name}
                     </h3>
                 </Link>
@@ -184,8 +193,13 @@ const ProductCard = ({ product }) => {
                 </Link>
 
                 {/* Reserved slot, so a card WITH a stock warning and one
-                    without still end at the same point. */}
-                <p className="mt-0.5 min-h-4 text-[12px] font-medium tracking-wide text-warning">
+                    without still end at the same point.
+
+                    h-4.5 (18px), not min-h-4. The warning renders at 18px but the
+                    reservation was 16px, so a card carrying one grew 2px and
+                    the grid held three different card heights. A fixed height
+                    reserves exactly what the line occupies. */}
+                <p className="mt-0.5 h-4.5 overflow-hidden text-[12px] font-medium tracking-wide text-warning">
                     {lowStock ? `Only ${product.stock} left — order soon` : ''}
                 </p>
             </div>

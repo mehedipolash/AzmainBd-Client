@@ -7,6 +7,9 @@ export const NAV_LINKS = [
     { label: "Shop", path: "/shop" },
     { label: "Categories", path: "/categories" },
     { label: "Deals", path: "/deals" },
+    // The showroom is the client's main sales channel, so the way to reach
+    // them belongs in the header rather than only at the foot of the page.
+    { label: "Contact", path: "/contact" },
 ];
 
 // Shop links mirror the real category slugs seeded in the database. If a

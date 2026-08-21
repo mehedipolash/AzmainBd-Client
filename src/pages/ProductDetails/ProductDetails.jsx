@@ -213,8 +213,15 @@ const ProductDetails = () => {
 
                         {/* Variants are labels, not separate SKUs — the chosen
                             one travels in the WhatsApp message so the owner
-                            knows exactly which version to pack. */}
-                        {product.variants?.length > 1 && (
+                            knows exactly which version to pack.
+
+                            Shown from ONE variant, not two. Anything the owner
+                            types into the admin form has to appear here, and a
+                            product with a single "500ml" was saving that label
+                            and then never displaying it. With one option there
+                            is nothing to choose, so it reads as a stated fact
+                            rather than a control. */}
+                        {product.variants?.length > 1 ? (
                             <fieldset className="mt-7">
                                 <legend className="eyebrow mb-3">Choose an option</legend>
                                 <div className="flex flex-wrap gap-2">
@@ -235,6 +242,15 @@ const ProductDetails = () => {
                                     ))}
                                 </div>
                             </fieldset>
+                        ) : (
+                            product.variants?.length === 1 && (
+                                <div className="mt-7">
+                                    <p className="eyebrow mb-3">Option</p>
+                                    <span className="inline-block border border-base-300 px-4 py-2 text-[12px] text-base-content/70">
+                                        {product.variants[0]}
+                                    </span>
+                                </div>
+                            )
                         )}
 
                         {/* Availability line — the exact stock count is shown

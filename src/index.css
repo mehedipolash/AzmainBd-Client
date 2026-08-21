@@ -239,9 +239,16 @@
 }
 
 @layer base {
+  /* A safety net, not the fix. Individual sections clip their own entrance
+     animations (see DealOfTheDay) — this only guarantees that if one is ever
+     missed, the page still cannot be dragged sideways on a phone.
+
+     body, not html: overflow-x on the root element gets propagated to the
+     viewport, which stops position:sticky working in the header. */
   body {
     @apply bg-base-100 text-base-content antialiased;
     font-family: var(--font-sans);
+    overflow-x: hidden;
   }
 
   h1,
