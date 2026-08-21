@@ -175,25 +175,56 @@ const AdminProducts = () => {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-base-300 bg-base-200/60 text-left">
-                                    {['Product', 'Category', 'Price', 'Stock', ''].map(
-                                        (heading) => (
-                                            <th
-                                                key={heading}
-                                                className="admin-th"
-                                            >
-                                                {heading}
-                                            </th>
-                                        ),
-                                    )}
+                                    {/* A serial number, and the product column
+                                        frozen to the left edge. With five
+                                        columns the table scrolls sideways, and
+                                        once the name scrolls out of view there
+                                        is nothing left to tell one row from
+                                        another — you end up counting rows to
+                                        find the stock you meant to edit.
+
+                                        The number gives every row a label the
+                                        owner can say out loud; the sticky
+                                        column means the name is still there
+                                        when they reach the buttons on the
+                                        right. */}
+                                    {/* min-w, not w: a table cell treats width
+                                        as a suggestion and will shrink it to
+                                        the content ("#" is 9px wide), which
+                                        would put the sticky offset below out
+                                        of step with the cell it is meant to
+                                        clear. min-w is honoured. */}
+                                    <th className="admin-th sticky left-0 z-30 min-w-14 bg-base-200 px-0 text-center">
+                                        #
+                                    </th>
+                                    <th className="admin-th sticky left-14 z-30 border-r border-base-300 bg-base-200">
+                                        Product
+                                    </th>
+                                    {['Category', 'Price', 'Stock', ''].map((heading) => (
+                                        <th key={heading} className="admin-th">
+                                            {heading}
+                                        </th>
+                                    ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {items.map((product) => (
+                                {items.map((product, index) => (
                                     <tr
                                         key={product._id}
-                                        className="border-b border-base-300 last:border-0"
+                                        // group + a hover tint on every cell:
+                                        // the row the pointer is on stays
+                                        // highlighted all the way across, so
+                                        // the eye does not lose it while
+                                        // travelling to the buttons.
+                                        className="group border-b border-base-300 last:border-0 hover:bg-base-200/40"
                                     >
-                                        <td className="admin-td">
+                                        {/* The list is a single unpaginated page
+                                            of 60, so the index IS the serial
+                                            number — no page offset to add. */}
+                                        <td className="admin-td sticky left-0 z-20 min-w-14 bg-base-100 px-0 text-center text-[13px] font-semibold tabular-nums text-base-content/40 group-hover:bg-base-200">
+                                            {index + 1}
+                                        </td>
+                                        <td className="admin-td sticky left-14 z-20 border-r border-base-300 bg-base-100 group-hover:bg-base-200">
                                             <div className="flex items-center gap-3">
                                                 <img
                                                     src={resolveImageUrl(product.image)}
@@ -201,7 +232,7 @@ const AdminProducts = () => {
                                                     loading="lazy"
                                                     className="size-10 shrink-0 border border-base-300 bg-white object-contain"
                                                 />
-                                                <div className="min-w-0">
+                                                <div className="min-w-0 max-w-64">
                                                     <p className="truncate font-medium">
                                                         {product.name}
                                                     </p>

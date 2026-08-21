@@ -80,7 +80,12 @@ const Navbar = () => {
                 rounded card, so it reads as a control surface rather than a
                 border. */}
             <div className="bg-base-200/70 px-3 py-3 backdrop-blur-lg sm:px-4">
-                <nav className="container-px flex h-16 items-center justify-between gap-4 rounded-2xl border border-base-300 bg-base-100 px-4 shadow-sm sm:px-6 lg:h-20">
+                {/* Taller than a stock header (72px, 96px from lg) because the
+                    logo is the first thing a visitor reads and it was being
+                    squeezed by the row rather than sized on its own merits.
+                    The bar grew with it so the mark keeps its breathing room
+                    instead of crowding the border. */}
+                <nav className="container-px flex h-18 items-center justify-between gap-4 rounded-2xl border border-base-300 bg-base-100 px-4 shadow-sm sm:px-6 lg:h-24">
                     <button
                         type="button"
                         onClick={() => setMenuOpen(true)}

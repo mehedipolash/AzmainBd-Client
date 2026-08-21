@@ -22,12 +22,17 @@ import { SITE_NAME } from '../utils/constants';
 --------------------------------------------------------------------------- */
 
 // Heights, not widths: the mark sits inside rows of a known height (the navbar
-// is h-16 / lg:h-20), so constraining the height is what keeps it from
+// is h-18 / lg:h-24), so constraining the height is what keeps it from
 // changing the row it lives in. Width follows from the aspect ratio.
+//
+// Sized up on the client's note that the logo is the first impression and was
+// reading small. The navbar grew to match rather than the mark being pushed
+// against the bar's border — at h-18 the logo is 72px in a 96px row, which
+// leaves 12px of clear space above and below.
 const SIZES = {
-    sm: 'h-10',
-    md: 'h-12 sm:h-14',
-    lg: 'h-16 sm:h-20',
+    sm: 'h-12',
+    md: 'h-14 sm:h-18',
+    lg: 'h-20 sm:h-26',
 };
 
 const Logo = ({ size = 'md', to = '/', className = '' }) => {

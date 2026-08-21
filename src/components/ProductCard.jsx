@@ -167,16 +167,21 @@ const ProductCard = ({ product }) => {
                     stock and delivery alongside it rather than a bare number
                     in a grid.
 
-                    The row is kept — a prompt to open the product, not an
-                    empty gap — so cards still end at a common baseline and the
-                    grid keeps its rhythm. */}
-                <p className="mt-3 flex min-h-8 items-center gap-1.5 text-[13px] font-semibold tracking-wide text-primary">
+                    A real link, not decoration. It replaced the price row and
+                    was left as a <p>, so it looked like a button and did
+                    nothing when clicked — the whole point of the row is to be
+                    the way through to the price. mt-auto pins it to the bottom
+                    so it lines up across a row whatever the name's length. */}
+                <Link
+                    to={`/product/${_id}`}
+                    className="mt-auto flex min-h-8 items-center gap-1.5 pt-3 text-[13px] font-semibold tracking-wide text-primary transition-colors hover:text-primary/75"
+                >
                     View details
                     <FaArrowRight
                         className="text-[10px] transition-transform group-hover:translate-x-1"
                         aria-hidden="true"
                     />
-                </p>
+                </Link>
 
                 {/* Reserved slot, so a card WITH a stock warning and one
                     without still end at the same point. */}
