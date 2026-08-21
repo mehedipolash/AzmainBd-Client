@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router';
-import { FaArrowRight, FaTruckFast, FaShieldHalved, FaWhatsapp } from 'react-icons/fa6';
+import {
+    FaArrowRight,
+    FaTruckFast,
+    FaShieldHalved,
+    FaWhatsapp,
+    FaChevronLeft,
+    FaChevronRight,
+} from 'react-icons/fa6';
 import { getHeroBanner } from '../../../data/banners';
 import { getHeroProducts, getStoreStats, isLowStock, HERO_LIMIT } from '../../../utils/catalogue';
 import { resolveImageUrl, resolveCardImageUrl } from '../../../utils/imageUrl';
@@ -27,7 +34,7 @@ const Banner = () => {
     // Pause the rotation while the pointer or keyboard focus is on the card,
     // so it never changes out from under someone reading it.
     const [paused, setPaused] = useState(false);
-    const { index, goTo } = UseRotator(featured.length, { paused });
+    const { index, goTo, next, previous } = UseRotator(featured.length, { paused });
 
     if (!hero) return null;
 
@@ -74,7 +81,12 @@ const Banner = () => {
                     The leftover height under the card is not a defect — it is
                     where the background photograph shows through, which is the
                     point of having one. */}
-                <div className="grid items-start gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
+                {/* The card column is the wider one. The client wanted the
+                    product shots given real room — they are the thing being
+                    advertised — so the copy column was cut back to pay for it
+                    rather than the card being stretched into the page margin.
+                    Its height is unchanged; only the width grew. */}
+                <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12">
                     <div>
                         {/* The client's own tagline, set in the display serif
                             rather than as a pill of uppercase micro-type. A
@@ -94,19 +106,25 @@ const Banner = () => {
                             </p>
                         </Reveal>
 
+                        {/* Stepped down from 4.25rem so the card beside it can
+                            be wider. The headline is still the largest thing
+                            on the page and still breaks over its own lines —
+                            it simply no longer claims width the products need
+                            more than it does. */}
                         <Reveal direction="up" delay={0.08}>
-                            <h1 className="font-display text-[2.6rem] leading-[1.06] font-semibold text-white sm:text-6xl lg:text-[4.25rem]">
+                            <h1 className="font-display text-[2.1rem] leading-[1.08] font-semibold text-white sm:text-[2.9rem] lg:text-[3.15rem]">
                                 {hero.title}
                             </h1>
                         </Reveal>
 
-                        <Reveal direction="up" delay={0.16}>
-                            <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-white/80">
-                                {hero.body}
-                            </p>
-                        </Reveal>
+                        {/* The supporting paragraph came out at the client's
+                            request. The brands it listed are on the cards and
+                            in the shop, the delivery promise is in the strip
+                            above the nav, and the WhatsApp route is a button
+                            right below — so it was restating what the page
+                            already says, using the width the card wanted. */}
 
-                        <Reveal direction="up" delay={0.24} className="mt-8 flex flex-wrap gap-3">
+                        <Reveal direction="up" delay={0.16} className="mt-7 flex flex-wrap gap-3">
                             {/* The palette's own teal->cyan gradient, which is
                                 what makes the primary action look like part of
                                 this brand rather than a default button. */}
@@ -129,9 +147,9 @@ const Banner = () => {
                             stock changes rather than being decorative. */}
                         <Reveal
                             direction="up"
-                            delay={0.32}
+                            delay={0.24}
                             as="dl"
-                            className="mt-9 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-6"
+                            className="mt-8 grid max-w-md grid-cols-3 gap-6 border-t border-white/15 pt-6"
                         >
                             {[
                                 { label: 'In stock', count: stats.productCount, suffix: '+' },
@@ -182,6 +200,10 @@ const Banner = () => {
                             onFocusCapture={() => setPaused(true)}
                             onBlurCapture={() => setPaused(false)}
                         >
+                            {/* relative, so the arrows can be positioned against
+                                the card rather than against the grid cell —
+                                they must track the card's own edges. */}
+                            <div className="relative">
                             {/* Keyed so each product animates in as it becomes
                                 active rather than the content swapping in place. */}
                             <article
@@ -281,6 +303,45 @@ const Banner = () => {
                                     </div>
                                 </div>
                             </article>
+
+                            {/* Prev / next, one on each side of the card, so it
+                                reads as a carousel at a glance instead of the
+                                thumbnails below being the only clue that there
+                                is more than one product.
+
+                                They sit just OUTSIDE the card and overlap its
+                                edge, which keeps them clear of the product
+                                photograph and the buttons inside. Hidden below
+                                lg, where the card is full-width and there is no
+                                margin to sit in — the thumbnail strip is the
+                                control there, and it is already touch-sized.
+
+                                text-ink, not text-base-content: the button
+                                brings its OWN white surface in both themes, so
+                                an icon that follows the theme turns near-white
+                                on white in dark mode — measured at 1.12:1,
+                                invisible. Fixed dark ink is 17.4:1 on it. */}
+                            {featured.length > 1 && (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={previous}
+                                        aria-label="Previous product"
+                                        className="absolute top-1/2 -left-5 z-10 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/95 text-ink shadow-xl backdrop-blur-sm transition-all hover:-translate-x-0.5 hover:border-brand-gold hover:bg-white hover:text-primary lg:flex"
+                                    >
+                                        <FaChevronLeft className="text-[13px]" aria-hidden="true" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={next}
+                                        aria-label="Next product"
+                                        className="absolute top-1/2 -right-5 z-10 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/95 text-ink shadow-xl backdrop-blur-sm transition-all hover:translate-x-0.5 hover:border-brand-gold hover:bg-white hover:text-primary lg:flex"
+                                    >
+                                        <FaChevronRight className="text-[13px]" aria-hidden="true" />
+                                    </button>
+                                </>
+                            )}
+                            </div>
 
                             {/* The other featured products, as a horizontal strip.
                                 These double as the rotator's controls — a real

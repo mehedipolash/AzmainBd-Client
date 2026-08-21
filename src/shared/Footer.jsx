@@ -107,16 +107,10 @@ const Footer = () => {
 
                 <div className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
-                        {/* A white tile behind the mark, in dark mode only.
-                            logo.png is mid-tone, so on the dark panel it
-                            measures 2.0:1–2.5:1 — the disappearing logo the
-                            client reported. On the tile it is 5.4:1. The light
-                            theme needs none of this: its own panel already
-                            carries the mark at 3.6:1–4.3:1, and a white box
-                            there would just be a visible rectangle. */}
-                        <span className="inline-flex rounded-xl dark:bg-white dark:px-4 dark:py-3 dark:shadow-sm">
-                            <Logo size="lg" />
-                        </span>
+                        {/* The dark-mode white tile now lives in Logo itself,
+                            so every placement gets it rather than each caller
+                            remembering to wrap the mark. */}
+                        <Logo size="lg" className="dark:px-4 dark:py-3" />
 
                         <p className="mt-2 text-[11px] font-medium tracking-[0.18em] text-footer-muted uppercase">
                             {SITE_TAGLINE}
