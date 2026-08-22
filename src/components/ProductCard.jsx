@@ -55,21 +55,27 @@ const ProductCard = ({ product }) => {
                         src={resolveCardImageUrl(image)}
                         alt={name}
                         loading="lazy"
-                        // 4:5, and the SAME box on every card. The catalogue
-                        // mixes shapes badly — measured from 0.67 (a tall
-                        // bottle) to 1.25 (a wide panel) — and in a square box
-                        // the tall ones had to shrink to fit, so they read as
-                        // small products beside the wide ones.
+                        // A FIXED height, not an aspect ratio.
                         //
-                        // A slightly portrait box is the shape that suits the
-                        // worst case without starving the best: the tall
-                        // bottles now fill it, and object-contain still shows
-                        // every product WHOLE, never cropped.
+                        // aspect-4/5 scales with the card's width, so the wider
+                        // the card the taller it got: on a phone one card is
+                        // full-bleed, which made the image box 445px and the
+                        // whole card 602px — 71% of an 844px screen. A card you
+                        // have to scroll to see the end of is a card nobody
+                        // reads, and the grid lost its rhythm entirely.
                         //
-                        // Padded rather than bled to the edge: these are
-                        // packshots, and a product touching the card border
-                        // reads as a crop rather than a deliberate frame.
-                        className={`aspect-4/5 w-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.05] ${
+                        // A fixed height decouples the two: the image box is
+                        // the same on every card at a given breakpoint whatever
+                        // the column width, so the card stays comfortably
+                        // inside the viewport and a row still lines up.
+                        //
+                        // object-contain against a fixed height means a tall
+                        // bottle fits by its HEIGHT and a wide panel by its
+                        // width — every product still shown WHOLE, never
+                        // cropped, which is the part that matters for
+                        // packshots. Padded rather than bled to the edge, so a
+                        // product touching the border does not read as a crop.
+                        className={`h-56 w-full object-contain p-3 transition-transform duration-500 group-hover:scale-[1.05] sm:h-60 ${
                             soldOut ? 'opacity-45 grayscale' : ''
                         }`}
                     />
