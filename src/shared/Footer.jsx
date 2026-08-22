@@ -8,6 +8,7 @@ import {
     FaArrowRight,
 } from 'react-icons/fa6';
 import Logo from '../components/Logo';
+import zendroqLogo from '../assets/zendroq.png';
 import { FacebookIcon, InstagramIcon, WhatsAppBrandIcon } from '../components/BrandIcons';
 import OrderButton from '../components/OrderButton';
 import { FOOTER_LINKS, SITE_NAME, SITE_TAGLINE } from '../utils/constants';
@@ -220,13 +221,45 @@ const Footer = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col items-center justify-between gap-2 border-t border-footer-rule pt-6 sm:flex-row">
-                    <p className="text-xs text-footer-muted">
+                <div className="flex flex-col items-center gap-2 border-t border-footer-rule pt-6 sm:flex-row sm:justify-between">
+                    <p className="text-center text-xs text-footer-muted sm:text-left">
                         © {year} {SITE_NAME}. All rights reserved.
                     </p>
-                    <p className="text-xs text-footer-muted">
+                    <p className="text-center text-xs text-footer-muted sm:text-right">
                         Orders and payment confirmed on WhatsApp
                     </p>
+                </div>
+
+                {/* Who built the system. Zendroq is our identity — a quiet
+                    maker's credit, kept on its own centred line so it never
+                    sits under the floating WhatsApp button in the corner, and
+                    small enough that it reads as a signature rather than a
+                    second brand competing with the client's.
+
+                    The mark is a transparent PNG whose wordmark is WHITE with a
+                    blue arrow. A white tile swallowed the letters, and the light
+                    theme's pale-blue footer swallows them too. So the logo sits
+                    on a black tile — white text and a blue arrow read at their
+                    sharpest on black, and it stays the same in BOTH themes. The
+                    whole line links to our Facebook page. */}
+                <div className="mt-6 flex justify-center">
+                    <a
+                        href="https://www.facebook.com/share/19KghPRgWP/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="System designed and built by Zendroq — visit our Facebook page"
+                        className="group inline-flex items-center gap-2.5 text-[11px] tracking-wide text-footer-muted transition-colors hover:text-footer-content"
+                    >
+                        <span>Designed &amp; built by</span>
+                        <span className="flex items-center justify-center rounded-lg bg-black px-3 py-1.5 shadow-sm ring-1 ring-white/10 transition-transform group-hover:-translate-y-0.5">
+                            <img
+                                src={zendroqLogo}
+                                alt="Zendroq"
+                                loading="lazy"
+                                className="h-6 w-auto object-contain"
+                            />
+                        </span>
+                    </a>
                 </div>
             </div>
         </footer>
