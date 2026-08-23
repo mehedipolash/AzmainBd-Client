@@ -8,3 +8,4 @@ export const Dashboard = lazy(() => import('../pages/Admin/Dashboard'));
 export const AdminProducts = lazy(() => import('../pages/Admin/AdminProducts'));
 export const ProductForm = lazy(() => import('../pages/Admin/ProductForm'));
 export const AdminCategories = lazy(() => import('../pages/Admin/AdminCategories'));
+export const AdminUsers = lazy(() => import('../pages/Admin/AdminUsers'));

@@ -14,8 +14,8 @@ export const WHATSAPP_NUMBER = '8801711979966';
 export const PHONE_DISPLAY = '+880 1711-979966';
 export const PHONE_HREF = 'tel:+8801711979966';
 
-export const EMAIL = 'azminbdweb@gmail.com';
-export const EMAIL_HREF = 'mailto:azminbdweb@gmail.com';
+export const EMAIL = 'azmainbdweb@gmail.com';
+export const EMAIL_HREF = 'mailto:azmainbdweb@gmail.com';
 
 export const ADDRESS_LINES = ['42, Jabbar Tower', 'Gulshan-1, Dhaka-1212'];
 export const ADDRESS = ADDRESS_LINES.join(', ');

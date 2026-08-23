@@ -21,6 +21,7 @@ import {
   AdminProducts,
   ProductForm,
   AdminCategories,
+  AdminUsers,
 } from "./adminRoutes";
 
 import Login from "../pages/Auth/Login";
@@ -149,6 +150,10 @@ export const routes = [
       {
         path: "categories",
         element: <AdminCategories></AdminCategories>,
+      },
+      {
+        path: "users",
+        element: <AdminUsers></AdminUsers>,
       },
     ],
   },

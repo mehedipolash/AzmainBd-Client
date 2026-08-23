@@ -26,6 +26,17 @@ export const syncUser = () => api.post('/api/users/sync', {});
 
 export const fetchMe = () => api.getAuthed('/api/users/me');
 
+// Admin-only user management. The role always comes from the server; these
+// just drive the admin panel's Users table.
+export const fetchUsers = () => api.getAuthed('/api/users');
+
+export const updateUserRole = (uid, role) => api.patch(`/api/users/${uid}/role`, { role });
+
+// Removes the user's MongoDB record. Their Firebase Auth account is separate
+// and untouched — on their next sign-in a fresh record is created and the
+// ADMIN_EMAILS bootstrap runs again.
+export const deleteUser = (uid) => api.delete(`/api/users/${uid}`);
+
 /* --------------------------------- images -------------------------------- */
 
 // Returns { url, id, contentType, size }. The url is relative — pass it

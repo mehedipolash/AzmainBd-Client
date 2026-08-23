@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink, Outlet } from 'react-router';
-import { FaGaugeHigh, FaBoxOpen, FaLayerGroup, FaArrowLeft } from 'react-icons/fa6';
+import { FaGaugeHigh, FaBoxOpen, FaLayerGroup, FaUsers, FaArrowLeft } from 'react-icons/fa6';
 import UseAuth from '../Hooks/UseAuth';
 import ScrollToTop from '../components/ScrollToTop';
 import Logo from '../components/Logo';
@@ -10,6 +10,7 @@ const NAV = [
     { label: 'Dashboard', path: '/admin', icon: FaGaugeHigh, end: true },
     { label: 'Products', path: '/admin/products', icon: FaBoxOpen },
     { label: 'Categories', path: '/admin/categories', icon: FaLayerGroup },
+    { label: 'Users', path: '/admin/users', icon: FaUsers },
 ];
 
 const AdminLayout = () => {
