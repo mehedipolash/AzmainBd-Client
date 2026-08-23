@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Deploy artifacts — never commit a build zip (can bundle secrets/node_modules).
+*.zip
+
 # Environment — never commit real keys.
 # .env.example IS committed as the template for new developers.
 .env

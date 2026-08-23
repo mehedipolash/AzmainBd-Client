@@ -1,0 +1,12 @@
+# SPA routing for the React frontend.
+# Any request that is not a real file or folder is handed to index.html so
+# client-side routing works — without this, refreshing /shop or /login on the
+# server returns a 404 instead of the app.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
