@@ -9,6 +9,7 @@ import {
     FaPhone,
     FaWhatsapp,
     FaTruckFast,
+    FaGaugeHigh,
 } from 'react-icons/fa6';
 import ThemeToggle from '../components/ThemeToggle';
 import UserMenu from '../components/UserMenu';
@@ -25,7 +26,7 @@ const Navbar = () => {
     const [term, setTerm] = useState('');
     const navigate = useNavigate();
     const { count: cartCount, subtotal } = UseCart();
-    const { isLoggedIn, loading: authLoading, logOut } = UseAuth();
+    const { isLoggedIn, isAdmin, loading: authLoading, logOut } = UseAuth();
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -327,6 +328,21 @@ const Navbar = () => {
                         <div className="space-y-3 border-t border-base-300 p-5">
                             {isLoggedIn ? (
                                 <>
+                                    {/* Admins reach the panel from the phone too.
+                                        Desktop shows this in UserMenu, but the
+                                        drawer is the phone's only account menu, so
+                                        without it an admin on a phone had no way
+                                        in. */}
+                                    {isAdmin && (
+                                        <Link
+                                            to="/admin"
+                                            onClick={() => setMenuOpen(false)}
+                                            className="btn-shop w-full"
+                                        >
+                                            <FaGaugeHigh className="text-xs" />
+                                            Admin panel
+                                        </Link>
+                                    )}
                                     <Link
                                         to="/profile"
                                         onClick={() => setMenuOpen(false)}
