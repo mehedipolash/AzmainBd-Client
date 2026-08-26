@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { FaCloudArrowUp, FaTrash, FaLink } from 'react-icons/fa6';
+import { FaCloudArrowUp, FaTrash, FaLink, FaTriangleExclamation, FaCircleCheck } from 'react-icons/fa6';
 import { uploadImage, deleteImage } from '../api/products.api';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { inspectImageUrl, normalizeImageUrl } from '../utils/imageLink';
 import { confirmAction } from '../utils/alerts';
 
 /* ---------------------------------------------------------------------------
@@ -29,6 +30,19 @@ const ImageUploader = ({ value, onChange, error }) => {
     const [localError, setLocalError] = useState('');
     const [deleting, setDeleting] = useState(false);
     const [mode, setMode] = useState('upload');
+    // Guidance for a pasted link (page-link vs direct image), computed from the
+    // string alone, plus whether the preview image actually loaded.
+    const [urlHint, setUrlHint] = useState({ level: 'ok', message: '' });
+    const [previewBroken, setPreviewBroken] = useState(false);
+
+    // Paste handler for the URL field: normalise, store, and inspect the link so
+    // the owner is warned about a page-link before they wonder why it is blank.
+    const handleUrlChange = (raw) => {
+        const cleaned = normalizeImageUrl(raw);
+        setPreviewBroken(false);
+        setUrlHint(inspectImageUrl(cleaned));
+        onChange(cleaned);
+    };
 
     const handleFile = async (file) => {
         if (!file) return;
@@ -188,15 +202,41 @@ const ImageUploader = ({ value, onChange, error }) => {
                     )}
                 </div>
             ) : (
-                <input
-                    type="url"
-                    value={value?.startsWith('http') ? value : ''}
-                    onChange={(event) => onChange(event.target.value)}
-                    placeholder="https://…"
-                    className={`w-full border bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-primary ${
-                        shownError ? 'border-error' : 'border-base-300'
-                    }`}
-                />
+                <div>
+                    <input
+                        type="url"
+                        value={value?.startsWith('http') ? value : ''}
+                        onChange={(event) => handleUrlChange(event.target.value)}
+                        placeholder="https://i.ibb.co/…/photo.jpg"
+                        className={`w-full border bg-base-100 px-4 py-3 text-sm outline-none transition-colors placeholder:text-base-content/30 focus:border-primary ${
+                            shownError || previewBroken ? 'border-error' : 'border-base-300'
+                        }`}
+                    />
+
+                    {/* Two things can be wrong with a link, and they are shown
+                        differently: a page-link is caught from the string
+                        itself (a warning, amber), while a link that simply does
+                        not load is caught by the preview image below (an error,
+                        red). A link with no problems gets a quiet green tick. */}
+                    {value?.startsWith('http') && !previewBroken && urlHint.level === 'warn' && (
+                        <p className="mt-2 flex items-start gap-2 text-[12px] text-warning">
+                            <FaTriangleExclamation className="mt-0.5 shrink-0" aria-hidden="true" />
+                            <span>{urlHint.message}</span>
+                        </p>
+                    )}
+
+                    {value?.startsWith('http') && !previewBroken && urlHint.level === 'ok' && (
+                        <p className="mt-2 flex items-center gap-2 text-[12px] text-success">
+                            <FaCircleCheck className="shrink-0" aria-hidden="true" />
+                            Looks like a direct image link.
+                        </p>
+                    )}
+
+                    <p className="mt-2 text-[11px] text-base-content/45">
+                        Paste the image’s <strong>direct link</strong> — it ends in .jpg, .png or
+                        .webp. On ImgBB, right-click the photo and choose “Copy image address”.
+                    </p>
+                </div>
             )}
 
             {shownError && (
@@ -206,27 +246,52 @@ const ImageUploader = ({ value, onChange, error }) => {
             )}
 
             {value && (
-                <div className="mt-4 flex items-start gap-3">
-                    <img
-                        src={resolveImageUrl(value)}
-                        alt="Product preview"
-                        className="size-24 border border-base-300 bg-white object-contain"
-                    />
-                    <button
-                        type="button"
-                        onClick={handleRemove}
-                        disabled={deleting}
-                        className="flex items-center gap-1.5 text-[11px] tracking-wide text-base-content/50 uppercase transition-colors hover:text-error disabled:opacity-40"
-                    >
-                        {deleting ? (
-                            'Deleting…'
-                        ) : (
-                            <>
-                                <FaTrash className="text-[10px]" aria-hidden="true" />
-                                {UPLOADED.test(value ?? '') ? 'Delete photo' : 'Remove'}
-                            </>
-                        )}
-                    </button>
+                <div className="mt-4">
+                    <div className="flex items-start gap-3">
+                        <img
+                            // Keyed on the value so switching links always
+                            // re-runs onLoad/onError rather than reusing the last
+                            // result — otherwise a broken link stays "broken"
+                            // even after it is corrected.
+                            key={value}
+                            src={resolveImageUrl(value)}
+                            alt="Product preview"
+                            onLoad={() => setPreviewBroken(false)}
+                            onError={() => setPreviewBroken(true)}
+                            className={`size-24 border bg-white object-contain ${
+                                previewBroken ? 'border-error' : 'border-base-300'
+                            }`}
+                        />
+                        <button
+                            type="button"
+                            onClick={handleRemove}
+                            disabled={deleting}
+                            className="flex items-center gap-1.5 text-[11px] tracking-wide text-base-content/50 uppercase transition-colors hover:text-error disabled:opacity-40"
+                        >
+                            {deleting ? (
+                                'Deleting…'
+                            ) : (
+                                <>
+                                    <FaTrash className="text-[10px]" aria-hidden="true" />
+                                    {UPLOADED.test(value ?? '') ? 'Delete photo' : 'Remove'}
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    {/* The definitive check: the browser tried to load this link
+                        and failed. This is exactly the "image not showing" case
+                        the owner hit — said plainly, with what to do. */}
+                    {previewBroken && (
+                        <p role="alert" className="mt-2 flex items-start gap-2 text-[12px] text-error">
+                            <FaTriangleExclamation className="mt-0.5 shrink-0" aria-hidden="true" />
+                            <span>
+                                This image did not load. The link is probably a page, not the
+                                image itself — open the photo and copy its direct address (ending
+                                in .jpg or .png), or upload the file from your device instead.
+                            </span>
+                        </p>
+                    )}
                 </div>
             )}
         </div>

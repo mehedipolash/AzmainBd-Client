@@ -146,14 +146,20 @@ const ProductDetails = () => {
 
             <div className="container-px py-10 lg:py-16">
                 <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-                    <div className="relative overflow-hidden rounded-xl border border-base-300 bg-base-200">
+                    {/* A FIXED-height box, the same for every product, so the
+                        card never grows or shrinks with the upload — but the
+                        image inside is object-CONTAIN, never cover: the customer
+                        must see the WHOLE product, nothing cropped off the top
+                        or sides, whatever shape the owner uploaded. A soft
+                        tinted ground fills the box around a tall or wide photo
+                        so the spare space reads as intentional framing rather
+                        than a gap. lg:sticky keeps it in view while the long
+                        details column scrolls. */}
+                    <div className="relative h-104 overflow-hidden rounded-xl border border-base-300 bg-linear-to-b from-white to-base-200/70 p-4 sm:h-128 sm:p-6 lg:sticky lg:top-24">
                         <img
                             src={resolveImageUrl(product.image)}
                             alt={product.name}
-                            // Square, matching the card and the client's own
-                            // photography — a portrait box left empty bands
-                            // above and below these square marketing panels.
-                            className={`aspect-square w-full bg-white object-contain p-6 ${
+                            className={`h-full w-full object-contain object-center ${
                                 soldOut ? 'opacity-50 grayscale' : ''
                             }`}
                         />

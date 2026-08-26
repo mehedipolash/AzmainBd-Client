@@ -136,3 +136,43 @@ export const getRelated = (product, products = [], limit = 4) =>
 // Brands present in the catalogue, for the shop filter sidebar.
 export const getBrands = (products = []) =>
     [...new Set(products.map((product) => product.brand).filter(Boolean))].sort();
+
+/* ---------------------------------------------------------------------------
+   One search used by both the navbar's live dropdown and the shop page's live
+   filter, so the two always agree on what "matches". A product matches when the
+   query appears in its name, brand or category — the three things a shopper
+   types. Empty query returns nothing (the caller decides what to show instead).
+
+   Results lead with available stock and, within that, with a name that STARTS
+   with the query, so typing "sh" surfaces "Shampoo" ahead of "Herbal Shower".
+--------------------------------------------------------------------------- */
+export const searchProducts = (products = [], query = '', limit = Infinity) => {
+    const term = query.trim().toLowerCase();
+    if (!term) return [];
+
+    const scored = products
+        .map((product) => {
+            const name = (product.name ?? '').toLowerCase();
+            const brand = (product.brand ?? '').toLowerCase();
+            const category = (product.category ?? '').toLowerCase();
+
+            if (!name.includes(term) && !brand.includes(term) && !category.includes(term)) {
+                return null;
+            }
+
+            // Lower rank sorts first: an exact name start beats a mid-name hit,
+            // which beats a brand/category-only hit.
+            const rank = name.startsWith(term) ? 0 : name.includes(term) ? 1 : 2;
+            return { product, rank };
+        })
+        .filter(Boolean);
+
+    scored.sort((a, b) => {
+        const availability = byAvailability(a.product, b.product);
+        if (availability) return availability;
+        return a.rank - b.rank;
+    });
+
+    const results = scored.map((entry) => entry.product);
+    return Number.isFinite(limit) ? results.slice(0, limit) : results;
+};

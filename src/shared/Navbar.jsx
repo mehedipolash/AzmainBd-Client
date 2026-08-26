@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
 import {
     FaMagnifyingGlass,
@@ -13,12 +13,18 @@ import {
 } from 'react-icons/fa6';
 import ThemeToggle from '../components/ThemeToggle';
 import UserMenu from '../components/UserMenu';
+import SearchSuggestions from '../components/SearchSuggestions';
 import UseCart from '../Hooks/UseCart';
 import UseAuth from '../Hooks/UseAuth';
+import UseCatalogue from '../Hooks/UseCatalogue';
+import { searchProducts } from '../utils/catalogue';
 import { formatCurrency } from '../utils/formatCurrency';
 import Logo from '../components/Logo';
 import { NAV_LINKS } from '../utils/constants';
 import { PHONE_DISPLAY, PHONE_HREF, buildWhatsAppLink } from '../utils/business';
+
+// The live dropdown lists at most this many; the rest live on the results page.
+const SUGGESTION_LIMIT = 6;
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -27,14 +33,32 @@ const Navbar = () => {
     const navigate = useNavigate();
     const { count: cartCount, subtotal } = UseCart();
     const { isLoggedIn, isAdmin, loading: authLoading, logOut } = UseAuth();
+    const { products } = UseCatalogue();
 
-    const handleSearch = (e) => {
-        e.preventDefault();
+    // Live matches for the dropdown, recomputed as the shopper types. Capped so
+    // the panel stays short; "See all results" opens the full shop list.
+    const suggestions = useMemo(
+        () => searchProducts(products, term, SUGGESTION_LIMIT),
+        [products, term],
+    );
+
+    // Both the panel and the drawer close and reset after a search runs.
+    const closeSearch = () => {
+        setSearchOpen(false);
+        setMenuOpen(false);
+    };
+
+    const goToResults = () => {
         const query = term.trim();
         if (!query) return;
         navigate(`/shop?search=${encodeURIComponent(query)}`);
-        setSearchOpen(false);
-        setMenuOpen(false);
+        setTerm('');
+        closeSearch();
+    };
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        goToResults();
     };
 
     // NavLink gives us isActive; the underline makes the current page legible
@@ -202,28 +226,46 @@ const Navbar = () => {
             {searchOpen && (
                 <div className="bg-base-200/70 px-3 pb-3 backdrop-blur-lg sm:px-4">
                     <form onSubmit={handleSearch} className="container-px">
-                        <div className="flex items-center gap-3 rounded-full border border-base-300 bg-base-100 px-6 py-3.5 shadow-sm">
-                            <FaMagnifyingGlass
-                                className="text-sm text-base-content/40"
-                                aria-hidden="true"
-                            />
-                            <input
-                                type="search"
-                                autoFocus
-                                value={term}
-                                onChange={(e) => setTerm(e.target.value)}
-                                placeholder="Search for products..."
-                                aria-label="Search products"
-                                className="w-full bg-transparent text-base outline-none placeholder:text-base-content/35"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setSearchOpen(false)}
-                                className="text-sm text-base-content/40 hover:text-base-content"
-                                aria-label="Close search"
-                            >
-                                <FaXmark />
-                            </button>
+                        <div className="rounded-2xl border border-base-300 bg-base-100 shadow-sm">
+                            <div className="flex items-center gap-3 px-6 py-3.5">
+                                <FaMagnifyingGlass
+                                    className="text-sm text-base-content/40"
+                                    aria-hidden="true"
+                                />
+                                <input
+                                    type="search"
+                                    autoFocus
+                                    value={term}
+                                    onChange={(e) => setTerm(e.target.value)}
+                                    placeholder="Search for products..."
+                                    aria-label="Search products"
+                                    className="w-full bg-transparent text-base outline-none placeholder:text-base-content/35"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setTerm('');
+                                        setSearchOpen(false);
+                                    }}
+                                    className="text-sm text-base-content/40 hover:text-base-content"
+                                    aria-label="Close search"
+                                >
+                                    <FaXmark />
+                                </button>
+                            </div>
+
+                            {/* Live matches appear as you type; Enter or the
+                                footer row opens the full results page. */}
+                            {term.trim() && (
+                                <div className="border-t border-base-300">
+                                    <SearchSuggestions
+                                        results={suggestions}
+                                        query={term}
+                                        onPick={closeSearch}
+                                        onSeeAll={goToResults}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </form>
                 </div>
@@ -255,22 +297,46 @@ const Navbar = () => {
                                 it is the first thing a shopper reaches for, so
                                 it opens the drawer as a real field rather than
                                 a magnifier that toggles yet another panel. */}
-                            <form onSubmit={handleSearch} className="border-b border-base-300 p-5">
-                                <div className="flex items-center gap-2.5 rounded-full border border-base-300 bg-base-200/60 px-4 py-2.5">
-                                    <FaMagnifyingGlass
-                                        className="text-sm text-base-content/40"
-                                        aria-hidden="true"
-                                    />
-                                    <input
-                                        type="search"
-                                        value={term}
-                                        onChange={(e) => setTerm(e.target.value)}
-                                        placeholder="Search products..."
-                                        aria-label="Search products"
-                                        className="w-full bg-transparent text-[15px] outline-none placeholder:text-base-content/35"
-                                    />
-                                </div>
-                            </form>
+                            <div className="border-b border-base-300 p-5">
+                                <form onSubmit={handleSearch}>
+                                    <div className="flex items-center gap-2.5 rounded-full border border-base-300 bg-base-200/60 px-4 py-2.5">
+                                        <FaMagnifyingGlass
+                                            className="text-sm text-base-content/40"
+                                            aria-hidden="true"
+                                        />
+                                        <input
+                                            type="search"
+                                            value={term}
+                                            onChange={(e) => setTerm(e.target.value)}
+                                            placeholder="Search products..."
+                                            aria-label="Search products"
+                                            className="w-full bg-transparent text-[15px] outline-none placeholder:text-base-content/35"
+                                        />
+                                        {term && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setTerm('')}
+                                                className="text-sm text-base-content/40 hover:text-base-content"
+                                                aria-label="Clear search"
+                                            >
+                                                <FaXmark />
+                                            </button>
+                                        )}
+                                    </div>
+                                </form>
+
+                                {/* Same live matches as the desktop panel. */}
+                                {term.trim() && (
+                                    <div className="mt-3 overflow-hidden rounded-xl border border-base-300">
+                                        <SearchSuggestions
+                                            results={suggestions}
+                                            query={term}
+                                            onPick={closeSearch}
+                                            onSeeAll={goToResults}
+                                        />
+                                    </div>
+                                )}
+                            </div>
 
                             <ul className="py-2">
                                 {NAV_LINKS.map((link) => (

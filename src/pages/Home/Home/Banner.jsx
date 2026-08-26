@@ -217,27 +217,31 @@ const Banner = () => {
                                 key={product._id}
                                 className="overflow-hidden rounded-2xl bg-base-100 shadow-2xl motion-safe:animate-[card-in_420ms_ease-out]"
                             >
-                                <div className="flex flex-col sm:flex-row">
-                                    {/* Half the card, not 46%, and taller. The
-                                        card got wider but the photo did not
-                                        visibly grow, because object-contain
-                                        fits a TALL packshot to the row height —
-                                        extra width alone does nothing for a
-                                        portrait image. Raising the minimum
-                                        height is what actually enlarges these
-                                        shots, and the padding came down from
-                                        p-4 to p-2 so the product uses the box
-                                        it is given. */}
+                                {/* items-stretch so both halves take the row's
+                                    height, and the row's height is fixed by the
+                                    image box below — never by the copy or the
+                                    image's own proportions. That is what stops
+                                    the whole card growing or shrinking when the
+                                    owner uploads a taller or shorter photo. */}
+                                <div className="flex flex-col sm:flex-row sm:items-stretch">
+                                    {/* Half the card, a FIXED height so the card
+                                        never grows or shrinks with the upload —
+                                        but object-CONTAIN, never cover: the whole
+                                        product must show, nothing clipped off the
+                                        top or sides whatever shape the owner
+                                        uploads. The tinted ground fills the box
+                                        around a tall or wide shot so the spare
+                                        space reads as framing rather than a gap. */}
                                     <Link
                                         to={`/product/${product._id}`}
-                                        className="group relative block shrink-0 overflow-hidden bg-white sm:w-1/2"
+                                        className="group relative block shrink-0 overflow-hidden bg-linear-to-b from-white to-base-200/60 p-3 sm:w-1/2"
                                     >
                                         <img
                                             src={resolveCardImageUrl(product.image)}
                                             alt={product.name}
                                             loading="eager"
                                             fetchPriority="high"
-                                            className="h-60 w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105 sm:h-full sm:min-h-88"
+                                            className="h-60 w-full object-contain object-center transition-transform duration-500 group-hover:scale-105 sm:h-96"
                                         />
 
                                         {/* The "Save N%" badge went with the
@@ -406,7 +410,7 @@ const Banner = () => {
                                                 src={resolveCardImageUrl(item.image)}
                                                 alt=""
                                                 loading="lazy"
-                                                className="h-20 w-full rounded-lg bg-white object-contain p-1.5"
+                                                className="h-12 w-full rounded-lg bg-white object-contain p-1"
                                             />
                                         </button>
                                     ))}

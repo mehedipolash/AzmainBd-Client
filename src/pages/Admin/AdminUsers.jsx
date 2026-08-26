@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FaTrash, FaUserShield, FaUser } from 'react-icons/fa6';
+import { FaTrash, FaUserShield, FaUser, FaCrown } from 'react-icons/fa6';
 import { fetchUsers, updateUserRole, deleteUser } from '../../api/products.api';
 import Loader from '../../components/Loader';
 import AdminBanner from '../../components/AdminBanner';
@@ -93,7 +93,7 @@ const AdminUsers = () => {
             <AdminBanner
                 eyebrow="Access"
                 title="Users"
-                subtitle="Everyone who has signed in. Grant or remove admin access, or delete an account to reset it."
+                subtitle="Everyone who has signed in. To add an admin, ask them to sign up first, then use Make admin on their row. Owner accounts are protected and cannot be changed here."
                 stats={[
                     { label: 'Users', value: items.length },
                     { label: 'Admins', value: adminCount },
@@ -131,6 +131,12 @@ const AdminUsers = () => {
                                     const isMe = account.uid === myUid;
                                     const isAdmin = account.role === 'admin';
                                     const busy = busyUid === account.uid;
+                                    // Protected owner (the proprietor / maintainer, from the
+                                    // server's ADMIN_EMAILS). Their controls are locked here —
+                                    // and the server refuses the change too, so this only makes
+                                    // the rule visible rather than being the rule itself.
+                                    const isOwner = account.isOwner === true;
+                                    const locked = isMe || isOwner;
 
                                     return (
                                         <tr
@@ -153,41 +159,59 @@ const AdminUsers = () => {
                                                 </div>
                                             </td>
                                             <td className="admin-td">
-                                                {isAdmin ? (
-                                                    <span className="inline-flex items-center gap-1.5 bg-secondary px-2.5 py-1 text-[11px] font-semibold tracking-wide text-secondary-content uppercase">
-                                                        <FaUserShield className="text-[10px]" />
-                                                        Admin
-                                                    </span>
-                                                ) : (
-                                                    <span className="inline-flex items-center gap-1.5 text-[12px] text-base-content/60">
-                                                        <FaUser className="text-[10px]" />
-                                                        Customer
-                                                    </span>
-                                                )}
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    {isAdmin ? (
+                                                        <span className="inline-flex items-center gap-1.5 bg-secondary px-2.5 py-1 text-[11px] font-semibold tracking-wide text-secondary-content uppercase">
+                                                            <FaUserShield className="text-[10px]" />
+                                                            Admin
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1.5 text-[12px] text-base-content/60">
+                                                            <FaUser className="text-[10px]" />
+                                                            Customer
+                                                        </span>
+                                                    )}
+                                                    {/* Marks the proprietor / maintainer — a protected
+                                                        account no admin can demote or delete from here. */}
+                                                    {isOwner && (
+                                                        <span className="inline-flex items-center gap-1.5 border border-warning/60 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-warning uppercase">
+                                                            <FaCrown className="text-[10px]" />
+                                                            Owner
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="admin-td">
-                                                <div className="flex justify-end gap-2">
-                                                    {/* An admin cannot change or delete
-                                                        their own access — that path could
-                                                        lock the last admin out. */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleToggleRole(account)}
-                                                        disabled={isMe || busy}
-                                                        className="border border-base-300 px-3 py-1.5 text-[12px] font-medium transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-                                                    >
-                                                        {isAdmin ? 'Remove admin' : 'Make admin'}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDelete(account)}
-                                                        disabled={isMe || busy}
-                                                        className="btn-icon btn-icon-delete disabled:cursor-not-allowed disabled:opacity-40"
-                                                        aria-label={`Delete ${account.email}`}
-                                                    >
-                                                        <FaTrash />
-                                                    </button>
-                                                </div>
+                                                {locked ? (
+                                                    /* Own row, or a protected owner — no controls.
+                                                       An admin cannot change their own access (it
+                                                       could lock the last admin out), and no admin
+                                                       can touch an owner. The server enforces both;
+                                                       this just shows why the buttons are gone. */
+                                                    <p className="text-right text-[11px] text-base-content/40">
+                                                        {isMe ? 'This is you' : 'Protected'}
+                                                    </p>
+                                                ) : (
+                                                    <div className="flex justify-end gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleToggleRole(account)}
+                                                            disabled={busy}
+                                                            className="border border-base-300 px-3 py-1.5 text-[12px] font-medium transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                                                        >
+                                                            {isAdmin ? 'Remove admin' : 'Make admin'}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDelete(account)}
+                                                            disabled={busy}
+                                                            className="btn-icon btn-icon-delete disabled:cursor-not-allowed disabled:opacity-40"
+                                                            aria-label={`Delete ${account.email}`}
+                                                        >
+                                                            <FaTrash />
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </td>
                                         </tr>
                                     );

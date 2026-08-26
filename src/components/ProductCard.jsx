@@ -69,12 +69,15 @@ const ProductCard = ({ product }) => {
                         // the column width, so the card stays comfortably
                         // inside the viewport and a row still lines up.
                         //
-                        // object-contain against a fixed height means a tall
-                        // bottle fits by its HEIGHT and a wide panel by its
-                        // width — every product still shown WHOLE, never
-                        // cropped, which is the part that matters for
-                        // packshots. Padded rather than bled to the edge, so a
-                        // product touching the border does not read as a crop.
+                        // object-contain against this fixed height, NOT cover.
+                        // The card height stays identical across the grid (it is
+                        // fixed here, not tied to the image), but the customer
+                        // must see the WHOLE product — cover cropped the top off
+                        // tall labels, which is bad for a shop. Contain fits the
+                        // whole shot inside the box; the tinted ground behind it
+                        // makes the spare space read as framing, and the small
+                        // padding stops a product touching the border from
+                        // looking cropped.
                         className={`h-56 w-full object-contain p-3 transition-transform duration-500 group-hover:scale-[1.05] sm:h-60 ${
                             soldOut ? 'opacity-45 grayscale' : ''
                         }`}
