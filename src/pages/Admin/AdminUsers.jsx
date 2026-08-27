@@ -20,10 +20,17 @@ const AdminUsers = () => {
     const [error, setError] = useState('');
     // uid currently being changed, so only that row's buttons show as busy.
     const [busyUid, setBusyUid] = useState(null);
+    // Whether THIS viewer may act. Only a super admin (the owner) can add or
+    // remove admins; a general admin sees the list read-only. The server is the
+    // source of truth — it returns callerRole and refuses any write from a
+    // non-super-admin — so this only decides what the panel shows.
+    const [canManage, setCanManage] = useState(false);
 
     const load = useCallback(async () => {
         try {
-            setItems(await fetchUsers());
+            const data = await fetchUsers();
+            setItems(data.users ?? []);
+            setCanManage(data.callerRole === 'superadmin');
             setError('');
         } catch (err) {
             setError(err.message);
@@ -86,14 +93,20 @@ const AdminUsers = () => {
         }
     };
 
-    const adminCount = items.filter((u) => u.role === 'admin').length;
+    const adminCount = items.filter(
+        (u) => u.role === 'admin' || u.role === 'superadmin',
+    ).length;
 
     return (
         <div>
             <AdminBanner
                 eyebrow="Access"
                 title="Users"
-                subtitle="Everyone who has signed in. To add an admin, ask them to sign up first, then use Make admin on their row. Owner accounts are protected and cannot be changed here."
+                subtitle={
+                    canManage
+                        ? 'Everyone who has signed in. To add an admin, ask them to sign up first, then use Make admin on their row. The owner account is protected and cannot be changed here.'
+                        : 'Everyone who has signed in. Only the owner can add or remove admins, so these controls are locked for your account.'
+                }
                 stats={[
                     { label: 'Users', value: items.length },
                     { label: 'Admins', value: adminCount },
@@ -129,14 +142,18 @@ const AdminUsers = () => {
                             <tbody>
                                 {items.map((account) => {
                                     const isMe = account.uid === myUid;
-                                    const isAdmin = account.role === 'admin';
+                                    // Super admin counts as admin for the badge.
+                                    const isAdmin =
+                                        account.role === 'admin' || account.role === 'superadmin';
                                     const busy = busyUid === account.uid;
-                                    // Protected owner (the proprietor / maintainer, from the
-                                    // server's ADMIN_EMAILS). Their controls are locked here —
-                                    // and the server refuses the change too, so this only makes
-                                    // the rule visible rather than being the rule itself.
-                                    const isOwner = account.isOwner === true;
-                                    const locked = isMe || isOwner;
+                                    // Protected owner (super admin). Their controls are locked
+                                    // here — and the server refuses the change too, so this only
+                                    // makes the rule visible rather than being the rule itself.
+                                    const isOwner = account.isOwner === true || account.role === 'superadmin';
+                                    // Locked when: the viewer is not a super admin (general admins
+                                    // see the list read-only), or it is the viewer's own row, or
+                                    // the target is the protected owner.
+                                    const locked = !canManage || isMe || isOwner;
 
                                     return (
                                         <tr
@@ -183,13 +200,13 @@ const AdminUsers = () => {
                                             </td>
                                             <td className="admin-td">
                                                 {locked ? (
-                                                    /* Own row, or a protected owner — no controls.
-                                                       An admin cannot change their own access (it
-                                                       could lock the last admin out), and no admin
-                                                       can touch an owner. The server enforces both;
-                                                       this just shows why the buttons are gone. */
+                                                    /* No controls. Reasons, in order: a general
+                                                       admin may only look; the owner's own row and
+                                                       the protected owner account cannot be changed.
+                                                       The server enforces all three — this just
+                                                       shows why the buttons are gone. */
                                                     <p className="text-right text-[11px] text-base-content/40">
-                                                        {isMe ? 'This is you' : 'Protected'}
+                                                        {!canManage ? '—' : isMe ? 'This is you' : 'Protected'}
                                                     </p>
                                                 ) : (
                                                     <div className="flex justify-end gap-2">

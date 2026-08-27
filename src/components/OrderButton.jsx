@@ -28,6 +28,7 @@ const OrderButton = ({
     className = '',
     signedOutLabel = 'Sign in to order',
     disabled = false,
+    onOrder,
 }) => {
     const { isLoggedIn, loading } = UseAuth();
     const navigate = useNavigate();
@@ -43,6 +44,12 @@ const OrderButton = ({
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
+                // Fired when the order is actually sent (the WhatsApp link
+                // opens). The cart uses it to empty itself once the basket has
+                // been handed over, so a placed order does not linger as if it
+                // were still waiting to be sent. Opens in a new tab, so the
+                // shopper stays on the site with a fresh cart.
+                onClick={onOrder}
                 className={className}
                 aria-disabled={disabled || undefined}
             >

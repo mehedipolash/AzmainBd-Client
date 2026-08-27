@@ -126,9 +126,13 @@ const AuthProvider = ({ children }) => {
         user,
         loading,
         role,
-        // Derived so components never re-check the conditions themselves.
+        // Derived so components never re-check the conditions themselves. A
+        // super admin is an admin too, so isAdmin covers both — isSuperAdmin
+        // only gates the user-management controls. These are for showing UI;
+        // every write is re-checked on the server against the stored role.
         isLoggedIn: !!user,
-        isAdmin: role === 'admin',
+        isAdmin: role === 'admin' || role === 'superadmin',
+        isSuperAdmin: role === 'superadmin',
         createUser,
         signIn,
         signInWithGoogle,

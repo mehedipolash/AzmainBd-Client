@@ -27,7 +27,8 @@ export const syncUser = () => api.post('/api/users/sync', {});
 export const fetchMe = () => api.getAuthed('/api/users/me');
 
 // Admin-only user management. The role always comes from the server; these
-// just drive the admin panel's Users table.
+// just drive the admin panel's Users table. Returns { users, callerRole } so
+// the panel knows whether the viewer (a general admin) may act or only look.
 export const fetchUsers = () => api.getAuthed('/api/users');
 
 export const updateUserRole = (uid, role) => api.patch(`/api/users/${uid}/role`, { role });

@@ -11,8 +11,21 @@ import { FREE_DELIVERY_THRESHOLD } from '../../utils/catalogue';
 import { cartEnquiryLink } from '../../utils/business';
 
 const Cart = () => {
-    const { items, removeItem, updateQuantity, subtotal, count } = UseCart();
+    const { items, removeItem, updateQuantity, clearCart, subtotal, count } = UseCart();
     const { notify } = UseToast();
+
+    // The order is placed by sending the basket to WhatsApp. Once that message
+    // is on its way the cart has done its job, so it empties — otherwise the
+    // same items sit here looking unsent and get ordered twice. The WhatsApp
+    // link opens in a new tab, so the shopper stays on the site and lands on a
+    // clean, empty cart. A short delay lets the new tab open before the list
+    // under it disappears.
+    const handleOrderPlaced = () => {
+        setTimeout(() => {
+            clearCart();
+            notify('Order sent on WhatsApp — your cart is now empty', 'success');
+        }, 400);
+    };
 
     const qualifiesForFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
     const shortfall = FREE_DELIVERY_THRESHOLD - subtotal;
@@ -211,6 +224,7 @@ const Cart = () => {
                                 <OrderButton
                                     href={cartEnquiryLink(items)}
                                     signedOutLabel="Sign in to order"
+                                    onOrder={handleOrderPlaced}
                                     className="mt-7 flex w-full items-center justify-center gap-2 bg-[#25D366] py-3.5 text-xs font-semibold tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-90"
                                 >
                                     <FaWhatsapp className="text-base" aria-hidden="true" />

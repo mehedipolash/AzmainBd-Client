@@ -19,9 +19,11 @@ const Profile = () => {
         setBusy(true);
 
         try {
+            // Only the display name is editable. The photo comes from the
+            // account they signed up with (Google gives one automatically), so a
+            // "photo URL" box was just a way to break their avatar — removed.
             await updateUserProfile({
                 displayName: e.target.displayName.value.trim(),
-                photoURL: e.target.photoURL.value.trim(),
             });
             notify('Profile updated');
         } catch (err) {
@@ -90,23 +92,6 @@ const Profile = () => {
                                 placeholder="Your name"
                                 className={fieldClass}
                             />
-                        </div>
-
-                        <div>
-                            <label htmlFor="photoURL" className="eyebrow mb-2 block">
-                                Photo URL
-                            </label>
-                            <input
-                                id="photoURL"
-                                name="photoURL"
-                                type="url"
-                                defaultValue={user?.photoURL ?? ''}
-                                placeholder="https://…"
-                                className={fieldClass}
-                            />
-                            <p className="mt-2 text-[12px] text-base-content/45">
-                                Direct image uploads arrive with the backend.
-                            </p>
                         </div>
 
                         {error && (
