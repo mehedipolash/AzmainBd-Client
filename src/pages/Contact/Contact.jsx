@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { FaPhone, FaEnvelope, FaLocationDot, FaClock, FaWhatsapp } from 'react-icons/fa6';
 import PageHeader from '../../components/PageHeader';
 import ShopMap from '../../components/ShopMap';
+import UsePageTitle from '../../Hooks/UsePageTitle';
 import { alertSuccess } from '../../utils/alerts';
 import {
     ADDRESS_LINES,
@@ -51,6 +52,7 @@ const FieldError = ({ error }) =>
     ) : null;
 
 const Contact = () => {
+    UsePageTitle('Contact us');
     const {
         register,
         handleSubmit,

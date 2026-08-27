@@ -2,10 +2,122 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/ecommerce-svgrepo-com.svg" />
+    <link rel="icon" type="image/png" href="/logo-mark.png" />
+    <link rel="apple-touch-icon" href="/logo-mark.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Azmain BD Int — premium electronics and home appliances with official warranty, EMI facilities and 24/7 support." />
-    <title>Azmain BD Int — Premium Electronics</title>
+
+    <!-- Search + browser tab. The old copy described "premium electronics with
+         EMI and warranty" — this is a beauty and personal-care shop, so that
+         was both wrong and bad for search. The description now matches the
+         wording on the shop's Facebook page, so the same identity shows across
+         Google and social. -->
+    <title>Azmain BD — House of Global Brands</title>
+    <meta
+      name="description"
+      content="Wholesale & Retail Supplier of Premium International Brands. Specializing in Authentic Food, Healthcare & Professional Cosmetics."
+    />
+    <meta name="theme-color" content="#0d7d6e" />
+    <link rel="canonical" href="https://azmain.com.bd/" />
+
+    <!-- Open Graph — the card WhatsApp, Facebook and Messenger show when the
+         link is shared. Without these the link previewed as bare text (and the
+         wrong "electronics" title); now it shows the shop's name, its real
+         one-line description and the hero image. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Azmain BD" />
+    <meta property="og:title" content="Azmain BD — House of Global Brands" />
+    <meta
+      property="og:description"
+      content="Wholesale & Retail Supplier of Premium International Brands. Specializing in Authentic Food, Healthcare & Professional Cosmetics."
+    />
+    <meta property="og:url" content="https://azmain.com.bd/" />
+    <meta property="og:image" content="https://azmain.com.bd/banners/hero.jpg" />
+    <meta property="og:image:alt" content="Azmain BD — house of global brands" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter/X card — same preview on that platform. -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Azmain BD — House of Global Brands" />
+    <meta
+      name="twitter:description"
+      content="Wholesale & Retail Supplier of Premium International Brands. Specializing in Authentic Food, Healthcare & Professional Cosmetics."
+    />
+    <meta name="twitter:image" content="https://azmain.com.bd/banners/hero.jpg" />
+
+    <!-- Structured data (JSON-LD). This is what lets Google show the business
+         NAME, LOGO and details the way a knowledge card does, rather than just
+         a blue link. Two linked entities in one @graph:
+           • Store       — the business: name, logo, address, geo, hours, socials
+           • WebSite     — the site itself, with a search action so Google can
+                           offer a search box under the result.
+         Everything (name, url, logo, phone, address) must stay consistent with
+         the meta tags, the favicon and the real Facebook/Instagram pages — that
+         consistency is exactly the signal Google uses to build the panel. It
+         still decides whether and when to show one; this only gives it the best
+         possible material. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Store",
+            "@id": "https://azmain.com.bd/#store",
+            "name": "Azmain BD",
+            "alternateName": ["Azmain BD Int", "azmainbd"],
+            "description": "Wholesale & Retail Supplier of Premium International Brands. Specializing in Authentic Food, Healthcare & Professional Cosmetics.",
+            "url": "https://azmain.com.bd/",
+            "logo": "https://azmain.com.bd/logo-mark.png",
+            "image": "https://azmain.com.bd/banners/hero.jpg",
+            "telephone": "+8801711979966",
+            "email": "azmainbdweb@gmail.com",
+            "priceRange": "৳৳",
+            "currenciesAccepted": "BDT",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "42, Jabbar Tower, Gulshan-1",
+              "addressLocality": "Dhaka",
+              "postalCode": "1212",
+              "addressRegion": "Dhaka",
+              "addressCountry": "BD"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 23.7806,
+              "longitude": 90.4152
+            },
+            "areaServed": {
+              "@type": "Country",
+              "name": "Bangladesh"
+            },
+            "openingHoursSpecification": {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+              "opens": "10:00",
+              "closes": "20:00"
+            },
+            "sameAs": [
+              "https://www.facebook.com/azmain.con.bd",
+              "https://www.instagram.com/azmain_com_bd"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://azmain.com.bd/#website",
+            "url": "https://azmain.com.bd/",
+            "name": "Azmain BD",
+            "publisher": { "@id": "https://azmain.com.bd/#store" },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://azmain.com.bd/shop?search={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

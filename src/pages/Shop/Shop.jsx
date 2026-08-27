@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import Loader from '../../components/Loader';
 import ShopFilters from './ShopFilters';
 import UseCatalogue from '../../Hooks/UseCatalogue';
+import UsePageTitle from '../../Hooks/UsePageTitle';
 import { isSoldOut, byAvailability, getBrands, searchProducts } from '../../utils/catalogue';
 import { SORT_OPTIONS } from '../../utils/constants';
 
@@ -129,6 +130,16 @@ const Shop = () => {
     };
 
     const activeCategory = categories.find((item) => item.slug === category);
+
+    // Name the tab after what is being shown — a search, a category, or the
+    // whole shop — so history and bookmarks are meaningful.
+    UsePageTitle(
+        search
+            ? `Search: ${search}`
+            : activeCategory?.name
+              ? `${activeCategory.name} — Shop`
+              : 'Shop',
+    );
 
     return (
         <div>

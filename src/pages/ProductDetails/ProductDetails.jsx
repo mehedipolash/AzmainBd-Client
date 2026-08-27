@@ -26,6 +26,7 @@ import { resolveImageUrl } from '../../utils/imageUrl';
 import { productEnquiryLink } from '../../utils/business';
 import UseCart from '../../Hooks/UseCart';
 import UseToast from '../../Hooks/UseToast';
+import UsePageTitle from '../../Hooks/UsePageTitle';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -67,6 +68,11 @@ const ProductDetails = () => {
     }, [id, fromCatalogue, catalogueLoading]);
 
     const product = fromCatalogue ?? fetched;
+
+    // Names the tab and any shared link after the product itself, once it has
+    // loaded. Called unconditionally (the hook no-ops on a falsy title) so it
+    // sits above the early returns without breaking the rules of hooks.
+    UsePageTitle(product?.name);
 
     // Quantity and variant reset when the visitor moves to another product,
     // otherwise "3" carries over to an item that only has 1 in stock.

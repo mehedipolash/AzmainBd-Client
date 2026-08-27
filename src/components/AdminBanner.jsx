@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { FaArrowRight } from 'react-icons/fa6';
+import { FaArrowRight, FaCrown } from 'react-icons/fa6';
 
 /* ---------------------------------------------------------------------------
    The banner at the top of every admin screen.
@@ -18,24 +18,67 @@ import { FaArrowRight } from 'react-icons/fa6';
    change with the theme.
 --------------------------------------------------------------------------- */
 
-const AdminBanner = ({ eyebrow, title, subtitle, image = '/banners/admin.jpg', action, stats }) => (
-    <header className="relative overflow-hidden bg-brand-surface">
-        <img
-            src={image}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover opacity-30"
-        />
+const AdminBanner = ({ eyebrow, title, subtitle, image = '/banners/admin.jpg', action, stats, royal = false }) => (
+    <header
+        className={`relative overflow-hidden ${
+            // The owner's screens get a deep royal ground instead of the product
+            // photo — a distinct, unmistakable "this is the owner" vibe that
+            // holds in both light and dark mode, since it never depends on a
+            // theme token or a background image the way the normal banner does.
+            royal
+                ? 'bg-[#211546] text-white'
+                : 'bg-brand-surface'
+        }`}
+    >
+        {royal ? (
+            <>
+                {/* A deep royal indigo→plum ground with a warm gold glow in the
+                    corner — reads as "premium" far better than a flat brown, and
+                    holds identically in both themes since it never touches a
+                    theme token. */}
+                <div
+                    aria-hidden="true"
+                    className="absolute inset-0"
+                    style={{
+                        backgroundImage:
+                            'radial-gradient(130% 150% at 100% 0%, rgba(255,205,110,0.30) 0%, rgba(255,205,110,0) 52%), radial-gradient(110% 130% at 0% 100%, rgba(129,90,255,0.35) 0%, rgba(129,90,255,0) 55%), linear-gradient(120deg, #2a1a5c 0%, #211546 52%, #170f33 100%)',
+                    }}
+                />
+                {/* A faint crown motif in the corner, drawn not photographed. */}
+                <FaCrown
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-6 right-6 text-[190px] text-brand-gold/10 sm:right-16"
+                />
+                <div
+                    aria-hidden="true"
+                    className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-brand-gold/60 to-transparent"
+                />
+            </>
+        ) : (
+            <>
+                <img
+                    src={image}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover opacity-30"
+                />
 
-        {/* Directional scrim — heavier where the copy sits, so the headline
-            stays readable without flattening the whole photograph. */}
-        <div className="absolute inset-0 bg-linear-to-r from-brand-surface via-brand-surface/90 to-brand-surface/55" />
+                {/* Directional scrim — heavier where the copy sits, so the
+                    headline stays readable without flattening the photograph. */}
+                <div className="absolute inset-0 bg-linear-to-r from-brand-surface via-brand-surface/90 to-brand-surface/55" />
+            </>
+        )}
 
         <div className="relative px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
             <div className="flex flex-wrap items-end justify-between gap-5">
                 <div className="min-w-0">
                     {eyebrow && (
-                        <p className="mb-2 text-[11px] font-semibold tracking-[0.22em] text-white/60 uppercase">
+                        <p
+                            className={`mb-2 flex items-center gap-2 text-[11px] font-semibold tracking-[0.22em] uppercase ${
+                                royal ? 'text-brand-gold' : 'text-white/60'
+                            }`}
+                        >
+                            {royal && <FaCrown className="text-[11px]" aria-hidden="true" />}
                             {eyebrow}
                         </p>
                     )}

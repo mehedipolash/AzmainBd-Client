@@ -1,0 +1,16 @@
+# Azmain BD — allow search engines to crawl the storefront, keep them out of
+# the app's private and API paths. The admin panel and API carry nothing a
+# search result should ever link to.
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /cart
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /change-password
+Disallow: /forgot-password
+
+Sitemap: https://azmain.com.bd/sitemap.xml

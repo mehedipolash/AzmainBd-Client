@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader';
 import SectionTitle from '../../components/SectionTitle';
 import ShopMap from '../../components/ShopMap';
 import UseCatalogue from '../../Hooks/UseCatalogue';
+import UsePageTitle from '../../Hooks/UsePageTitle';
 import { getStoreStats } from '../../utils/catalogue';
 
 const VALUES = [
@@ -31,6 +32,7 @@ const VALUES = [
 ];
 
 const About = () => {
+    UsePageTitle('About us');
     const { products, categories } = UseCatalogue();
     const stats = getStoreStats(products, categories);
 

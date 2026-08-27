@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import OrderButton from '../../components/OrderButton';
 import UseCart from '../../Hooks/UseCart';
 import UseToast from '../../Hooks/UseToast';
+import UsePageTitle from '../../Hooks/UsePageTitle';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { FREE_DELIVERY_THRESHOLD } from '../../utils/catalogue';
 import { cartEnquiryLink } from '../../utils/business';
@@ -13,6 +14,7 @@ import { cartEnquiryLink } from '../../utils/business';
 const Cart = () => {
     const { items, removeItem, updateQuantity, clearCart, subtotal, count } = UseCart();
     const { notify } = UseToast();
+    UsePageTitle('Your cart');
 
     // The order is placed by sending the basket to WhatsApp. Once that message
     // is on its way the cart has done its job, so it empties — otherwise the

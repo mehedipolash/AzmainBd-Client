@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink, Outlet } from 'react-router';
-import { FaGaugeHigh, FaBoxOpen, FaLayerGroup, FaUsers, FaArrowLeft } from 'react-icons/fa6';
+import { FaGaugeHigh, FaBoxOpen, FaLayerGroup, FaUsers, FaArrowLeft, FaCrown } from 'react-icons/fa6';
 import UseAuth from '../Hooks/UseAuth';
 import ScrollToTop from '../components/ScrollToTop';
 import Logo from '../components/Logo';
@@ -14,7 +14,7 @@ const NAV = [
 ];
 
 const AdminLayout = () => {
-    const { user } = UseAuth();
+    const { user, isSuperAdmin } = UseAuth();
 
     const linkClass = ({ isActive }) =>
         `flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
@@ -72,9 +72,19 @@ const AdminLayout = () => {
                     <p className="mt-1 truncate text-[12px] font-medium" title={user?.email}>
                         {user?.email}
                     </p>
-                    <span className="mt-2 inline-block bg-secondary px-2 py-0.5 text-[10px] font-semibold tracking-[0.12em] text-secondary-content uppercase">
-                        Administrator
-                    </span>
+                    {/* The owner gets a gold "Super Admin" mark here too, so the
+                        difference in standing is visible from every admin screen,
+                        not only the Users page. */}
+                    {isSuperAdmin ? (
+                        <span className="mt-2 inline-flex items-center gap-1.5 bg-brand-gold/20 px-2 py-0.5 text-[10px] font-semibold tracking-[0.12em] text-gold-ink uppercase ring-1 ring-brand-gold/50">
+                            <FaCrown className="text-[9px]" aria-hidden="true" />
+                            Super Admin
+                        </span>
+                    ) : (
+                        <span className="mt-2 inline-block bg-secondary px-2 py-0.5 text-[10px] font-semibold tracking-[0.12em] text-secondary-content uppercase">
+                            Administrator
+                        </span>
+                    )}
 
                     <Link
                         to="/"
