@@ -34,9 +34,17 @@ const axiosInstance = axios.create({
 });
 
 // Routes that need a token are marked with `withAuth: true` at the call site,
-// so public reads never wait on Firebase to resolve.
+// so public reads never wait on Firebase to resolve. The flag is read from BOTH
+// config.withAuth and a custom header the call sites set, because a bare custom
+// property on the axios config is not guaranteed to survive every build/minify
+// path — reading a header too makes the auth attach reliable in production,
+// which is where a dropped flag showed up as "signed in but no admin panel".
 axiosInstance.interceptors.request.use(async (config) => {
-    if (!config.withAuth) return config;
+    const wantsAuth = config.withAuth || config.headers?.['X-Requires-Auth'];
+    if (!wantsAuth) return config;
+
+    // Clean up the marker header so it never leaves the browser.
+    if (config.headers?.['X-Requires-Auth']) delete config.headers['X-Requires-Auth'];
 
     const current = auth.currentUser;
     if (!current) return config;
@@ -73,12 +81,17 @@ axiosInstance.interceptors.response.use(
     },
 );
 
+// A header marker rides alongside the config flag so the interceptor can see
+// the auth intent even if the plain config property is stripped in a build.
+const AUTH = { withAuth: true, headers: { 'X-Requires-Auth': '1' } };
+
 export const api = {
     get: (path, params) => axiosInstance.get(path, { params }),
-    getAuthed: (path, params) => axiosInstance.get(path, { params, withAuth: true }),
-    post: (path, body, { withAuth = true } = {}) => axiosInstance.post(path, body, { withAuth }),
-    patch: (path, body) => axiosInstance.patch(path, body, { withAuth: true }),
-    delete: (path) => axiosInstance.delete(path, { withAuth: true }),
+    getAuthed: (path, params) => axiosInstance.get(path, { params, ...AUTH }),
+    post: (path, body, { withAuth = true } = {}) =>
+        axiosInstance.post(path, body, withAuth ? AUTH : {}),
+    patch: (path, body) => axiosInstance.patch(path, body, AUTH),
+    delete: (path) => axiosInstance.delete(path, AUTH),
 
     // Multipart upload. Content-Type is deleted rather than set: the browser
     // has to generate it itself so it can append the multipart boundary, and
