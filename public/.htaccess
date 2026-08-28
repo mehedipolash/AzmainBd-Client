@@ -5,6 +5,15 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # Leave the API alone. The backend Node app lives in the /api folder, and its
+  # sub-paths (/api/users/me, /api/users/sync, /api/images/…) are NOT real files
+  # here, so without this exception the SPA rule below would swallow them and
+  # hand back index.html — which is exactly why sign-in could not read a user's
+  # role and the admin panel never appeared. /api/products only worked because
+  # it happened to hit the folder directly. This must come FIRST.
+  RewriteRule ^api(/.*)?$ - [L]
+
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
